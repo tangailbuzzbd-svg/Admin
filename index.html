@@ -1551,6 +1551,7 @@
                 const currentStatus = accountStatusToggleBtn.dataset.status;
                 const newStatus = currentStatus === 'active' ? 'frozen' : 'active';
                 const actionText = newStatus === 'frozen' ? 'block' : 'unblock';
+                const modalText = `Are you sure you want to ${actionText} this account? This prevents them from being assigned new orders. Note: This does NOT prevent them from logging in. To fully block access, you must disable their account in the Firebase Console.`;
 
                 showConfirmationModal(async () => {
                     try {
@@ -1560,7 +1561,7 @@
                         showToast(`Failed to ${actionText} account.`, 'error');
                         console.error(error);
                     }
-                }, `Confirm ${actionText}`, `Are you sure you want to ${actionText} this account?`);
+                }, `Confirm ${actionText}`, modalText);
             }
 
             const viewDeliveryManBtn = e.target.closest('.view-delivery-man-btn');
@@ -2037,6 +2038,7 @@
     </script>
 </body>
 </html>
+
 
 
 
