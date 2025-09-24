@@ -1099,14 +1099,19 @@
                     <button class="view-delivery-man-btn p-2 rounded-full text-blue-400 hover:text-blue-300 hover:bg-white/10" data-id="${manId}" title="View Details">
                         <i data-lucide="eye" class="w-5 h-5"></i>
                     </button>
-                    <button class="account-status-toggle-btn p-2 rounded-full ${status === 'frozen' ? 'text-yellow-400 hover:text-yellow-300' : 'text-green-400 hover:text-green-300'} hover:bg-white/10" data-id="${manId}" data-status="${status}" title="${status === 'frozen' ? 'Unfreeze Account' : 'Freeze Account'}">
-                        <i data-lucide="${status === 'frozen' ? 'play' : 'pause'}" class="w-5 h-5"></i>
+                    <button class="account-status-toggle-btn p-2 rounded-full ${status === 'frozen' ? 'text-yellow-400 hover:text-yellow-300' : 'text-green-400 hover:text-green-300'} hover:bg-white/10" data-id="${manId}" data-status="${status}" title="${status === 'frozen' ? 'Unfreeze Account' : 'Block/Freeze Account'}">
+                        <i data-lucide="${status === 'frozen' ? 'play' : 'lock'}" class="w-5 h-5"></i>
+                    </button>
+                     <button class="delete-btn p-2 rounded-full text-red-500 hover:text-red-400 hover:bg-white/10" data-id="${manId}" data-coll="deliveryMen" title="Delete Account">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
                     </button>
                 </div>
                 
                 <div class="flex-shrink-0">
-                    <h4 class="text-xl font-bold text-white pr-20">${d.name || 'N/A'}</h4>
-                    <span class="absolute top-6 right-6 text-xs font-bold px-2 py-1 ${statusBadgeColor} text-white rounded-full">${statusText}</span>
+                    <div class="flex items-center space-x-3 mb-2 pr-20">
+                        <h4 class="text-xl font-bold text-white">${d.name || 'N/A'}</h4>
+                        <span class="text-xs font-bold px-2 py-1 ${statusBadgeColor} text-white rounded-full">${statusText}</span>
+                    </div>
                     <p class="text-sm text-gray-400">${d.email || 'N/A'}</p>
                     <p class="text-sm text-gray-400">Phone: ${d.phone || 'N/A'}</p>
                 </div>
@@ -1486,10 +1491,15 @@
                 if (collection === 'users') {
                     title = "Delete User?";
                     text = "This only removes the user's data, not their authentication account. This action cannot be undone.";
+                } else if (collection === 'deliveryMen') {
+                    title = "Delete Delivery Man?";
+                    text = "This will permanently delete the delivery man's data. Their login account will NOT be deleted. Consider 'Blocking' the account instead. This action is irreversible.";
                 }
 
                 showConfirmationModal(async () => {
                     try {
+                        // IMPORTANT: This does not delete the Firebase Auth user, only the Firestore document.
+                        // A Cloud Function would be needed for a full cleanup.
                         await deleteDoc(doc(db, collection, id));
                         showToast('Item deleted successfully!');
                     } catch (err) {
@@ -1540,12 +1550,12 @@
                 const id = accountStatusToggleBtn.dataset.id;
                 const currentStatus = accountStatusToggleBtn.dataset.status;
                 const newStatus = currentStatus === 'active' ? 'frozen' : 'active';
-                const actionText = newStatus === 'frozen' ? 'freeze' : 'unfreeze';
+                const actionText = newStatus === 'frozen' ? 'block' : 'unblock';
 
                 showConfirmationModal(async () => {
                     try {
                         await updateDoc(doc(db, "deliveryMen", id), { accountStatus: newStatus });
-                        showToast(`Account ${actionText}d successfully!`);
+                        showToast(`Account ${actionText}ed successfully!`);
                     } catch (error) {
                         showToast(`Failed to ${actionText} account.`, 'error');
                         console.error(error);
@@ -2027,6 +2037,8 @@
     </script>
 </body>
 </html>
+
+
 
 
 
