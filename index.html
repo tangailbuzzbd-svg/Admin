@@ -223,6 +223,7 @@
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Total Orders</p><p class="text-3xl font-bold text-text-primary" id="total-orders">0</p></div><div class="bg-green-100 text-green-600 rounded-full p-3"><i data-lucide="shopping-bag" class="w-6 h-6"></i></div></div>
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Total Products</p><p class="text-3xl font-bold text-text-primary" id="total-products-stat">0</p></div><div class="bg-pink-100 text-pink-600 rounded-full p-3"><i data-lucide="archive" class="w-6 h-6"></i></div></div>
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Total Users</p><p class="text-3xl font-bold text-text-primary" id="total-users">0</p></div><div class="bg-red-100 text-red-600 rounded-full p-3"><i data-lucide="users" class="w-6 h-6"></i></div></div>
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Total Delivery Men</p><p class="text-3xl font-bold text-text-primary" id="total-delivery-men">0</p></div><div class="bg-indigo-100 text-indigo-600 rounded-full p-3"><i data-lucide="user-check" class="w-6 h-6"></i></div></div>
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Pending Orders</p><p class="text-3xl font-bold text-text-primary" id="total-pending">0</p></div><div class="bg-yellow-100 text-yellow-600 rounded-full p-3"><i data-lucide="clock" class="w-6 h-6"></i></div></div>
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Confirmed Orders</p><p class="text-3xl font-bold text-text-primary" id="total-confirmed">0</p></div><div class="bg-theme-bg-light text-theme-primary rounded-full p-3"><i data-lucide="check-circle" class="w-6 h-6"></i></div></div>
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Shipped Orders</p><p class="text-3xl font-bold text-text-primary" id="total-shipped">0</p></div><div class="bg-teal-100 text-teal-600 rounded-full p-3"><i data-lucide="ship" class="w-6 h-6"></i></div></div>
@@ -303,8 +304,8 @@
                             <h3 class="text-xl font-semibold text-text-primary mb-4">All Users</h3>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left">
-                                    <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">User</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Join Date</th><th class="px-4 py-3">UID</th></tr></thead>
-                                    <tbody class="divide-y border-color" id="all-users-body"><tr class="text-text-primary"><td colspan="6" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
+                                    <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">User</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Join Date</th><th class="px-4 py-3">UID</th><th class="px-4 py-3">Actions</th></tr></thead>
+                                    <tbody class="divide-y border-color" id="all-users-body"><tr class="text-text-primary"><td colspan="7" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
                                 </table>
                             </div>
                         </div>
@@ -929,6 +930,7 @@
                 
                 const usersSnap = await getCountFromServer(collection(db, "users"));
                 const productsSnap = await getCountFromServer(collection(db, "products"));
+                const deliveryMenSnap = await getCountFromServer(collection(db, "deliveryMen"));
 
                 const productsData = (await getDocs(collection(db, "products"))).docs.map(d => d.data());
                 const totalStockValue = productsData.reduce((sum, product) => sum + ((product.mainPrice || 0) * (product.stock || 0)), 0);
@@ -937,6 +939,7 @@
                 document.getElementById('total-sale').textContent = `৳${totalSales.toFixed(2)}`;
                 document.getElementById('total-users').textContent = usersSnap.data().count;
                 document.getElementById('total-products-stat').textContent = productsSnap.data().count;
+                document.getElementById('total-delivery-men').textContent = deliveryMenSnap.data().count;
                 document.getElementById('total-pending').textContent = statusCounts.pending || 0;
                 document.getElementById('total-confirmed').textContent = statusCounts.confirmed || 0;
                 document.getElementById('total-shipped').textContent = statusCounts.shipped || 0;
@@ -1060,7 +1063,22 @@
                 </td>
             </tr>`;
         };
-        const renderUserRow_All = doc => { const d = doc.data(); return `<tr class="text-text-primary"><td class="px-4 py-3 text-sm">${d.name || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.email || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.mobile || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.location || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td><td class="px-4 py-3 text-xs font-mono">${doc.id}</td></tr>`; };
+        const renderUserRow_All = doc => { 
+            const d = doc.data(); 
+            return `<tr class="text-text-primary">
+                <td class="px-4 py-3 text-sm">${d.name || 'N/A'}</td>
+                <td class="px-4 py-3 text-sm">${d.email || 'N/A'}</td>
+                <td class="px-4 py-3 text-sm">${d.mobile || 'N/A'}</td>
+                <td class="px-4 py-3 text-sm">${d.location || 'N/A'}</td>
+                <td class="px-4 py-3 text-sm">${d.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td>
+                <td class="px-4 py-3 text-xs font-mono">${doc.id}</td>
+                <td class="px-4 py-3">
+                    <button class="delete-btn text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-100 dark:hover:bg-gray-700" data-id="${doc.id}" data-coll="users" title="Delete User">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                </td>
+            </tr>`; 
+        };
         
         const renderDeliveryManCard = (manDoc, stats) => {
             const d = manDoc.data();
@@ -1178,10 +1196,7 @@
                     <div><label for="${prefix}product-offer-price" class="block text-text-primary font-medium mb-2">Offer Price (৳)</label><input type="number" id="${prefix}product-offer-price" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"></div>
                     <div><label for="${prefix}product-discount" class="block text-text-primary font-medium mb-2">Discount (%)</label><input type="number" id="${prefix}product-discount" readonly class="w-full px-4 py-2 bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg"></div>
                 </div>
-                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div><label for="${prefix}product-stock" class="block text-text-primary font-medium mb-2">Stock Count</label><input type="number" id="${prefix}product-stock" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" value="0"></div>
-                    <div><label for="${prefix}product-delivery" class="block text-text-primary font-medium mb-2">Delivery Options</label><input type="text" id="${prefix}product-delivery" placeholder="e.g., Home Delivery, Pickup" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"></div>
-                </div>
+                <div><label for="${prefix}product-stock" class="block text-text-primary font-medium mb-2">Stock Count</label><input type="number" id="${prefix}product-stock" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" value="0"></div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-color">
                     <div class="flex items-center justify-between">
                         <span class="text-text-primary font-medium">On Offer</span>
@@ -1219,6 +1234,7 @@
                         <select id="${prefix}product-subcategory" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary hidden" disabled>
                             <option value="">Select sub-category</option>
                         </select>
+                        <div id="${prefix}subcategory-info" class="text-xs text-text-secondary mt-1"></div>
                     </div>
                 </div>
                 <div>
@@ -1263,12 +1279,14 @@
 
             const categorySelect = document.getElementById(`${prefix}product-category`);
             const subCategorySelect = document.getElementById(`${prefix}product-subcategory`);
+            const subCategoryInfo = document.getElementById(`${prefix}subcategory-info`);
 
             categorySelect.addEventListener('change', (e) => {
                 const selectedCategory = e.target.value;
                 const subCategories = SUB_CATEGORY_MAP[selectedCategory];
                 
                 subCategorySelect.innerHTML = '<option value="">Select sub-category</option>'; // Reset
+                subCategoryInfo.innerHTML = ''; // Reset info text
 
                 if (subCategories && subCategories.length > 0) {
                     subCategories.forEach(sub => {
@@ -1279,6 +1297,7 @@
                     });
                     subCategorySelect.disabled = false;
                     subCategorySelect.classList.remove('hidden');
+                    subCategoryInfo.innerHTML = `Available: ${subCategories.join(', ')}`;
                 } else {
                     subCategorySelect.disabled = true;
                     subCategorySelect.classList.add('hidden');
@@ -1326,7 +1345,6 @@
                 offerPrice: parseFloat(form.querySelector(`#${prefix}product-offer-price`).value) || 0,
                 discount: parseFloat(form.querySelector(`#${prefix}product-discount`).value) || 0,
                 stock: parseInt(form.querySelector(`#${prefix}product-stock`).value, 10) || 0,
-                deliveryOptions: form.querySelector(`#${prefix}product-delivery`).value,
                 imageUrl: form.querySelector(`#${prefix}product-main-image`).value,
                 thumbnails,
                 category: form.querySelector(`#${prefix}product-category`).value,
@@ -1460,15 +1478,25 @@
             
             const deleteBtn = e.target.closest('.delete-btn');
             if (deleteBtn) {
-                 showConfirmationModal(async () => {
+                const collection = deleteBtn.dataset.coll;
+                const id = deleteBtn.dataset.id;
+                let title = "Are you sure?";
+                let text = "This action cannot be undone.";
+
+                if (collection === 'users') {
+                    title = "Delete User?";
+                    text = "This only removes the user's data, not their authentication account. This action cannot be undone.";
+                }
+
+                showConfirmationModal(async () => {
                     try {
-                        await deleteDoc(doc(db, deleteBtn.dataset.coll, deleteBtn.dataset.id));
+                        await deleteDoc(doc(db, collection, id));
                         showToast('Item deleted successfully!');
                     } catch (err) {
                         console.error("Delete failed:", err);
                         showToast('Failed to delete item.', 'error');
                     }
-                });
+                }, title, text);
             }
 
             const editBtn = e.target.closest('.edit-btn');
@@ -1635,7 +1663,6 @@
                 form.querySelector('#edit-product-discount').value = data.discount || 0;
                 form.querySelector('#edit-product-main-image').value = data.imageUrl || '';
                 form.querySelector('#edit-product-stock').value = data.stock || 0;
-                form.querySelector('#edit-product-delivery').value = data.deliveryOptions || '';
                 form.querySelector('#edit-product-details').value = data.details || '';
                 
                 const mainCategorySelect = form.querySelector('#edit-product-category');
@@ -2000,3 +2027,9 @@
     </script>
 </body>
 </html>
+
+
+
+
+
+
