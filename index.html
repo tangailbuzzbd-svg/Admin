@@ -1,0 +1,2002 @@
+<!DOCTYPE html>
+<html lang="en" class="theme-indigo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Default Light Mode Colors */
+            --c-bg-primary-light: #f3f4f6; /* gray-100 */
+            --c-bg-secondary-light: #ffffff; /* white */
+            --c-text-primary-light: #374151; /* gray-700 */
+            --c-text-secondary-light: #6b7280; /* gray-500 */
+            --c-border-light: #e5e7eb; /* gray-200 */
+            
+            /* Default Dark Mode Colors */
+            --c-bg-primary-dark: #111827; /* gray-900 */
+            --c-bg-secondary-dark: #1f2937; /* gray-800 */
+            --c-text-primary-dark: #d1d5db; /* gray-300 */
+            --c-text-secondary-dark: #9ca3af; /* gray-400 */
+            --c-border-dark: #374151; /* gray-700 */
+        }
+        body { 
+            font-family: 'Inter', sans-serif;
+            background-color: var(--c-bg-primary);
+            color: var(--c-text-primary);
+        }
+
+        .bg-primary { background-color: var(--c-bg-primary); }
+        .bg-secondary { background-color: var(--c-bg-secondary); }
+        .text-primary { color: var(--c-text-primary); }
+        .text-secondary { color: var(--c-text-secondary); }
+        .border-color { border-color: var(--c-border); }
+
+        .sidebar { transition: transform 0.3s ease-in-out; }
+        .main-content { transition: margin-left 0.3s ease-in-out; }
+        .stat-card { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        .stat-card:hover { transform: translateY(-5px); }
+        [x-cloak] { display: none !important; }
+        #new-order-alert { transition: transform 0.3s ease-in-out; }
+        .rotate-anim { animation: spin 1s ease-in-out; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+        /* --- Theme Variables --- */
+        .theme-indigo {
+            --c-primary: #4f46e5; --c-primary-hover: #4338ca; --c-ring: #4f46e5;
+            --c-text-theme: #4f46e5; --c-bg-light: #e0e7ff;
+        }
+        .theme-forest {
+            --c-primary: #16a34a; --c-primary-hover: #15803d; --c-ring: #16a34a;
+            --c-text-theme: #16a34a; --c-bg-light: #dcfce7;
+        }
+        .theme-crimson {
+            --c-primary: #dc2626; --c-primary-hover: #b91c1c; --c-ring: #dc2626;
+            --c-text-theme: #dc2626; --c-bg-light: #fee2e2;
+        }
+        .theme-ocean {
+            --c-primary: #0284c7; --c-primary-hover: #0369a1; --c-ring: #0284c7;
+            --c-text-theme: #0284c7; --c-bg-light: #e0f2fe;
+        }
+        .theme-royal {
+            --c-primary: #9333ea; --c-primary-hover: #7e22ce; --c-ring: #9333ea;
+            --c-text-theme: #9333ea; --c-bg-light: #f3e8ff;
+        }
+
+        /* --- Theme-aware Component Styles --- */
+        .nav-link.active { background-color: var(--c-primary); color: white; }
+        .bg-theme-primary { background-color: var(--c-primary); }
+        .hover\:bg-theme-primary-hover:hover { background-color: var(--c-primary-hover); }
+        .focus\:ring-theme-primary:focus { --tw-ring-color: var(--c-ring) !important; box-shadow: 0 0 0 2px var(--c-ring) !important; }
+        .text-theme-primary { color: var(--c-text-theme); }
+        .bg-theme-bg-light { background-color: var(--c-bg-light); }
+        .peer:checked ~ .peer-checked\:bg-theme-primary { background-color: var(--c-primary); }
+    </style>
+</head>
+<body class="bg-primary">
+
+    <!-- Loading Spinner -->
+    <div id="loading-spinner" class="flex items-center justify-center min-h-screen">
+        <div class="w-16 h-16 border-4 border-t-4 border-gray-200 border-t-indigo-600 rounded-full animate-spin"></div>
+    </div>
+
+    <!-- Login Screen -->
+    <div id="login-screen" class="flex items-center justify-center min-h-screen hidden bg-cover bg-center" style="background-image: url('https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/vecteezy_ai-generated-empty-wooden-table-on-the-natural-background_40890255.jpg?raw=true');">
+        <div class="w-full max-w-sm relative">
+            <img id="login-profile-pic" src="https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/WhatsApp%20Image%202025-07-30%20at%2019.29.33_9f8c7d06.jpg?raw=true" alt="Profile" class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border-4 border-white dark:border-gray-700 shadow-lg z-10">
+            <div class="p-8 pt-16 space-y-6 bg-white/20 dark:bg-gray-900/60 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl">
+                <h2 class="text-2xl font-bold text-center text-white">Tangail Buzz Admin</h2>
+                <form id="login-form" class="space-y-4">
+                    <div>
+                        <label for="email" class="text-sm font-medium text-white block mb-1">Enter Your Email</label>
+                        <input type="email" id="email" name="email" required class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white placeholder-gray-300 focus:ring-0 focus:border-white transition">
+                    </div>
+                    <div>
+                        <label for="password" class="text-sm font-medium text-white block mb-1">Enter Your Password</label>
+                        <input type="password" id="password" name="password" required class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white placeholder-gray-300 focus:ring-0 focus:border-white transition">
+                    </div>
+                    <div class="flex items-center">
+                        <input id="keep-signed-in" type="checkbox" class="h-4 w-4 text-theme-primary bg-gray-50/50 border-white/50 focus:ring-theme-primary rounded">
+                        <label for="keep-signed-in" class="ml-2 block text-sm text-white">Keep me signed in on this device</label>
+                    </div>
+                    <p id="login-error" class="text-sm text-red-300"></p>
+                    <button type="submit" class="w-full py-3 font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 disabled:bg-green-400">LOGIN</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN Verification Screen -->
+    <div id="pin-verification-screen" class="flex items-center justify-center min-h-screen hidden bg-cover bg-center" style="background-image: url('https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/vecteezy_ai-generated-empty-wooden-table-on-the-natural-background_40890255.jpg?raw=true');">
+        <div class="w-full max-w-sm p-8 space-y-6 bg-white/20 dark:bg-gray-900/60 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl">
+            <h2 class="text-2xl font-bold text-center text-white">Enter Security PIN</h2>
+            <form id="pin-verification-form" class="space-y-4">
+                <div>
+                    <label for="pin-input" class="text-sm font-medium text-white block mb-1">Your 4-Digit PIN</label>
+                    <input type="password" id="pin-input" name="pin" required maxlength="4" pattern="\d{4}" class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white text-center text-2xl tracking-[1em] focus:ring-0 focus:border-white transition">
+                </div>
+                <p id="pin-error" class="text-sm text-red-300"></p>
+                <button type="submit" class="w-full py-3 font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 disabled:bg-green-400">VERIFY</button>
+            </form>
+            <div class="text-center">
+                <button id="forgot-pin-btn" class="text-sm text-white hover:underline">Forgot PIN?</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PIN Setup/Reset Screen -->
+    <div id="pin-setup-screen" class="flex items-center justify-center min-h-screen hidden bg-cover bg-center" style="background-image: url('https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/vecteezy_ai-generated-empty-wooden-table-on-the-natural-background_40890255.jpg?raw=true');">
+        <div class="w-full max-w-sm p-8 space-y-6 bg-white/20 dark:bg-gray-900/60 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl">
+            <h2 id="pin-setup-title" class="text-2xl font-bold text-center text-white">Set Up Security PIN</h2>
+            <p id="pin-setup-subtitle" class="text-center text-white text-sm">Create a 4-digit PIN for extra security.</p>
+            <form id="pin-setup-form" class="space-y-4">
+                <div id="current-pin-wrapper" class="hidden">
+                    <!-- This content will be dynamically replaced by JS for password re-auth -->
+                    <label for="current-pin" class="text-sm font-medium text-white block mb-1">Current 4-Digit PIN</label>
+                    <input type="password" id="current-pin" name="currentPin" required maxlength="4" pattern="\d{4}" class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white text-center text-2xl tracking-[1em] focus:ring-0 focus:border-white transition">
+                </div>
+                <div>
+                    <label for="new-pin" class="text-sm font-medium text-white block mb-1">New 4-Digit PIN</label>
+                    <input type="password" id="new-pin" name="newPin" required maxlength="4" pattern="\d{4}" class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white text-center text-2xl tracking-[1em] focus:ring-0 focus:border-white transition">
+                </div>
+                <div>
+                    <label for="confirm-pin" class="text-sm font-medium text-white block mb-1">Confirm New PIN</label>
+                    <input type="password" id="confirm-pin" name="confirmPin" required maxlength="4" pattern="\d{4}" class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white text-center text-2xl tracking-[1em] focus:ring-0 focus:border-white transition">
+                </div>
+                <p id="pin-setup-error" class="text-sm text-red-300"></p>
+                <button type="submit" class="w-full py-3 font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 disabled:bg-blue-400">SAVE PIN</button>
+            </form>
+        </div>
+    </div>
+
+
+    <!-- Admin Panel -->
+    <div id="admin-panel" class="hidden">
+        <div class="flex h-screen" x-data="{ sidebarOpen: true }">
+            <!-- Sidebar -->
+            <aside class="sidebar fixed inset-y-0 left-0 z-30 w-64 bg-secondary transform transition-transform duration-300 ease-in-out" :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}">
+                <div class="flex items-center justify-between h-20 px-6 border-b border-color">
+                    <h1 class="text-2xl font-bold text-theme-primary">Admin</h1>
+                </div>
+                <nav class="mt-6">
+                    <a href="#dashboard" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary active" data-page="dashboard"><i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i><span>Dashboard</span></a>
+                    <a href="#products" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="products"><i data-lucide="package" class="w-5 h-5 mr-3"></i><span>Products</span></a>
+                    <a href="#add-product" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="add-product"><i data-lucide="plus-circle" class="w-5 h-5 mr-3"></i><span>Add Product</span></a>
+                    <a href="#banners" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="banners"><i data-lucide="image" class="w-5 h-5 mr-3"></i><span>Banners</span></a>
+                    <a href="#orders" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="orders"><i data-lucide="shopping-cart" class="w-5 h-5 mr-3"></i><span>Orders</span></a>
+                    <a href="#users" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="users"><i data-lucide="users" class="w-5 h-5 mr-3"></i><span>Users</span></a>
+                    <a href="#delivery" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="delivery"><i data-lucide="truck" class="w-5 h-5 mr-3"></i><span>Delivery</span></a>
+                    <a href="#settings" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="settings"><i data-lucide="settings" class="w-5 h-5 mr-3"></i><span>Settings</span></a>
+                </nav>
+            </aside>
+
+            <!-- Main Content -->
+            <div class="main-content flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out" :class="{'ml-64': sidebarOpen, 'ml-0': !sidebarOpen}">
+                <header class="flex items-center justify-between h-20 px-6 bg-secondary border-b border-color">
+                    <button @click="sidebarOpen = !sidebarOpen" class="text-text-secondary focus:outline-none"><i data-lucide="menu" class="w-6 h-6"></i></button>
+                    <div class="text-2xl font-semibold text-text-primary" id="page-title">Dashboard</div>
+                    <div class="flex items-center">
+                        <!-- Manual Refresh Button -->
+                        <button id="manual-refresh-button" class="text-text-secondary focus:outline-none mr-4" title="Refresh Data">
+                            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                        </button>
+                        <!-- Notification Bell -->
+                        <div x-data="{ notificationsOpen: false }" class="relative">
+                            <button @click="handleNotificationClick($data)" class="relative text-text-secondary focus:outline-none">
+                                <i data-lucide="bell" class="w-6 h-6"></i>
+                                <span id="notification-count" class="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full hidden"></span>
+                            </button>
+                            <div x-show="notificationsOpen" @click.away="notificationsOpen = false" x-cloak class="absolute right-0 mt-2 w-80 bg-secondary rounded-lg shadow-xl overflow-hidden z-10">
+                                <div class="py-2 px-4 text-sm font-semibold text-text-primary border-b border-color">Notifications</div>
+                                <div id="notification-list" class="max-h-64 overflow-y-auto">
+                                    <p class="p-4 text-sm text-text-secondary">No new notifications.</p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Profile Dropdown -->
+                        <div x-data="{ profileOpen: false }" class="relative ml-4">
+                            <button @click="profileOpen = !profileOpen" class="flex items-center space-x-2 focus:outline-none">
+                                <span id="header-admin-name" class="hidden sm:inline text-sm font-medium text-text-primary">Admin</span>
+                                <img id="header-admin-image" class="w-8 h-8 rounded-full object-cover" src="https://placehold.co/32x32/e2e8f0/64748b?text=A" alt="Admin Profile">
+                            </button>
+                            <div x-show="profileOpen" @click.away="profileOpen = false" x-cloak class="absolute right-0 mt-2 w-48 bg-secondary rounded-lg shadow-xl overflow-hidden z-10">
+                                <div class="px-4 py-2 border-b border-color">
+                                    <p id="dropdown-admin-name" class="text-sm font-semibold text-text-primary">Admin</p>
+                                    <p id="dropdown-admin-email" class="text-xs text-text-secondary truncate">email@example.com</p>
+                                </div>
+                                <a href="#settings" @click="profileOpen = false" class="nav-link block px-4 py-2 text-sm text-text-primary hover:bg-gray-100 dark:hover:bg-gray-600" data-page="settings">Settings</a>
+                                <button id="logout-button" class="w-full text-left block px-4 py-2 text-sm text-red-600 hover:bg-gray-100 dark:text-red-400 dark:hover:bg-gray-600">Logout</button>
+                            </div>
+                        </div>
+                    </div>
+                </header>
+
+                <main class="flex-1 overflow-x-hidden overflow-y-auto p-6 bg-primary">
+                    <!-- Dashboard Page -->
+                    <div id="dashboard-page" class="page-content">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Total Sales</p><p class="text-3xl font-bold text-text-primary" id="total-sale">৳0</p></div><div class="bg-blue-100 text-blue-600 rounded-full p-3"><i data-lucide="dollar-sign" class="w-6 h-6"></i></div></div>
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Total Orders</p><p class="text-3xl font-bold text-text-primary" id="total-orders">0</p></div><div class="bg-green-100 text-green-600 rounded-full p-3"><i data-lucide="shopping-bag" class="w-6 h-6"></i></div></div>
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Total Products</p><p class="text-3xl font-bold text-text-primary" id="total-products-stat">0</p></div><div class="bg-pink-100 text-pink-600 rounded-full p-3"><i data-lucide="archive" class="w-6 h-6"></i></div></div>
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Total Users</p><p class="text-3xl font-bold text-text-primary" id="total-users">0</p></div><div class="bg-red-100 text-red-600 rounded-full p-3"><i data-lucide="users" class="w-6 h-6"></i></div></div>
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Pending Orders</p><p class="text-3xl font-bold text-text-primary" id="total-pending">0</p></div><div class="bg-yellow-100 text-yellow-600 rounded-full p-3"><i data-lucide="clock" class="w-6 h-6"></i></div></div>
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Confirmed Orders</p><p class="text-3xl font-bold text-text-primary" id="total-confirmed">0</p></div><div class="bg-theme-bg-light text-theme-primary rounded-full p-3"><i data-lucide="check-circle" class="w-6 h-6"></i></div></div>
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Shipped Orders</p><p class="text-3xl font-bold text-text-primary" id="total-shipped">0</p></div><div class="bg-teal-100 text-teal-600 rounded-full p-3"><i data-lucide="ship" class="w-6 h-6"></i></div></div>
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Out for Delivery</p><p class="text-3xl font-bold text-text-primary" id="total-out-for-delivery">0</p></div><div class="bg-orange-100 text-orange-600 rounded-full p-3"><i data-lucide="truck" class="w-6 h-6"></i></div></div>
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Delivered Orders</p><p class="text-3xl font-bold text-text-primary" id="total-delivered">0</p></div><div class="bg-purple-100 text-purple-600 rounded-full p-3"><i data-lucide="package-check" class="w-6 h-6"></i></div></div>
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Cancelled Orders</p><p class="text-3xl font-bold text-text-primary" id="total-cancelled">0</p></div><div class="bg-red-100 text-red-600 rounded-full p-3"><i data-lucide="x-circle" class="w-6 h-6"></i></div></div>
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between lg:col-span-2"><div><p class="text-sm font-medium text-text-secondary">Total Stock Value</p><p class="text-3xl font-bold text-text-primary" id="total-stock-value">৳0</p></div><div class="bg-cyan-100 text-cyan-600 rounded-full p-3"><i data-lucide="database" class="w-6 h-6"></i></div></div>
+                        </div>
+                        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
+                            <div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">Recent Orders</h3><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Status</th></tr></thead><tbody class="divide-y border-color" id="recent-orders-body"><tr class="text-text-primary"><td colspan="4" class="px-4 py-3 text-center">Loading...</td></tr></tbody></table></div></div>
+                            <div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">New Users</h3><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">User</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Join Date</th></tr></thead><tbody class="divide-y border-color" id="recent-users-body"><tr class="text-text-primary"><td colspan="3" class="px-4 py-3 text-center">Loading...</td></tr></tbody></table></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Products Page -->
+                    <div id="products-page" class="page-content hidden">
+                        <div class="bg-secondary p-6 rounded-lg shadow-md">
+                            <div class="flex flex-wrap justify-between items-center mb-4">
+                                <h3 class="text-xl font-semibold text-text-primary">All Products</h3>
+                                <!-- Category Filters -->
+                                <div id="product-category-filters" class="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
+                                    <!-- Filter buttons will be dynamically inserted here -->
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Image</th><th class="px-4 py-3">Name</th><th class="px-4 py-3">Category</th><th class="px-4 py-3">Sub-Category</th><th class="px-4 py-3">Main Price</th><th class="px-4 py-3">Offer Price</th><th class="px-4 py-3">Stock</th><th class="px-4 py-3">Rating</th><th class="px-4 py-3">Offer %</th><th class="px-4 py-3">On Offer</th><th class="px-4 py-3">Refundable</th><th class="px-4 py-3">Actions</th></tr></thead>
+                                    <tbody class="divide-y border-color" id="all-products-body"><tr class="text-text-primary"><td colspan="12" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Add Product Page -->
+                    <div id="add-product-page" class="page-content hidden">
+                        <div class="bg-secondary p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+                            <h2 class="text-2xl font-bold mb-6 text-text-primary">Add New Product</h2>
+                            <form id="add-product-form" class="space-y-6">
+                                <!-- Reusable form content will be injected here by JS -->
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Edit Product Page -->
+                    <div id="edit-product-page" class="page-content hidden">
+                        <div class="bg-secondary p-8 rounded-lg shadow-md max-w-4xl mx-auto">
+                            <h2 class="text-2xl font-bold mb-6 text-text-primary">Edit Product</h2>
+                            <form id="edit-product-form" class="space-y-6">
+                                 <!-- Reusable form content will be injected here by JS -->
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Banners Page -->
+                    <div id="banners-page" class="page-content hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div class="lg-col-span-1"><div class="bg-secondary p-8 rounded-lg shadow-md"><h2 class="text-2xl font-bold mb-6 text-text-primary">Add New Banner</h2><form id="add-banner-form"><div class="mb-4"><label for="banner-image" class="block text-text-primary font-medium mb-2">Banner Image URL</label><input type="url" id="banner-image" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="https://example.com/banner.jpg"></div><div class="mb-4"><label for="banner-link" class="block text-text-primary font-medium mb-2">Link (Optional)</label><input type="url" id="banner-link" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="/products/promo"></div><button type="submit" class="w-full bg-theme-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-theme-primary-hover disabled:bg-opacity-70">Add Banner</button></form></div></div>
+                            <div class="lg-col-span-2"><div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">Current Banners</h3><div id="banners-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="text-text-primary">Loading...</div></div></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Orders Page -->
+                    <div id="orders-page" class="page-content hidden">
+                         <div class="bg-secondary p-6 rounded-lg shadow-md">
+                             <h3 class="text-xl font-semibold text-text-primary mb-4">All Orders</h3>
+                             <div class="overflow-x-auto">
+                                 <table class="w-full text-left">
+                                     <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer Name</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Date & Time</th><th class="px-4 py-3">Items</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Payment Method</th><th class="px-4 py-3">Delivery Charge</th><th class="px-4 py-3">Assign Delivery Man</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr></thead>
+                                     <tbody class="divide-y border-color" id="all-orders-body"><tr class="text-text-primary"><td colspan="12" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
+                                 </table>
+                             </div>
+                         </div>
+                    </div>
+                    
+                    <!-- Users Page -->
+                    <div id="users-page" class="page-content hidden">
+                        <div class="bg-secondary p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-semibold text-text-primary mb-4">All Users</h3>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">User</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Join Date</th><th class="px-4 py-3">UID</th></tr></thead>
+                                    <tbody class="divide-y border-color" id="all-users-body"><tr class="text-text-primary"><td colspan="6" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Delivery Page -->
+                    <div id="delivery-page" class="page-content hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                             <div class="lg:col-span-1">
+                                 <div class="bg-secondary p-8 rounded-lg shadow-md">
+                                     <h2 class="text-2xl font-bold mb-6 text-text-primary">Add Delivery Man</h2>
+                                     <form id="add-delivery-man-form" class="space-y-4">
+                                         <div>
+                                             <label for="delivery-man-name" class="block text-text-primary font-medium mb-2">Name</label>
+                                             <input type="text" id="delivery-man-name" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                         </div>
+                                         <div>
+                                             <label for="delivery-man-email" class="block text-text-primary font-medium mb-2">Email</label>
+                                             <input type="email" id="delivery-man-email" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                         </div>
+                                         <div>
+                                             <label for="delivery-man-password" class="block text-text-primary font-medium mb-2">Password</label>
+                                             <input type="password" id="delivery-man-password" required minlength="6" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                         </div>
+                                         <div>
+                                             <label for="delivery-man-phone" class="block text-text-primary font-medium mb-2">Phone Number</label>
+                                             <input type="tel" id="delivery-man-phone" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                         </div>
+                                         <div>
+                                             <label for="delivery-man-vehicle" class="block text-text-primary font-medium mb-2">Vehicle Details (e.g., Bike, Cycle)</label>
+                                             <input type="text" id="delivery-man-vehicle" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                         </div>
+                                         <button type="submit" class="w-full bg-theme-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-theme-primary-hover disabled:bg-opacity-70">Add Delivery Man</button>
+                                     </form>
+                                 </div>
+                             </div>
+                            <div class="lg:col-span-2">
+                                <div class="bg-secondary p-6 rounded-lg shadow-md">
+                                    <h3 class="text-xl font-semibold text-text-primary mb-4">All Delivery Men</h3>
+                                    <div id="delivery-man-cards-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+                                         <div class="text-text-primary text-center xl:col-span-2">Loading...</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <!-- Settings Page -->
+                    <div id="settings-page" class="page-content hidden">
+                        <div class="max-w-4xl mx-auto space-y-8">
+                            <!-- Profile Settings -->
+                            <div class="bg-secondary p-6 rounded-lg shadow-md">
+                                <h3 class="text-xl font-semibold text-text-primary mb-4">Profile Settings</h3>
+                                <form id="profile-settings-form" class="space-y-4">
+                                    <div>
+                                        <label for="admin-name" class="block text-text-primary font-medium mb-2">Name</label>
+                                        <input type="text" id="admin-name" class="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-text-primary">
+                                    </div>
+                                    <div>
+                                        <label for="admin-image" class="block text-text-primary font-medium mb-2">Profile Picture URL</label>
+                                        <input type="url" id="admin-image" class="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-text-primary">
+                                    </div>
+                                     <p class="text-sm text-text-secondary">Your Email: <span id="admin-profile-email" class="font-semibold"></span></p>
+                                    <div class="flex justify-end">
+                                        <button type="submit" class="bg-theme-primary text-white font-bold py-2 px-4 rounded-lg hover:bg-theme-primary-hover disabled:bg-opacity-70">Save Changes</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                             <!-- Theme Settings -->
+                            <div class="bg-secondary p-6 rounded-lg shadow-md">
+                                <h3 class="text-xl font-semibold text-text-primary mb-4">Theme</h3>
+                                <div id="theme-selector" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+                                    <div class="theme-option cursor-pointer" data-theme="indigo">
+                                        <div class="w-full h-16 rounded-lg bg-indigo-600 flex items-center justify-center relative border-4 border-transparent"><i data-lucide="check-circle" class="w-8 h-8 text-white hidden theme-check"></i></div>
+                                        <p class="text-center text-sm mt-2 text-text-primary">Indigo</p>
+                                    </div>
+                                    <div class="theme-option cursor-pointer" data-theme="forest">
+                                        <div class="w-full h-16 rounded-lg bg-green-600 flex items-center justify-center relative border-4 border-transparent"><i data-lucide="check-circle" class="w-8 h-8 text-white hidden theme-check"></i></div>
+                                        <p class="text-center text-sm mt-2 text-text-primary">Forest</p>
+                                    </div>
+                                    <div class="theme-option cursor-pointer" data-theme="crimson">
+                                        <div class="w-full h-16 rounded-lg bg-red-600 flex items-center justify-center relative border-4 border-transparent"><i data-lucide="check-circle" class="w-8 h-8 text-white hidden theme-check"></i></div>
+                                        <p class="text-center text-sm mt-2 text-text-primary">Crimson</p>
+                                    </div>
+                                    <div class="theme-option cursor-pointer" data-theme="ocean">
+                                        <div class="w-full h-16 rounded-lg bg-sky-600 flex items-center justify-center relative border-4 border-transparent"><i data-lucide="check-circle" class="w-8 h-8 text-white hidden theme-check"></i></div>
+                                        <p class="text-center text-sm mt-2 text-text-primary">Ocean</p>
+                                    </div>
+                                    <div class="theme-option cursor-pointer" data-theme="royal">
+                                        <div class="w-full h-16 rounded-lg bg-purple-600 flex items-center justify-center relative border-4 border-transparent"><i data-lucide="check-circle" class="w-8 h-8 text-white hidden theme-check"></i></div>
+                                        <p class="text-center text-sm mt-2 text-text-primary">Royal</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Appearance Settings -->
+                            <div class="bg-secondary p-6 rounded-lg shadow-md">
+                                <h3 class="text-xl font-semibold text-text-primary mb-4">Appearance</h3>
+                                <div class="flex items-center justify-between">
+                                    <span class="text-text-primary">Dark Mode</span>
+                                    <label for="dark-mode-toggle" class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="dark-mode-toggle" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-600 peer-checked:bg-theme-primary peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                    </label>
+                                </div>
+                                <div class="mt-6 space-y-4">
+                                    <div>
+                                        <h4 class="text-lg font-medium text-text-primary mb-2">Login Screen</h4>
+                                        <div class="p-4 border rounded-lg border-color space-y-3">
+                                            <div class="flex items-center justify-between">
+                                                <label for="login-bg-url" class="text-sm text-text-secondary">Background Image URL</label>
+                                                <input type="url" id="login-bg-url" placeholder="https://..." class="w-1/2 px-2 py-1 border rounded-lg bg-gray-50 dark:bg-gray-700 text-sm">
+                                            </div>
+                                             <div class="flex items-center justify-between">
+                                                <label for="login-profile-url" class="text-sm text-text-secondary">Profile Picture URL</label>
+                                                <input type="url" id="login-profile-url" placeholder="https://..." class="w-1/2 px-2 py-1 border rounded-lg bg-gray-50 dark:bg-gray-700 text-sm">
+                                            </div>
+                                            <div class="flex justify-end pt-2 space-x-2">
+                                                <button id="reset-login-appearance-btn" class="text-xs text-text-secondary hover:text-text-primary">Reset</button>
+                                                <button id="save-login-appearance-btn" class="px-3 py-1 bg-theme-primary text-white rounded-lg hover:bg-theme-primary-hover text-xs">Save</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <h4 class="text-lg font-medium text-text-primary mb-2">Custom Colors</h4>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border-t border-color">
+                                            <!-- Light Mode Colors -->
+                                            <div class="space-y-3">
+                                                <p class="font-semibold text-text-primary">Light Mode</p>
+                                                <div class="flex items-center justify-between">
+                                                    <label for="light-bg-color" class="text-sm text-text-secondary">Background</label>
+                                                    <input type="color" id="light-bg-color" class="p-1 h-8 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg">
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <label for="light-text-color" class="text-sm text-text-secondary">Text</label>
+                                                    <input type="color" id="light-text-color" class="p-1 h-8 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg">
+                                                </div>
+                                            </div>
+                                            <!-- Dark Mode Colors -->
+                                            <div class="space-y-3">
+                                                <p class="font-semibold text-text-primary">Dark Mode</p>
+                                                 <div class="flex items-center justify-between">
+                                                    <label for="dark-bg-color" class="text-sm text-text-secondary">Background</label>
+                                                    <input type="color" id="dark-bg-color" class="p-1 h-8 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg">
+                                                </div>
+                                                <div class="flex items-center justify-between">
+                                                    <label for="dark-text-color" class="text-sm text-text-secondary">Text</label>
+                                                    <input type="color" id="dark-text-color" class="p-1 h-8 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="flex justify-end pt-4 border-t border-color">
+                                         <button id="reset-colors-btn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-sm">Reset Colors to Default</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </main>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Order Details Modal -->
+    <div id="order-details-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-color pb-3 mb-4">
+                <h3 class="text-xl font-semibold text-text-primary">Order Details</h3>
+                <button id="modal-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">&times;</button>
+            </div>
+            <div id="modal-order-content" class="space-y-4">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Delivery Man Details Modal -->
+    <div id="delivery-man-details-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-color pb-3 mb-4">
+                <h3 class="text-xl font-semibold text-text-primary">Delivery Man Details</h3>
+                <button id="delivery-modal-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">&times;</button>
+            </div>
+            <div id="modal-delivery-man-content" class="space-y-4">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- New Order Alert Modal -->
+    <div id="new-order-alert" class="fixed top-5 right-5 z-50 bg-secondary rounded-lg shadow-xl p-5 w-full max-w-sm transform transition-transform translate-x-full hidden">
+        <div class="flex justify-between items-center border-b border-color pb-2 mb-3">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="bell-ring" class="text-green-500"></i>
+                <h3 class="text-lg font-semibold text-text-primary">New Order Received!</h3>
+            </div>
+            <button id="new-order-alert-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">&times;</button>
+        </div>
+        <div id="new-order-alert-content" class="space-y-2 text-sm">
+            <!-- Dynamic content will go here -->
+        </div>
+        <div class="mt-4 pt-3 border-t border-color flex justify-end">
+             <button id="view-full-order-btn" class="px-4 py-2 bg-theme-primary text-white rounded-lg hover:bg-theme-primary-hover text-sm">View Full Order</button>
+        </div>
+    </div>
+
+    <!-- Confirmation Modal -->
+    <div id="confirmation-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-md">
+            <h3 id="modal-title" class="text-xl font-semibold text-text-primary">Are you sure?</h3>
+            <p id="modal-text" class="mt-2 text-text-secondary">This action cannot be undone.</p>
+            <div class="mt-6 flex justify-end space-x-4">
+                <button id="modal-cancel-btn" class="px-4 py-2 bg-gray-200 dark:bg-gray-600 text-gray-800 dark:text-gray-200 rounded-lg hover:bg-gray-300 dark:hover:bg-gray-500">Cancel</button>
+                <button id="modal-confirm-btn" class="px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700">Confirm</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast" class="fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg transition-transform transform translate-y-20 opacity-0"><p id="toast-message"></p></div>
+    
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+
+    <script type="module">
+        import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, getDocs, addDoc, serverTimestamp, query, orderBy, limit, where, getCountFromServer, doc, getDoc, deleteDoc, updateDoc, writeBatch, increment, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        /*
+            SECURITY NOTE:
+            - The Firebase configuration is exposed on the client-side. In a production environment,
+              it's crucial to secure your data using Firestore Security Rules.
+            - Admin PINs are stored as plaintext in Firestore. This is not recommended. For a production
+              system, PINs/passwords should be hashed using a secure, one-way algorithm (e.g., bcrypt)
+              on a server-side environment (like Cloud Functions) before being stored.
+            - Deleting delivery men only removes their Firestore record, not their Firebase Authentication
+              account, which requires a backend with the Admin SDK. This implementation uses a "soft delete"
+              (freezing the account) to prevent orphaned auth accounts.
+        */
+
+        // --- Firebase Config & Initialization ---
+        const firebaseConfig = { apiKey: "AIzaSyBQH3wiKS5_5gGg309REabDmJSk1VLIbtw", authDomain: "tangail-buzz-project.firebaseapp.com", projectId: "tangail-buzz-project", storageBucket: "tangail-buzz-project.appspot.com", messagingSenderId: "1080138191394", appId: "1:1080138191394:web:0e96b05009820b5dc5b07b" };
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const auth = getAuth(app);
+
+        // --- State Management & Constants---
+        let allProducts = [];
+        let currentProductCategoryFilter = 'all';
+        let allDeliveryMen = [];
+        let notifications = [];
+        let confirmCallback = null;
+        let unsubscribeListeners = [];
+
+        const UI = {
+            loadingSpinner: document.getElementById('loading-spinner'),
+            loginScreen: document.getElementById('login-screen'),
+            adminPanel: document.getElementById('admin-panel'),
+            loginForm: document.getElementById('login-form'),
+            loginError: document.getElementById('login-error'),
+            pageTitle: document.getElementById('page-title'),
+            navLinks: document.querySelectorAll('.nav-link'),
+            pages: document.querySelectorAll('.page-content'),
+            notificationList: document.getElementById('notification-list'),
+            notificationCountBadge: document.getElementById('notification-count'),
+            orderDetailsModal: document.getElementById('order-details-modal'),
+            orderDetailsContent: document.getElementById('modal-order-content'),
+            orderDetailsCloseBtn: document.getElementById('modal-close-btn'),
+            deliveryManDetailsModal: document.getElementById('delivery-man-details-modal'),
+            deliveryManDetailsContent: document.getElementById('modal-delivery-man-content'),
+            deliveryManModalCloseBtn: document.getElementById('delivery-modal-close-btn'),
+            confirmationModal: document.getElementById('confirmation-modal'),
+            newOrderAlert: document.getElementById('new-order-alert'),
+            pinVerificationScreen: document.getElementById('pin-verification-screen'),
+            pinSetupScreen: document.getElementById('pin-setup-screen'),
+            pinVerificationForm: document.getElementById('pin-verification-form'),
+            pinSetupForm: document.getElementById('pin-setup-form'),
+            pinError: document.getElementById('pin-error'),
+            pinSetupError: document.getElementById('pin-setup-error'),
+            pinSetupTitle: document.getElementById('pin-setup-title'),
+            currentPinWrapper: document.getElementById('current-pin-wrapper'),
+        };
+        
+        const PAGE_TITLES = { dashboard: 'Dashboard', products: 'All Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
+
+        const CATEGORY_MAP = {
+            'electronics': 'Electronics',
+            'fashion': 'Fashion',
+            'home-garden': 'Home & Garden',
+            'health-beauty': 'Health & Beauty',
+            'sports-outdoors': 'Sports & Outdoors',
+            'books-stationery': 'Books & Stationery',
+            'kids-toys': 'Kids & Toys',
+            'cars-bikes': 'Cars & Bikes'
+        };
+
+        const SUB_CATEGORY_MAP = {
+            'electronics': ['Mobile Phone', 'Laptop & Computer', 'Tablet', 'TV & Home Theater', 'Headphone & Speaker', 'Camera & Accessories', 'Wearable Smart Watch', 'Gaming Console'],
+            'fashion': ['Men\'s Clothing', 'Women\'s Clothing', 'Kids\' Clothing', 'Shoes & Sandals', 'Watch & Jewelry', 'Bags & Accessories', 'Traditional Wear (Saree, Panjabi)'],
+            'home-garden': ['Furniture', 'Kitchen Items', 'Home Decor', 'Lighting', 'Garden Tools', 'Home Appliances', 'Storage & Organizer'],
+            'health-beauty': ['Skincare', 'Haircare', 'Makeup', 'Perfume', 'Health Supplement', 'Fitness Equipment', 'Personal Care (Shaver, Trimmer)'],
+            'sports-outdoors': ['Sports Apparel', 'Sports Shoes', 'Fitness Gear', 'Cycles', 'Gym Equipment', 'Outdoor Camping Gear', 'Football, Cricket, Badminton Items'],
+            'books-stationery': ['Educational Books', 'Story Books', 'Religious Books', 'Office Stationery', 'School Stationery', 'Notebook & Diary', 'Arts & Crafts Supplies'],
+            'kids-toys': ['Educational Toys', 'Soft Toys', 'Dolls & Action Figures', 'Games & Puzzles', 'Outdoor Toys (Cycles, Scooters)', 'Remote Control Toys', 'Lego & Building Blocks'],
+            'cars-bikes': ['Car Accessories', 'Bike Accessories', 'Helmets & Riding Gear', 'Tires & Wheels', 'Car Care Products', 'Motor Oil & Lubricants', 'Electric Scooters & Bikes']
+        };
+
+        // --- Helper & Utility Functions ---
+        const showToast = (message, type = 'success') => {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toast-message');
+            toastMessage.textContent = message;
+            
+            const typeClasses = {
+                success: 'bg-green-500 text-white',
+                error: 'bg-red-500 text-white',
+                warning: 'bg-yellow-500 text-black'
+            };
+
+            toast.className = `fixed bottom-5 right-5 py-2 px-4 rounded-lg shadow-lg transition-transform transform translate-y-0 opacity-100 ${typeClasses[type] || typeClasses.success}`;
+            setTimeout(() => {
+                toast.className = toast.className.replace('translate-y-0 opacity-100', 'translate-y-20 opacity-0');
+            }, 3000);
+        };
+
+        const handleSnapshotError = (context) => (error) => {
+            console.error(`Error loading ${context}:`, error);
+            showToast(`Could not load ${context}!`, 'error');
+        };
+
+        const setButtonLoading = (button, isLoading, text = 'Loading...') => {
+            if (!button) return;
+            if (isLoading) {
+                button.disabled = true;
+                button.dataset.originalText = button.textContent;
+                button.innerHTML = `<span class="inline-flex items-center">${text} <svg class="animate-spin -mr-1 ml-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg></span>`;
+            } else {
+                button.disabled = false;
+                button.innerHTML = button.dataset.originalText || 'Submit';
+            }
+        };
+
+        const cleanupListeners = () => {
+            unsubscribeListeners.forEach(unsub => unsub());
+            unsubscribeListeners = [];
+        };
+
+        // --- Authentication & PIN Logic ---
+        const isAdmin = async (uid) => {
+            try {
+                const adminDoc = await getDoc(doc(db, "admins", uid));
+                return adminDoc.exists();
+            } catch (error) {
+                console.error("Error checking admin status:", error);
+                showToast("Could not verify admin status!", 'error');
+                return false;
+            }
+        };
+
+        const showScreen = (screenName) => {
+            const screens = ['loading-spinner', 'login-screen', 'pin-verification-screen', 'pin-setup-screen', 'admin-panel'];
+            screens.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.classList.toggle('hidden', id !== screenName);
+            });
+        };
+
+        const checkPinStatus = async (user) => {
+            try {
+                const adminDocRef = doc(db, "admins", user.uid);
+                const adminDoc = await getDoc(adminDocRef);
+                if (adminDoc.exists() && adminDoc.data().pin) {
+                    showScreen('pin-verification-screen');
+                } else {
+                    UI.pinSetupTitle.textContent = 'Set Up Security PIN';
+                    UI.currentPinWrapper.classList.add('hidden');
+                    UI.pinSetupForm.querySelector('button[type="submit"]').textContent = 'SAVE PIN';
+                    showScreen('pin-setup-screen');
+                }
+            } catch (error) {
+                console.error("Error checking PIN status:", error);
+                showToast("Could not verify security settings.", 'error');
+                await signOut(auth);
+            }
+        };
+
+        onAuthStateChanged(auth, async (user) => {
+            showScreen('loading-spinner');
+            if (user) {
+                const userIsAdmin = await isAdmin(user.uid);
+                if (userIsAdmin) {
+                    await checkPinStatus(user);
+                } else {
+                    await signOut(auth);
+                    UI.loginError.textContent = "You do not have permission to access this panel.";
+                    showScreen('login-screen');
+                }
+            } else {
+                cleanupListeners();
+                showScreen('login-screen');
+            }
+        });
+
+        UI.loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const button = e.target.querySelector('button[type="submit"]');
+            setButtonLoading(button, true, 'LOGGING IN...');
+            UI.loginError.textContent = '';
+            try {
+                // onAuthStateChanged will handle the rest of the flow
+                await signInWithEmailAndPassword(auth, e.target.email.value, e.target.password.value);
+            } catch (error) {
+                console.error("Login failed:", error.code);
+                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    UI.loginError.textContent = "Incorrect email or password.";
+                } else if (error.code === 'auth/too-many-requests') {
+                    UI.loginError.textContent = "Too many failed login attempts. Please try again later.";
+                } else {
+                    UI.loginError.textContent = "An error occurred during login.";
+                }
+                setButtonLoading(button, false);
+            }
+        });
+
+        UI.pinVerificationForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const button = e.target.querySelector('button[type="submit"]');
+            setButtonLoading(button, true, 'VERIFYING...');
+            UI.pinError.textContent = '';
+            const enteredPin = e.target.pin.value;
+            const user = auth.currentUser;
+
+            try {
+                const adminDoc = await getDoc(doc(db, "admins", user.uid));
+                if (adminDoc.exists() && adminDoc.data().pin === enteredPin) {
+                    showScreen('admin-panel');
+                    initializeAdminPanel(user);
+                } else {
+                    UI.pinError.textContent = "Incorrect PIN.";
+                }
+            } catch (error) {
+                UI.pinError.textContent = "Error verifying PIN.";
+            } finally {
+                setButtonLoading(button, false);
+            }
+        });
+
+        UI.pinSetupForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const button = e.target.querySelector('button[type="submit"]');
+            setButtonLoading(button, true, 'SAVING...');
+            UI.pinSetupError.textContent = '';
+            
+            const newPin = e.target.newPin.value;
+            const confirmPin = e.target.confirmPin.value;
+            const user = auth.currentUser;
+            const isResetFlow = !UI.currentPinWrapper.classList.contains('hidden');
+
+            if (newPin.length !== 4) {
+                UI.pinSetupError.textContent = "PIN must be 4 digits.";
+                setButtonLoading(button, false);
+                return;
+            }
+
+            if (newPin !== confirmPin) {
+                UI.pinSetupError.textContent = "New PINs do not match.";
+                setButtonLoading(button, false);
+                return;
+            }
+            
+            try {
+                if (isResetFlow) {
+                    const password = e.target.currentPassword.value;
+                    if (!password) {
+                        UI.pinSetupError.textContent = "Password is required to reset PIN.";
+                        setButtonLoading(button, false);
+                        return;
+                    }
+                    const credential = EmailAuthProvider.credential(user.email, password);
+                    // Re-authenticate the user to confirm their identity before changing the PIN
+                    await reauthenticateWithCredential(user, credential);
+                }
+
+                await updateDoc(doc(db, "admins", user.uid), { pin: newPin });
+                showToast("PIN set successfully!");
+                showScreen('admin-panel');
+                initializeAdminPanel(user);
+
+            } catch (error) {
+                 if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                    UI.pinSetupError.textContent = "Incorrect password. PIN not reset.";
+                } else {
+                    UI.pinSetupError.textContent = "Failed to set PIN. An error occurred.";
+                }
+                console.error("PIN setup/reset error:", error);
+            } finally {
+                setButtonLoading(button, false);
+            }
+        });
+
+        document.getElementById('forgot-pin-btn').addEventListener('click', () => {
+            showScreen('pin-setup-screen');
+            UI.pinSetupTitle.textContent = 'Reset Security PIN';
+            UI.pinSetupForm.querySelector('#current-pin-wrapper').innerHTML = `
+                <label for="current-password" class="text-sm font-medium text-white block mb-1">Enter Your Account Password</label>
+                <input type="password" id="current-password" name="currentPassword" required class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white placeholder-gray-300 focus:ring-0 focus:border-white transition">
+            `;
+            UI.currentPinWrapper.classList.remove('hidden');
+            UI.pinSetupForm.querySelector('button[type="submit"]').textContent = 'RESET PIN';
+        });
+
+        
+        // --- Navigation ---
+        const showPage = (pageId) => {
+            const targetPage = document.getElementById(`${pageId}-page`);
+            if (!targetPage) {
+                console.warn(`Page not found: ${pageId}. Redirecting to dashboard.`);
+                pageId = 'dashboard';
+            }
+            UI.pages.forEach(p => p.classList.toggle('hidden', p.id !== `${pageId}-page`));
+            UI.navLinks.forEach(l => l.classList.toggle('active', l.dataset.page === pageId));
+            UI.pageTitle.textContent = PAGE_TITLES[pageId] || 'Dashboard';
+        };
+
+        // --- Appearance & Theming ---
+        const applyTheme = (themeName) => {
+            document.documentElement.className = document.documentElement.className.replace(/theme-\w+/g, '');
+            document.documentElement.classList.add(`theme-${themeName}`);
+            localStorage.setItem('adminTheme', themeName);
+            document.querySelectorAll('.theme-option').forEach(opt => {
+                const checkIcon = opt.querySelector('.theme-check');
+                const colorBox = opt.querySelector('.relative.border-4');
+                const isActive = opt.dataset.theme === themeName;
+                checkIcon.classList.toggle('hidden', !isActive);
+                colorBox.classList.toggle('border-transparent', !isActive);
+                colorBox.classList.toggle('border-blue-500', isActive);
+                colorBox.classList.toggle('dark:border-blue-400', isActive);
+            });
+        };
+
+        const applyDarkMode = (isDark) => {
+            document.documentElement.classList.toggle('dark', isDark);
+            if(document.getElementById('dark-mode-toggle')) {
+                document.getElementById('dark-mode-toggle').checked = isDark;
+            }
+            applyCustomColors();
+        };
+
+        const applyCustomColors = () => {
+            const root = document.documentElement;
+            const isDark = root.classList.contains('dark');
+            const defaultColors = {
+                lightBg: getComputedStyle(root).getPropertyValue('--c-bg-primary-light').trim(),
+                lightText: getComputedStyle(root).getPropertyValue('--c-text-primary-light').trim(),
+                darkBg: getComputedStyle(root).getPropertyValue('--c-bg-primary-dark').trim(),
+                darkText: getComputedStyle(root).getPropertyValue('--c-text-primary-dark').trim()
+            };
+            const colors = {
+                lightBg: localStorage.getItem('custom-light-bg') || defaultColors.lightBg,
+                lightText: localStorage.getItem('custom-light-text') || defaultColors.lightText,
+                darkBg: localStorage.getItem('custom-dark-bg') || defaultColors.darkBg,
+                darkText: localStorage.getItem('custom-dark-text') || defaultColors.darkText
+            };
+            root.style.setProperty('--c-bg-primary', isDark ? colors.darkBg : colors.lightBg);
+            root.style.setProperty('--c-text-primary', isDark ? colors.darkText : colors.lightText);
+            // Derive secondary colors for simplicity
+            root.style.setProperty('--c-bg-secondary', isDark ? '#1f2937' : '#ffffff');
+            root.style.setProperty('--c-text-secondary', isDark ? '#9ca3af' : '#6b7280');
+            root.style.setProperty('--c-border', isDark ? '#374151' : '#e5e7eb');
+        };
+
+        const initializeAppearance = () => {
+            applyTheme(localStorage.getItem('adminTheme') || 'forest');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            applyDarkMode(localStorage.theme === 'dark' || (!('theme' in localStorage) && prefersDark));
+            
+            const loginScreenDivs = document.querySelectorAll('#login-screen, #pin-verification-screen, #pin-setup-screen');
+            const loginProfilePic = document.getElementById('login-profile-pic');
+            const defaultBg = 'https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/vecteezy_ai-generated-empty-wooden-table-on-the-natural-background_40890255.jpg?raw=true';
+            const defaultAvatar = 'https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/WhatsApp%20Image%202025-07-30%20at%2019.29.33_9f8c7d06.jpg?raw=true';
+            
+            const bgUrl = `url('${localStorage.getItem('login-bg-url') || defaultBg}')`;
+            loginScreenDivs.forEach(div => div.style.backgroundImage = bgUrl);
+            loginProfilePic.src = localStorage.getItem('login-profile-url') || defaultAvatar;
+        };
+
+        // --- Data Loading & Rendering ---
+        const loadAdminProfile = async (user) => {
+            if (!user) return;
+            document.getElementById('admin-profile-email').textContent = user.email;
+            document.getElementById('dropdown-admin-email').textContent = user.email;
+
+            const adminDoc = await getDoc(doc(db, "admins", user.uid));
+            if (adminDoc.exists()) {
+                const data = adminDoc.data();
+                const name = data.name || 'Admin';
+                const imageUrl = data.imageUrl || `https://placehold.co/32x32/e2e8f0/64748b?text=${name.charAt(0)}`;
+                
+                document.getElementById('admin-name').value = data.name || '';
+                document.getElementById('admin-image').value = data.imageUrl || '';
+                document.getElementById('header-admin-name').textContent = name;
+                document.getElementById('header-admin-image').src = imageUrl;
+                document.getElementById('dropdown-admin-name').textContent = name;
+            }
+        };
+
+        const loadDashboardStats = async () => {
+            try {
+                const ordersSnapshot = await getDocs(query(collection(db, "orders")));
+                const ordersData = ordersSnapshot.docs.map(doc => doc.data());
+                
+                const statusCounts = ordersData.reduce((acc, order) => {
+                    const status = order.status || 'pending';
+                    acc[status] = (acc[status] || 0) + 1;
+                    return acc;
+                }, {});
+
+                const totalSales = ordersData.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+                
+                const usersSnap = await getCountFromServer(collection(db, "users"));
+                const productsSnap = await getCountFromServer(collection(db, "products"));
+
+                const productsData = (await getDocs(collection(db, "products"))).docs.map(d => d.data());
+                const totalStockValue = productsData.reduce((sum, product) => sum + ((product.mainPrice || 0) * (product.stock || 0)), 0);
+
+                document.getElementById('total-orders').textContent = ordersData.length;
+                document.getElementById('total-sale').textContent = `৳${totalSales.toFixed(2)}`;
+                document.getElementById('total-users').textContent = usersSnap.data().count;
+                document.getElementById('total-products-stat').textContent = productsSnap.data().count;
+                document.getElementById('total-pending').textContent = statusCounts.pending || 0;
+                document.getElementById('total-confirmed').textContent = statusCounts.confirmed || 0;
+                document.getElementById('total-shipped').textContent = statusCounts.shipped || 0;
+                document.getElementById('total-out-for-delivery').textContent = statusCounts['out-for-delivery'] || 0;
+                document.getElementById('total-delivered').textContent = statusCounts.delivered || 0;
+                document.getElementById('total-cancelled').textContent = statusCounts.cancelled || 0;
+                document.getElementById('total-stock-value').textContent = `৳${Math.round(totalStockValue)}`;
+            } catch (e) {
+                console.error("Error loading dashboard stats", e);
+                showToast("Failed to load dashboard stats!", 'error');
+            }
+        };
+
+        const renderTable = (snapshot, bodyId, rowRenderer) => {
+            const body = document.getElementById(bodyId);
+            if (!body) return;
+            body.innerHTML = '';
+            if (snapshot.empty) {
+                const colSpan = body.parentElement.querySelector('thead th').parentElement.children.length;
+                body.innerHTML = `<tr><td colspan="${colSpan}" class="p-4 text-center text-text-secondary">No data found.</td></tr>`;
+                return;
+            }
+            snapshot.forEach(doc => body.insertAdjacentHTML('beforeend', rowRenderer(doc)));
+            lucide.createIcons();
+        };
+
+        const getStatusBadge = (status) => { 
+            const colors = { pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300', confirmed: 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300', shipped: 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300', 'out-for-delivery': 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300', delivered: 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300', cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300' }; 
+            const text = (status || '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+            return `<span class="px-2 py-1 font-semibold leading-tight rounded-full ${colors[status] || ''}">${text}</span>`; 
+        };
+        const renderOrderRow_Recent = doc => { const d = doc.data(); return `<tr class="text-text-primary"><td class="px-4 py-3 text-sm">${doc.id.slice(0, 8)}</td><td class="px-4 py-3 text-sm">${d.userName || 'N/A'}</td><td class="px-4 py-3 text-sm">৳${d.totalAmount || 0}</td><td class="px-4 py-3 text-xs">${getStatusBadge(d.status)}</td></tr>`; };
+        const renderUserRow_Recent = doc => { const d = doc.data(); return `<tr class="text-text-primary"><td class="px-4 py-3 text-sm">${d.name || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.email || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td></tr>`; };
+        
+        const renderFilteredProducts = () => {
+            const body = document.getElementById('all-products-body');
+            body.innerHTML = '';
+            const filteredProducts = allProducts.filter(doc => 
+                currentProductCategoryFilter === 'all' || doc.data().category === currentProductCategoryFilter
+            );
+            if (filteredProducts.length === 0) {
+                const colSpan = body.parentElement.querySelector('thead th').parentElement.children.length;
+                body.innerHTML = `<tr><td colspan="${colSpan}" class="p-4 text-center text-text-secondary">No products found.</td></tr>`;
+                return;
+            }
+            filteredProducts.forEach(doc => body.insertAdjacentHTML('beforeend', renderProductRow_All(doc)));
+            lucide.createIcons();
+        };
+
+        const renderProductFilters = () => {
+            const filtersContainer = document.getElementById('product-category-filters');
+            const counts = allProducts.reduce((acc, doc) => {
+                const category = doc.data().category;
+                if (category) acc[category] = (acc[category] || 0) + 1;
+                return acc;
+            }, {});
+            let buttonsHtml = `<button class="category-filter-btn px-3 py-1 text-sm rounded-full ${currentProductCategoryFilter === 'all' ? 'bg-theme-primary text-white' : 'bg-gray-200 dark:bg-gray-700 text-text-primary'}" data-category="all">All <span class="ml-1 px-2 py-0.5 text-xs rounded-full bg-gray-400 dark:bg-gray-500 text-white">${allProducts.length}</span></button>`;
+            for (const key in CATEGORY_MAP) {
+                if (counts[key]) {
+                     buttonsHtml += `<button class="category-filter-btn px-3 py-1 text-sm rounded-full ${currentProductCategoryFilter === key ? 'bg-theme-primary text-white' : 'bg-gray-200 dark:bg-gray-700 text-text-primary'}" data-category="${key}">${CATEGORY_MAP[key]} <span class="ml-1 px-2 py-0.5 text-xs rounded-full bg-gray-400 dark:bg-gray-500 text-white">${counts[key]}</span></button>`;
+                }
+            }
+            filtersContainer.innerHTML = buttonsHtml;
+        };
+        
+        const renderProductRow_All = doc => { 
+            const d = doc.data();
+            const categoryName = CATEGORY_MAP[d.category] || d.category || 'N/A';
+            const subCategoryName = d.subcategory || 'N/A';
+            const isLowStock = d.stock < 5;
+            const stockValue = d.stock !== undefined ? d.stock : 'N/A';
+            const lowStockClass = isLowStock ? 'bg-yellow-100 dark:bg-yellow-900/20' : '';
+            const lowStockIcon = isLowStock ? '<i data-lucide="alert-triangle" class="w-4 h-4 text-yellow-500 inline-block ml-2"></i>' : '';
+            const isOfferHtml = (d.isOnOffer) ? `<span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">Yes</span>` : `<span class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-100">No</span>`;
+            const isRefundableHtml = d.isRefundable ? `<span class="px-2 py-1 font-semibold leading-tight text-blue-700 bg-blue-100 rounded-full dark:bg-blue-700 dark:text-blue-100">Yes</span>` : `<span class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-100">No</span>`;
+
+            return `<tr class="text-text-primary ${lowStockClass}">
+                <td class="px-4 py-3"><img src="${d.imageUrl}" onerror="this.src='https://placehold.co/48x48/e2e8f0/64748b?text=Img'" class="h-12 w-12 object-cover rounded"></td>
+                <td class="px-4 py-3 text-sm font-semibold">${d.name || 'N/A'}</td>
+                <td class="px-4 py-3 text-sm">${categoryName}</td>
+                <td class="px-4 py-3 text-sm">${subCategoryName}</td>
+                <td class="px-4 py-3 text-sm">৳${d.mainPrice || 0}</td>
+                <td class="px-4 py-3 text-sm">৳${d.offerPrice || 0}</td>
+                <td class="px-4 py-3 text-sm">${stockValue}${lowStockIcon}</td>
+                <td class="px-4 py-3 text-sm">${d.rating || 'N/A'} ★</td>
+                <td class="px-4 py-3 text-sm">${d.discount || 0}%</td>
+                <td class="px-4 py-3 text-xs">${isOfferHtml}</td>
+                <td class="px-4 py-3 text-xs">${isRefundableHtml}</td>
+                <td class="px-4 py-3 flex items-center"><button class="edit-btn text-indigo-500 hover:text-indigo-700 mr-2" data-id="${doc.id}"><i data-lucide="edit" class="w-5 h-5"></i></button><button class="delete-btn text-red-500 hover:text-red-700" data-id="${doc.id}" data-coll="products"><i data-lucide="trash-2" class="w-5 h-5"></i></button></td>
+            </tr>`; 
+        };
+        const getDeliveryManDropdown = (deliveryMen, orderId, currentDeliveryManId) => {
+            let options = deliveryMen
+                .filter(doc => (doc.data().accountStatus || 'active') === 'active') // Filter for active delivery men
+                .map(doc => {
+                    const man = doc.data();
+                    return `<option value="${doc.id}" ${doc.id === currentDeliveryManId ? 'selected' : ''}>${man.name}</option>`;
+                }).join('');
+            return `<select class="delivery-man-assign border rounded p-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600" data-id="${orderId}"><option value="">Unassigned</option>${options}</select>`;
+        };
+        const getStatusDropdown = (id, currentStatus) => { const statuses = ['pending', 'confirmed', 'shipped', 'out-for-delivery', 'delivered', 'cancelled']; return `<select class="status-change border rounded p-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600" data-id="${id}">${statuses.map(s => `<option value="${s}" ${s === currentStatus ? 'selected' : ''}>${s.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>`).join('')}</select>`; };
+        const renderOrderRow_All = doc => {
+            const d = doc.data();
+            const itemsHtml = d.items?.map(item => `<div class="whitespace-nowrap">${item.name} (x${item.quantity})</div>`).join('') || 'N/A';
+            return `<tr class="text-text-primary">
+                <td class="px-4 py-3 text-sm">${doc.id.slice(0, 8)}</td>
+                <td class="px-4 py-3 text-sm">${d.userName || 'N/A'}</td>
+                <td class="px-4 py-3 text-sm">${d.userMobile || 'N/A'}</td>
+                <td class="px-4 py-3 text-sm">${d.createdAt?.toDate().toLocaleString() || 'N/A'}</td>
+                <td class="px-4 py-3 text-xs">${itemsHtml}</td>
+                <td class="px-4 py-3 text-sm">৳${d.totalAmount || 0}</td>
+                <td class="px-4 py-3 text-sm">${d.userLocation || 'N/A'}</td>
+                <td class="px-4 py-3 text-sm">${d.paymentMethod || 'N/A'}</td>
+                <td class="px-4 py-3 text-sm">৳${d.deliveryCharge || 0}</td>
+                <td class="px-4 py-3 text-sm">${getDeliveryManDropdown(allDeliveryMen, doc.id, d.assignedDeliveryManId)}</td>
+                <td class="px-4 py-3">${getStatusBadge(d.status)}</td>
+                <td class="px-4 py-3 flex items-center space-x-2">
+                   <button class="view-order-btn text-blue-500 hover:text-blue-700 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-gray-700" data-id="${doc.id}" title="View Details"><i data-lucide="eye" class="w-5 h-5"></i></button>
+                   <div class="relative">${getStatusDropdown(doc.id, d.status)}</div>
+                   <button class="delete-btn text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-100 dark:hover:bg-gray-700" data-id="${doc.id}" data-coll="orders" title="Delete Order"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
+                </td>
+            </tr>`;
+        };
+        const renderUserRow_All = doc => { const d = doc.data(); return `<tr class="text-text-primary"><td class="px-4 py-3 text-sm">${d.name || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.email || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.mobile || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.location || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td><td class="px-4 py-3 text-xs font-mono">${doc.id}</td></tr>`; };
+        
+        const renderDeliveryManCard = (manDoc, stats) => {
+            const d = manDoc.data();
+            const manId = manDoc.id;
+            const status = d.accountStatus || 'active';
+
+            const {
+                totalDelivered = 0,
+                cashCollected = 0,
+            } = stats[manId] || {};
+
+            const statusBadgeColor = status === 'frozen' ? 'bg-yellow-500' : 'bg-green-500';
+            const statusText = status.charAt(0).toUpperCase() + status.slice(1);
+
+            return `
+            <div class="bg-gray-800 p-6 rounded-lg shadow-md flex flex-col space-y-4 relative">
+                <div class="absolute top-2 right-2 flex space-x-1">
+                    <button class="view-delivery-man-btn p-2 rounded-full text-blue-400 hover:text-blue-300 hover:bg-white/10" data-id="${manId}" title="View Details">
+                        <i data-lucide="eye" class="w-5 h-5"></i>
+                    </button>
+                    <button class="account-status-toggle-btn p-2 rounded-full ${status === 'frozen' ? 'text-yellow-400 hover:text-yellow-300' : 'text-green-400 hover:text-green-300'} hover:bg-white/10" data-id="${manId}" data-status="${status}" title="${status === 'frozen' ? 'Unfreeze Account' : 'Freeze Account'}">
+                        <i data-lucide="${status === 'frozen' ? 'play' : 'pause'}" class="w-5 h-5"></i>
+                    </button>
+                </div>
+                
+                <div class="flex-shrink-0">
+                    <h4 class="text-xl font-bold text-white pr-20">${d.name || 'N/A'}</h4>
+                    <span class="absolute top-6 right-6 text-xs font-bold px-2 py-1 ${statusBadgeColor} text-white rounded-full">${statusText}</span>
+                    <p class="text-sm text-gray-400">${d.email || 'N/A'}</p>
+                    <p class="text-sm text-gray-400">Phone: ${d.phone || 'N/A'}</p>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 text-center py-4 border-y border-gray-700">
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Total Delivered</p>
+                        <p class="text-2xl font-semibold text-white">${totalDelivered}</p>
+                    </div>
+                    <div>
+                        <p class="text-xs text-gray-400 uppercase tracking-wider">Cash Collected</p>
+                        <p class="text-2xl font-semibold text-white">৳${Math.round(cashCollected)}</p>
+                    </div>
+                </div>
+            </div>`;
+        };
+
+        const renderDeliverySection = async (deliveryMenSnapshot) => {
+            const container = document.getElementById('delivery-man-cards-container');
+            if (!container) return;
+            container.innerHTML = '<div class="text-text-primary text-center xl:col-span-2">Calculating stats...</div>';
+
+            try {
+                // 1. Fetch all delivered orders once to calculate stats
+                const ordersQuery = query(collection(db, "orders"), where("status", "==", "delivered"));
+                const ordersSnapshot = await getDocs(ordersQuery);
+
+                // 2. Process orders to calculate stats for each delivery man
+                const deliveryStats = {};
+                ordersSnapshot.forEach(orderDoc => {
+                    const order = orderDoc.data();
+                    const manId = order.assignedDeliveryManId;
+                    if (!manId) return;
+
+                    if (!deliveryStats[manId]) {
+                        deliveryStats[manId] = { totalDelivered: 0, cashCollected: 0 };
+                    }
+                    deliveryStats[manId].totalDelivered++;
+                    deliveryStats[manId].cashCollected += order.totalAmount || 0;
+                });
+                
+                // 3. Render cards
+                container.innerHTML = '';
+                if (deliveryMenSnapshot.empty) {
+                    container.innerHTML = '<p class="text-center text-text-secondary col-span-full">No delivery men have been added.</p>';
+                    return;
+                }
+                
+                deliveryMenSnapshot.forEach(manDoc => {
+                    container.insertAdjacentHTML('beforeend', renderDeliveryManCard(manDoc, deliveryStats));
+                });
+
+                lucide.createIcons();
+            } catch (error) {
+                console.error("Error rendering delivery section:", error);
+                container.innerHTML = '<p class="text-center text-red-500 col-span-full">Could not load delivery man data.</p>';
+                showToast('Failed to load delivery section!', 'error');
+            }
+        };
+
+        const renderBanners = (snapshot) => {
+            const list = document.getElementById('banners-list');
+            list.innerHTML = '';
+            if (snapshot.empty) { list.innerHTML = `<p class="text-center text-text-secondary col-span-full">No banners have been added.</p>`; return; }
+            snapshot.forEach(doc => {
+                const d = doc.data();
+                list.insertAdjacentHTML('beforeend', `<div class="relative group"><img src="${d.imageUrl}" onerror="this.src='https://placehold.co/400x160/e2e8f0/64748b?text=Banner'" class="w-full h-40 object-cover rounded-lg shadow-md"><div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><button class="delete-btn text-white" data-id="${doc.id}" data-coll="banners"><i data-lucide="trash-2" class="w-8 h-8"></i></button></div></div>`);
+            });
+            lucide.createIcons();
+        };
+
+        // --- Product Form Logic ---
+        const getProductFormHTML = (prefix) => {
+            const categoryOptions = Object.entries(CATEGORY_MAP).map(([key, value]) => `<option value="${key}">${value}</option>`).join('');
+            return `
+            <input type="hidden" id="${prefix}product-id-hidden">
+            <div class="p-4 border rounded-lg bg-gray-50/50 dark:bg-gray-800/50 border-color space-y-4">
+                <h3 class="font-semibold text-lg text-text-primary">Common Details</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><label for="${prefix}product-name" class="block text-text-primary font-medium mb-2">Product Name</label><input type="text" id="${prefix}product-name" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"></div>
+                    <div><label for="${prefix}product-id" class="block text-text-primary font-medium mb-2">Model Number / Code</label><input type="text" id="${prefix}product-id" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"></div>
+                    <div><label for="${prefix}product-brand" class="block text-text-primary font-medium mb-2">Brand</label><input type="text" id="${prefix}product-brand" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"></div>
+                    <div><label for="${prefix}product-warranty" class="block text-text-primary font-medium mb-2">Warranty</label><input type="text" id="${prefix}product-warranty" placeholder="e.g., 1 year, 2 years" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div><label for="${prefix}product-main-price" class="block text-text-primary font-medium mb-2">Main Price (৳)</label><input type="number" id="${prefix}product-main-price" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"></div>
+                    <div><label for="${prefix}product-offer-price" class="block text-text-primary font-medium mb-2">Offer Price (৳)</label><input type="number" id="${prefix}product-offer-price" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"></div>
+                    <div><label for="${prefix}product-discount" class="block text-text-primary font-medium mb-2">Discount (%)</label><input type="number" id="${prefix}product-discount" readonly class="w-full px-4 py-2 bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg"></div>
+                </div>
+                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><label for="${prefix}product-stock" class="block text-text-primary font-medium mb-2">Stock Count</label><input type="number" id="${prefix}product-stock" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" value="0"></div>
+                    <div><label for="${prefix}product-delivery" class="block text-text-primary font-medium mb-2">Delivery Options</label><input type="text" id="${prefix}product-delivery" placeholder="e.g., Home Delivery, Pickup" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"></div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-color">
+                    <div class="flex items-center justify-between">
+                        <span class="text-text-primary font-medium">On Offer</span>
+                        <label for="${prefix}product-on-offer" class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="${prefix}product-on-offer" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-600 peer-checked:bg-theme-primary peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                        </label>
+                    </div>
+                    <div class="flex items-center justify-between">
+                        <span class="text-text-primary font-medium">Refundable</span>
+                        <label for="${prefix}product-refundable" class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="${prefix}product-refundable" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-600 peer-checked:bg-theme-primary peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                        </label>
+                    </div>
+                </div>
+                <div><label for="${prefix}product-main-image" class="block text-text-primary font-medium mb-2">Main Image URL</label><input type="url" id="${prefix}product-main-image" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="https://example.com/main-image.jpg"></div>
+                <div>
+                    <div class="flex items-center justify-between mb-2"><label class="block text-text-primary font-medium">Thumbnail Images</label><button type="button" id="${prefix}add-thumbnail-btn" class="text-sm bg-theme-primary text-white py-1 px-3 rounded-lg hover:bg-theme-primary-hover">+ Add</button></div>
+                    <div id="${prefix}thumbnail-container" class="space-y-2"></div>
+                </div>
+            </div>
+            
+            <div class="p-4 border rounded-lg bg-gray-50/50 dark:bg-gray-800/50 border-color space-y-4">
+                <h3 class="font-semibold text-lg text-text-primary">Category & Specifications</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <label for="${prefix}product-category" class="block text-text-primary font-medium mb-2">Category</label>
+                        <select id="${prefix}product-category" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                            <option value="">Select a category</option>${categoryOptions}
+                        </select>
+                    </div>
+                    <div>
+                        <label for="${prefix}product-subcategory" class="block text-text-primary font-medium mb-2">Sub-Category</label>
+                        <select id="${prefix}product-subcategory" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary hidden" disabled>
+                            <option value="">Select sub-category</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <div class="flex items-center justify-between mb-2"><label class="block text-text-primary font-medium">Specifications</label><button type="button" id="${prefix}add-specification-btn" class="text-sm bg-theme-primary text-white py-1 px-3 rounded-lg hover:bg-theme-primary-hover">+ Add</button></div>
+                    <div id="${prefix}specification-container" class="space-y-2"></div>
+                </div>
+            </div>
+            
+            <div><label for="${prefix}product-details" class="block text-text-primary font-medium mb-2">Description</label><textarea id="${prefix}product-details" rows="4" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg"></textarea></div>
+            
+            <button type="submit" class="w-full bg-theme-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-theme-primary-hover disabled:bg-opacity-70">${prefix === 'edit-' ? 'Save Changes' : 'Add Product'}</button>
+            `;
+        }
+
+        const createSpecificationInput = (container, key = '', value = '') => {
+            const inputWrapper = document.createElement('div');
+            inputWrapper.className = 'flex items-center space-x-2 spec-row';
+            inputWrapper.innerHTML = `
+                <input type="text" class="w-1/3 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm spec-key" placeholder="e.g., Color" value="${key}">
+                <input type="text" class="w-2/3 px-3 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm spec-value" placeholder="e.g., Red" value="${value}">
+                <button type="button" class="remove-spec-btn text-red-500 hover:text-red-700 p-1"><i data-lucide="x-circle" class="w-5 h-5"></i></button>
+            `;
+            container.appendChild(inputWrapper);
+            lucide.createIcons();
+        };
+
+        const setupProductForm = (formElement, prefix) => {
+            if (!formElement) return;
+            formElement.innerHTML = getProductFormHTML(prefix);
+
+            const mainPrice = document.getElementById(`${prefix}product-main-price`);
+            const offerPrice = document.getElementById(`${prefix}product-offer-price`);
+            const discount = document.getElementById(`${prefix}product-discount`);
+            
+            const calculateDiscount = () => {
+                const main = parseFloat(mainPrice.value) || 0;
+                const offer = parseFloat(offerPrice.value) || 0;
+                discount.value = (main > 0 && offer > 0 && main > offer) ? Math.round(((main - offer) / main) * 100) : 0;
+            };
+            mainPrice.addEventListener('input', calculateDiscount);
+            offerPrice.addEventListener('input', calculateDiscount);
+
+            const categorySelect = document.getElementById(`${prefix}product-category`);
+            const subCategorySelect = document.getElementById(`${prefix}product-subcategory`);
+
+            categorySelect.addEventListener('change', (e) => {
+                const selectedCategory = e.target.value;
+                const subCategories = SUB_CATEGORY_MAP[selectedCategory];
+                
+                subCategorySelect.innerHTML = '<option value="">Select sub-category</option>'; // Reset
+
+                if (subCategories && subCategories.length > 0) {
+                    subCategories.forEach(sub => {
+                        const option = document.createElement('option');
+                        option.value = sub;
+                        option.textContent = sub;
+                        subCategorySelect.appendChild(option);
+                    });
+                    subCategorySelect.disabled = false;
+                    subCategorySelect.classList.remove('hidden');
+                } else {
+                    subCategorySelect.disabled = true;
+                    subCategorySelect.classList.add('hidden');
+                }
+            });
+
+            document.getElementById(`${prefix}add-thumbnail-btn`).addEventListener('click', () => {
+                const container = document.getElementById(`${prefix}thumbnail-container`);
+                const inputWrapper = document.createElement('div');
+                inputWrapper.className = 'flex items-center space-x-2';
+                inputWrapper.innerHTML = `
+                    <input type="url" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg thumbnail-input" placeholder="https://example.com/image.jpg">
+                    <button type="button" class="remove-thumbnail-btn text-red-500 hover:text-red-700 p-1"><i data-lucide="x-circle" class="w-5 h-5"></i></button>
+                `;
+                container.appendChild(inputWrapper);
+                lucide.createIcons();
+            });
+
+            document.getElementById(`${prefix}add-specification-btn`).addEventListener('click', () => {
+                const container = document.getElementById(`${prefix}specification-container`);
+                createSpecificationInput(container);
+            });
+        };
+
+        const getProductDataFromForm = (form, prefix) => {
+            const thumbnailInputs = form.querySelectorAll(`#${prefix}thumbnail-container .thumbnail-input`);
+            const thumbnails = Array.from(thumbnailInputs).map(input => input.value).filter(Boolean);
+            
+            const specification = {};
+            const specRows = form.querySelectorAll(`#${prefix}specification-container .spec-row`);
+            specRows.forEach(row => {
+                const key = row.querySelector('.spec-key').value.trim();
+                const value = row.querySelector('.spec-value').value.trim();
+                if (key) {
+                    specification[key] = value;
+                }
+            });
+
+            return {
+                name: form.querySelector(`#${prefix}product-name`).value,
+                model: form.querySelector(`#${prefix}product-id`).value,
+                brand: form.querySelector(`#${prefix}product-brand`).value,
+                warranty: form.querySelector(`#${prefix}product-warranty`).value,
+                mainPrice: parseFloat(form.querySelector(`#${prefix}product-main-price`).value) || 0,
+                offerPrice: parseFloat(form.querySelector(`#${prefix}product-offer-price`).value) || 0,
+                discount: parseFloat(form.querySelector(`#${prefix}product-discount`).value) || 0,
+                stock: parseInt(form.querySelector(`#${prefix}product-stock`).value, 10) || 0,
+                deliveryOptions: form.querySelector(`#${prefix}product-delivery`).value,
+                imageUrl: form.querySelector(`#${prefix}product-main-image`).value,
+                thumbnails,
+                category: form.querySelector(`#${prefix}product-category`).value,
+                subcategory: form.querySelector(`#${prefix}product-subcategory`).value,
+                details: form.querySelector(`#${prefix}product-details`).value,
+                specification: specification,
+                isOnOffer: form.querySelector(`#${prefix}product-on-offer`).checked,
+                isRefundable: form.querySelector(`#${prefix}product-refundable`).checked
+            };
+        };
+
+        // --- Event Delegation & Handlers ---
+        document.addEventListener('submit', async e => {
+            e.preventDefault();
+            const formId = e.target.id;
+            const button = e.target.querySelector('button[type="submit"]');
+
+            if (formId === 'add-product-form') {
+                setButtonLoading(button, true, 'Adding...');
+                try {
+                    const productData = getProductDataFromForm(e.target, 'add-');
+                    await addDoc(collection(db, 'products'), { ...productData, createdAt: serverTimestamp() });
+                    showToast('Product added successfully!');
+                    e.target.reset();
+                    document.getElementById('add-thumbnail-container').innerHTML = '';
+                    document.getElementById('add-specification-container').innerHTML = '';
+                } catch (err) {
+                    console.error("Error adding product: ", err);
+                    showToast('Failed to add product!', 'error');
+                } finally {
+                    setButtonLoading(button, false);
+                }
+            } else if (formId === 'edit-product-form') {
+                setButtonLoading(button, true, 'Saving...');
+                try {
+                    const productId = document.getElementById('edit-product-id-hidden').value;
+                    const updatedData = getProductDataFromForm(e.target, 'edit-');
+                    await updateDoc(doc(db, 'products', productId), updatedData);
+                    showToast('Product updated successfully!');
+                    showPage('products');
+                } catch (err) {
+                    console.error("Error updating product:", err);
+                    showToast('Failed to update product!', 'error');
+                } finally {
+                    setButtonLoading(button, false);
+                }
+            } else if (formId === 'add-banner-form') {
+                setButtonLoading(button, true, 'Adding...');
+                try {
+                    await addDoc(collection(db, 'banners'), { 
+                        imageUrl: e.target['banner-image'].value, 
+                        link: e.target['banner-link'].value, 
+                        createdAt: serverTimestamp() 
+                    });
+                    showToast('Banner added successfully!');
+                    e.target.reset();
+                } catch(err) {
+                    showToast('Failed to add banner!', 'error');
+                } finally {
+                    setButtonLoading(button, false);
+                }
+            } else if (formId === 'add-delivery-man-form') {
+                 setButtonLoading(button, true, 'Adding...');
+                const email = e.target['delivery-man-email'].value;
+                const password = e.target['delivery-man-password'].value;
+                const name = e.target['delivery-man-name'].value;
+                const phone = e.target['delivery-man-phone'].value;
+                const vehicle = e.target['delivery-man-vehicle'].value;
+                
+                const tempAppName = `temp-app-${Date.now()}`;
+                let secondaryApp;
+                try {
+                    secondaryApp = initializeApp(firebaseConfig, tempAppName);
+                    const secondaryAuth = getAuth(secondaryApp);
+                    
+                    const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
+                    const newUserUid = userCredential.user.uid;
+
+                    await setDoc(doc(db, 'deliveryMen', newUserUid), {
+                        name: name,
+                        email: email,
+                        phone: phone,
+                        vehicle: vehicle,
+                        accountStatus: 'active',
+                        createdAt: serverTimestamp()
+                    });
+
+                    await signOut(secondaryAuth);
+                    showToast('Delivery man added successfully!');
+                    e.target.reset();
+                } catch (err) {
+                    console.error("Error adding delivery man: ", err);
+                    showToast(err.code === 'auth/email-already-in-use' ? 'This email is already registered.' : `Failed to add delivery man!`, 'error');
+                } finally {
+                    if (secondaryApp) {
+                        await deleteApp(secondaryApp).catch(e => console.error("Could not delete temp app", e));
+                    }
+                    setButtonLoading(button, false);
+                }
+            } else if(formId === 'profile-settings-form') {
+                setButtonLoading(button, true, 'Saving...');
+                try {
+                    const user = auth.currentUser;
+                    if (!user) throw new Error("User not found");
+                    const newName = document.getElementById('admin-name').value;
+                    const newImageUrl = document.getElementById('admin-image').value;
+                    await updateDoc(doc(db, "admins", user.uid), { name: newName, imageUrl: newImageUrl });
+                    await loadAdminProfile(user); // Refresh UI
+                    showToast("Profile updated successfully!");
+                } catch(err) {
+                    showToast("Failed to update profile!", 'error');
+                } finally {
+                    setButtonLoading(button, false);
+                }
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            const navLink = e.target.closest('.nav-link');
+            if(navLink) {
+                e.preventDefault();
+                const pageId = navLink.dataset.page;
+                history.pushState({pageId}, '', `#${pageId}`);
+                showPage(pageId);
+            }
+
+            const themeOption = e.target.closest('.theme-option');
+            if (themeOption) {
+                applyTheme(themeOption.dataset.theme);
+            }
+            
+            const deleteBtn = e.target.closest('.delete-btn');
+            if (deleteBtn) {
+                 showConfirmationModal(async () => {
+                    try {
+                        await deleteDoc(doc(db, deleteBtn.dataset.coll, deleteBtn.dataset.id));
+                        showToast('Item deleted successfully!');
+                    } catch (err) {
+                        console.error("Delete failed:", err);
+                        showToast('Failed to delete item.', 'error');
+                    }
+                });
+            }
+
+            const editBtn = e.target.closest('.edit-btn');
+            if(editBtn) {
+                loadProductForEdit(editBtn.dataset.id);
+            }
+            
+             if (e.target.closest('#logout-button')) {
+                signOut(auth);
+            }
+
+            const removeThumbnailBtn = e.target.closest('.remove-thumbnail-btn');
+            if (removeThumbnailBtn) {
+                removeThumbnailBtn.parentElement.remove();
+            }
+
+            const removeSpecBtn = e.target.closest('.remove-spec-btn');
+            if(removeSpecBtn) {
+                removeSpecBtn.parentElement.remove();
+            }
+
+            const refreshBtn = e.target.closest('#manual-refresh-button');
+            if(refreshBtn) {
+                manualDataRefresh();
+            }
+
+            if (e.target.closest('#new-order-alert-close-btn')) {
+                hideNewOrderAlert();
+            }
+
+            if (e.target.closest('#view-full-order-btn')) {
+                const orderId = e.target.closest('#view-full-order-btn').dataset.id;
+                if(orderId) {
+                    showOrderDetails(orderId);
+                }
+                hideNewOrderAlert();
+            }
+
+            const accountStatusToggleBtn = e.target.closest('.account-status-toggle-btn');
+            if (accountStatusToggleBtn) {
+                const id = accountStatusToggleBtn.dataset.id;
+                const currentStatus = accountStatusToggleBtn.dataset.status;
+                const newStatus = currentStatus === 'active' ? 'frozen' : 'active';
+                const actionText = newStatus === 'frozen' ? 'freeze' : 'unfreeze';
+
+                showConfirmationModal(async () => {
+                    try {
+                        await updateDoc(doc(db, "deliveryMen", id), { accountStatus: newStatus });
+                        showToast(`Account ${actionText}d successfully!`);
+                    } catch (error) {
+                        showToast(`Failed to ${actionText} account.`, 'error');
+                        console.error(error);
+                    }
+                }, `Confirm ${actionText}`, `Are you sure you want to ${actionText} this account?`);
+            }
+
+            const viewDeliveryManBtn = e.target.closest('.view-delivery-man-btn');
+            if(viewDeliveryManBtn) {
+                showDeliveryManDetails(viewDeliveryManBtn.dataset.id);
+            }
+            
+            const viewOrderBtn = e.target.closest('.view-order-btn');
+            if (viewOrderBtn) {
+                showOrderDetails(viewOrderBtn.dataset.id);
+            }
+
+            const categoryFilterBtn = e.target.closest('.category-filter-btn');
+            if(categoryFilterBtn) {
+                currentProductCategoryFilter = categoryFilterBtn.dataset.category;
+                renderProductFilters();
+                renderFilteredProducts();
+            }
+        });
+
+        document.addEventListener('change', async (e) => {
+            if (e.target.id === 'dark-mode-toggle') {
+                localStorage.theme = e.target.checked ? 'dark' : 'light';
+                applyDarkMode(e.target.checked);
+            }
+
+             // Order Status Change
+            if (e.target.classList.contains('status-change')) {
+                const orderId = e.target.dataset.id;
+                const newStatus = e.target.value;
+                const orderRef = doc(db, 'orders', orderId);
+
+                try {
+                    const orderDoc = await getDoc(orderRef);
+                    if (!orderDoc.exists()) throw new Error("Order not found");
+                    
+                    const orderData = orderDoc.data();
+                    const oldStatus = orderData.status;
+
+                    if(oldStatus === newStatus) return;
+
+                    const batch = writeBatch(db);
+                    
+                    if (newStatus === 'confirmed' && oldStatus !== 'confirmed') {
+                        for (const item of orderData.items) {
+                            const productRef = doc(db, 'products', item.productId);
+                            batch.update(productRef, { stock: increment(-item.quantity) });
+                        }
+                    }
+                    else if (oldStatus === 'confirmed' && newStatus !== 'confirmed') {
+                        for (const item of orderData.items) {
+                            const productRef = doc(db, 'products', item.productId);
+                            batch.update(productRef, { stock: increment(item.quantity) });
+                        }
+                    }
+
+                    batch.update(orderRef, { status: newStatus });
+                    
+                    await batch.commit();
+                    showToast('Status updated successfully!');
+
+                } catch (err) {
+                    console.error("Failed to update status/stock: ", err);
+                    showToast('Failed to update status!', 'error');
+                    const docSnap = await getDoc(orderRef);
+                    if (docSnap.exists()) {
+                        e.target.value = docSnap.data().status; 
+                    }
+                }
+            }
+
+            // Delivery Man Assign
+            if (e.target.classList.contains('delivery-man-assign')) {
+                const orderId = e.target.dataset.id;
+                const deliveryManId = e.target.value;
+                const deliveryManName = deliveryManId ? e.target.options[e.target.selectedIndex].text : '';
+
+                try {
+                    const updateData = {
+                        assignedDeliveryManId: deliveryManId,
+                        assignedDeliveryManName: deliveryManName
+                    };
+                    
+                    await updateDoc(doc(db, 'orders', orderId), updateData);
+                    showToast('Delivery man assigned!');
+                } catch(err) {
+                    console.error("Failed to assign delivery man:", err);
+                    showToast('Failed to assign delivery man!', 'error');
+                }
+            }
+        });
+
+        const loadProductForEdit = async (productId) => {
+            try {
+                const productDoc = await getDoc(doc(db, "products", productId));
+                if (!productDoc.exists()) {
+                    showToast("Product not found!", "error");
+                    return;
+                }
+                const data = productDoc.data();
+                const form = document.getElementById('edit-product-form');
+
+                form.querySelector('#edit-product-id-hidden').value = productId;
+                form.querySelector('#edit-product-name').value = data.name || '';
+                form.querySelector('#edit-product-id').value = data.model || '';
+                form.querySelector('#edit-product-brand').value = data.brand || '';
+                form.querySelector('#edit-product-warranty').value = data.warranty || '';
+                form.querySelector('#edit-product-main-price').value = data.mainPrice || 0;
+                form.querySelector('#edit-product-offer-price').value = data.offerPrice || 0;
+                form.querySelector('#edit-product-discount').value = data.discount || 0;
+                form.querySelector('#edit-product-main-image').value = data.imageUrl || '';
+                form.querySelector('#edit-product-stock').value = data.stock || 0;
+                form.querySelector('#edit-product-delivery').value = data.deliveryOptions || '';
+                form.querySelector('#edit-product-details').value = data.details || '';
+                
+                const mainCategorySelect = form.querySelector('#edit-product-category');
+                mainCategorySelect.value = data.category || '';
+                // Manually trigger the change event to populate sub-categories
+                mainCategorySelect.dispatchEvent(new Event('change')); 
+
+                // Use a small delay to ensure the sub-category dropdown is populated before setting its value
+                setTimeout(() => {
+                    form.querySelector('#edit-product-subcategory').value = data.subcategory || '';
+                }, 100);
+
+                form.querySelector('#edit-product-on-offer').checked = data.isOnOffer || false;
+                form.querySelector('#edit-product-refundable').checked = data.isRefundable || false;
+                
+                const thumbnailContainer = form.querySelector('#edit-thumbnail-container');
+                thumbnailContainer.innerHTML = '';
+                (data.thumbnails || []).forEach(url => {
+                     const inputWrapper = document.createElement('div');
+                    inputWrapper.className = 'flex items-center space-x-2';
+                    inputWrapper.innerHTML = `
+                        <input type="url" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg thumbnail-input" value="${url}" placeholder="https://example.com/image.jpg">
+                        <button type="button" class="remove-thumbnail-btn text-red-500 hover:text-red-700 p-1"><i data-lucide="x-circle" class="w-5 h-5"></i></button>
+                    `;
+                    thumbnailContainer.appendChild(inputWrapper);
+                });
+
+                const specContainer = form.querySelector('#edit-specification-container');
+                specContainer.innerHTML = '';
+                if(data.specification && typeof data.specification === 'object'){
+                    for(const [key, value] of Object.entries(data.specification)){
+                        createSpecificationInput(specContainer, key, value);
+                    }
+                }
+
+                lucide.createIcons();
+                showPage('edit-product');
+            } catch (error) {
+                console.error("Error loading product for edit:", error);
+                showToast("Could not load product data.", "error");
+            }
+        };
+
+        const showConfirmationModal = (callback, title = "Are you sure?", text = "This action cannot be undone.") => {
+            document.getElementById('modal-title').textContent = title;
+            document.getElementById('modal-text').textContent = text;
+            confirmCallback = callback;
+            UI.confirmationModal.classList.remove('hidden');
+        };
+
+        const hideConfirmationModal = () => {
+            confirmCallback = null;
+            UI.confirmationModal.classList.add('hidden');
+        };
+
+        const showOrderDetails = async (orderId) => {
+            UI.orderDetailsContent.innerHTML = '<p>Loading...</p>';
+            UI.orderDetailsModal.classList.remove('hidden');
+
+            try {
+                const orderDoc = await getDoc(doc(db, "orders", orderId));
+                if (!orderDoc.exists()) {
+                    UI.orderDetailsContent.innerHTML = '<p class="text-red-500">Order not found.</p>';
+                    return;
+                }
+
+                const data = orderDoc.data();
+                const itemsHtml = data.items?.map(item => `
+                    <div class="flex items-center justify-between py-2 border-b border-color">
+                        <div class="flex items-center">
+                            <img src="${item.imageUrl || item.image}" onerror="this.src='https://placehold.co/40x40/e2e8f0/64748b?text=Img'" class="w-10 h-10 object-cover rounded mr-4">
+                            <div>
+                                <p class="font-semibold text-text-primary">${item.name}</p>
+                                <p class="text-sm text-text-secondary">Qty: ${item.quantity}</p>
+                            </div>
+                        </div>
+                        <p class="text-text-primary">৳${((item.price || 0) * (item.quantity || 1)).toFixed(2)}</p>
+                    </div>
+                `).join('') || '<div>No items found.</div>';
+        
+                const deliveryManName = data.assignedDeliveryManId ? (allDeliveryMen.find(d => d.id === data.assignedDeliveryManId)?.data().name || 'N/A') : 'Unassigned';
+
+                UI.orderDetailsContent.innerHTML = `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                        <div><strong class="text-text-secondary">Order ID:</strong> <span class="font-mono">${orderDoc.id}</span></div>
+                        <div><strong class="text-text-secondary">Date:</strong> ${data.createdAt?.toDate().toLocaleString() || 'N/A'}</div>
+                        <div><strong class="text-text-secondary">Customer:</strong> ${data.userName || 'N/A'}</div>
+                        <div><strong class="text-text-secondary">Mobile:</strong> ${data.userMobile || 'N/A'}</div>
+                        <div class="sm:col-span-2"><strong class="text-text-secondary">Location:</strong> ${data.userLocation || 'N/A'}</div>
+                        <div><strong class="text-text-secondary">Payment:</strong> ${data.paymentMethod || 'N/A'}</div>
+                        <div><strong class="text-text-secondary">Status:</strong> ${getStatusBadge(data.status)}</div>
+                        <div><strong class="text-text-secondary">Assigned To:</strong> ${deliveryManName}</div>
+                        <div><strong class="text-text-secondary">Delivery Charge:</strong> ৳${data.deliveryCharge || 0}</div>
+                    </div>
+                    <div class="mt-4">
+                        <h4 class="font-semibold text-text-primary mb-2">Items Ordered</h4>
+                        <div class="space-y-2">${itemsHtml}</div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-color text-right">
+                        <strong class="text-lg text-text-primary">Total: ৳${(data.totalAmount || 0).toFixed(2)}</strong>
+                    </div>
+                `;
+                lucide.createIcons();
+            } catch (error) {
+                console.error("Error fetching order details:", error);
+                UI.orderDetailsContent.innerHTML = '<p class="text-red-500">Could not load order details.</p>';
+                showToast("Error fetching order details!", 'error');
+            }
+        };
+
+        UI.orderDetailsCloseBtn.addEventListener('click', () => UI.orderDetailsModal.classList.add('hidden'));
+
+        document.getElementById('modal-confirm-btn').addEventListener('click', () => {
+            if (typeof confirmCallback === 'function') {
+                confirmCallback();
+            }
+            hideConfirmationModal();
+        });
+
+        document.getElementById('modal-cancel-btn').addEventListener('click', hideConfirmationModal);
+        
+        const showDeliveryManDetails = async (deliveryManId) => {
+            UI.deliveryManDetailsContent.innerHTML = '<p>Loading...</p>';
+            UI.deliveryManDetailsModal.classList.remove('hidden');
+            try {
+                const manDoc = await getDoc(doc(db, "deliveryMen", deliveryManId));
+                if (!manDoc.exists()) throw new Error("Delivery man not found");
+                
+                const data = manDoc.data();
+                const assignedOrdersQuery = query(collection(db, "orders"), where("assignedDeliveryManId", "==", deliveryManId));
+                const ordersSnapshot = await getDocs(assignedOrdersQuery);
+                
+                let totalDeliveredCount = 0, totalProductsDelivered = 0, totalCashCollectedCOD = 0, totalNormalDeliveredCount = 0, subTotalDelivered = 0, grandTotalCollected = 0;
+                let currentlyAssignedOrdersHtml = '';
+
+                ordersSnapshot.docs.forEach(orderDoc => {
+                    const order = orderDoc.data();
+                    if (order.status === 'delivered') {
+                        totalDeliveredCount++;
+                        const orderSubTotal = order.items?.reduce((sum, item) => sum + (item.price * item.quantity), 0) || 0;
+                        subTotalDelivered += orderSubTotal;
+                        grandTotalCollected += order.totalAmount || 0;
+
+                        if(order.items && Array.isArray(order.items)){
+                            totalProductsDelivered += order.items.reduce((sum, item) => sum + item.quantity, 0);
+                        }
+
+                        if (order.paymentMethod === 'Cash on Delivery') {
+                            totalCashCollectedCOD += order.totalAmount || 0;
+                        } else {
+                            totalNormalDeliveredCount++;
+                        }
+                    } else {
+                        currentlyAssignedOrdersHtml += `<li class="flex justify-between items-center text-sm"><span>ID: ${orderDoc.id.slice(0, 8)}</span> ${getStatusBadge(order.status)}</li>`;
+                    }
+                });
+
+                if (currentlyAssignedOrdersHtml === '') {
+                    currentlyAssignedOrdersHtml = '<p class="text-text-secondary text-sm">No currently assigned orders.</p>';
+                }
+
+
+                UI.deliveryManDetailsContent.innerHTML = `
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm pb-4 border-b border-color">
+                        <div><strong class="text-text-secondary">Name:</strong> ${data.name}</div>
+                        <div><strong class="text-text-secondary">Email:</strong> ${data.email}</div>
+                        <div><strong class="text-text-secondary">Phone:</strong> ${data.phone}</div>
+                        <div><strong class="text-text-secondary">Vehicle:</strong> ${data.vehicle || 'N/A'}</div>
+                        <div><strong class="text-text-secondary">Status:</strong> ${getStatusBadge(data.accountStatus || 'active')}</div>
+                    </div>
+                    <div class="mt-4">
+                        <h4 class="font-semibold text-text-primary mb-2">Performance Summary</h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                            <div><strong class="text-text-secondary">Total Orders Delivered:</strong> ${totalDeliveredCount}</div>
+                            <div><strong class="text-text-secondary">Total Products Delivered:</strong> ${totalProductsDelivered}</div>
+                            <div><strong class="text-text-secondary">Normal Deliveries:</strong> ${totalNormalDeliveredCount}</div>
+                            <div><strong class="text-text-secondary">COD Deliveries:</strong> ${totalDeliveredCount - totalNormalDeliveredCount}</div>
+                            <div><strong class="text-text-secondary">Sub-Total Delivered:</strong> ৳${subTotalDelivered.toFixed(2)}</div>
+                            <div><strong class="text-text-secondary">Grand Total Collected:</strong> ৳${grandTotalCollected.toFixed(2)}</div>
+                            <div class="sm:col-span-2"><strong class="text-text-secondary">Total Cash Collected (COD):</strong> ৳${totalCashCollectedCOD.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-color">
+                        <h4 class="font-semibold text-text-primary mb-2">Currently Assigned Orders</h4>
+                        <ul class="space-y-2">${currentlyAssignedOrdersHtml}</ul>
+                    </div>
+                `;
+                 lucide.createIcons();
+            } catch(error) {
+                console.error("Error fetching delivery man details:", error);
+                UI.deliveryManDetailsContent.innerHTML = `<p class="text-red-500">Could not load details.</p>`;
+            }
+        };
+
+        UI.deliveryManModalCloseBtn.addEventListener('click', () => UI.deliveryManDetailsModal.classList.add('hidden'));
+
+        // --- Notification Logic ---
+        const handleNotificationClick = (alpineData) => {
+            alpineData.notificationsOpen = !alpineData.notificationsOpen;
+            if (alpineData.notificationsOpen && notifications.length > 0) {
+                setTimeout(() => {
+                    notifications = [];
+                    updateNotificationUI();
+                }, 2000);
+            }
+        };
+        window.handleNotificationClick = handleNotificationClick;
+
+        const addNotification = (text, page) => {
+            notifications.unshift({ text, page });
+            updateNotificationUI();
+        };
+
+        const updateNotificationUI = () => {
+            if (notifications.length > 0) {
+                UI.notificationCountBadge.textContent = notifications.length;
+                UI.notificationCountBadge.classList.remove('hidden');
+                UI.notificationList.innerHTML = notifications.map(n => `<a href="#${n.page}" class="notification-item block p-3 text-sm text-text-primary hover:bg-gray-100 dark:hover:bg-gray-600">${n.text}</a>`).join('');
+            } else {
+                UI.notificationCountBadge.classList.add('hidden');
+                UI.notificationList.innerHTML = `<p class="p-4 text-sm text-text-secondary">No new notifications.</p>`;
+            }
+        };
+
+        const listenForNotifications = () => {
+            const startTime = new Date();
+            const unsub = onSnapshot(query(collection(db, "orders"), where("createdAt", ">", startTime)), (snapshot) => {
+                snapshot.docChanges().forEach(change => {
+                    if (change.type === "added") {
+                        const orderData = change.doc.data();
+                        addNotification(`New order from: ${orderData.userName || 'N/A'}`, 'orders');
+                        showNewOrderAlert(orderData, change.doc.id);
+                    }
+                });
+            });
+            unsubscribeListeners.push(unsub);
+        };
+        
+        const showNewOrderAlert = (orderData, orderId) => {
+            const content = document.getElementById('new-order-alert-content');
+            content.innerHTML = `<p><strong class="font-semibold text-text-secondary">Customer:</strong> ${orderData.userName || 'N/A'}</p><p><strong class="font-semibold text-text-secondary">Total:</strong> ৳${orderData.totalAmount || 0}</p>`;
+            document.getElementById('view-full-order-btn').dataset.id = orderId;
+            UI.newOrderAlert.classList.remove('hidden', 'translate-x-full');
+            UI.newOrderAlert.classList.add('translate-x-0');
+            lucide.createIcons();
+        };
+
+        const hideNewOrderAlert = () => {
+            UI.newOrderAlert.classList.remove('translate-x-0');
+            UI.newOrderAlert.classList.add('translate-x-full');
+            setTimeout(() => UI.newOrderAlert.classList.add('hidden'), 300);
+        };
+        
+        const manualDataRefresh = async () => {
+            showToast("Refreshing data...");
+            await loadDashboardStats();
+            showToast("Data refreshed successfully!");
+        };
+
+        // --- Data Listeners Setup ---
+        const setupDataListeners = () => {
+            cleanupListeners(); // Clear any existing listeners
+            
+            // Recent Data for Dashboard
+            const unsubOrders = onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(5)), snap => renderTable(snap, 'recent-orders-body', renderOrderRow_Recent), handleSnapshotError('Recent Orders'));
+            const unsubUsers = onSnapshot(query(collection(db, "users"), orderBy("createdAt", "desc"), limit(5)), snap => renderTable(snap, 'recent-users-body', renderUserRow_Recent), handleSnapshotError('Recent Users'));
+
+            // Full Data for Pages
+            const unsubAllProducts = onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), snap => {
+                allProducts = snap.docs;
+                renderProductFilters();
+                renderFilteredProducts();
+            }, handleSnapshotError('All Products'));
+            
+            const unsubAllOrders = onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), snap => renderTable(snap, 'all-orders-body', renderOrderRow_All), handleSnapshotError('All Orders'));
+            const unsubAllUsers = onSnapshot(query(collection(db, "users"), orderBy("createdAt", "desc")), snap => renderTable(snap, 'all-users-body', renderUserRow_All), handleSnapshotError('All Users'));
+            const unsubBanners = onSnapshot(query(collection(db, "banners"), orderBy("createdAt", "desc")), renderBanners, handleSnapshotError('Banners'));
+            
+            const unsubDeliveryMen = onSnapshot(query(collection(db, "deliveryMen"), orderBy("createdAt", "desc")), 
+                snap => {
+                    allDeliveryMen = snap.docs; // keep this for the orders page dropdown
+                    renderDeliverySection(snap);
+                }, 
+                handleSnapshotError('Delivery Men')
+            );
+            
+            listenForNotifications();
+            
+            unsubscribeListeners.push(unsubOrders, unsubUsers, unsubAllProducts, unsubAllOrders, unsubAllUsers, unsubBanners, unsubDeliveryMen);
+        };
+
+        // --- Settings Page Logic ---
+        const setupSettingsPage = () => {
+            document.getElementById('save-login-appearance-btn').addEventListener('click', () => {
+                localStorage.setItem('login-bg-url', document.getElementById('login-bg-url').value);
+                localStorage.setItem('login-profile-url', document.getElementById('login-profile-url').value);
+                initializeAppearance();
+                showToast("Login screen appearance saved!");
+            });
+
+            document.getElementById('reset-login-appearance-btn').addEventListener('click', () => {
+                localStorage.removeItem('login-bg-url');
+                localStorage.removeItem('login-profile-url');
+                document.getElementById('login-bg-url').value = '';
+                document.getElementById('login-profile-url').value = '';
+                initializeAppearance();
+                showToast("Login screen appearance reset!");
+            });
+            
+            const colorInputs = [
+                { id: 'light-bg-color', storageKey: 'custom-light-bg', cssVar: '--c-bg-primary-light' },
+                { id: 'light-text-color', storageKey: 'custom-light-text', cssVar: '--c-text-primary-light' },
+                { id: 'dark-bg-color', storageKey: 'custom-dark-bg', cssVar: '--c-bg-primary-dark' },
+                { id: 'dark-text-color', storageKey: 'custom-dark-text', cssVar: '--c-text-primary-dark' },
+            ];
+            
+            colorInputs.forEach(({id, storageKey, cssVar}) => {
+                const input = document.getElementById(id);
+                const savedColor = localStorage.getItem(storageKey) || getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim();
+                input.value = savedColor;
+                input.addEventListener('input', (e) => {
+                    localStorage.setItem(storageKey, e.target.value);
+                    applyCustomColors();
+                });
+            });
+
+            document.getElementById('reset-colors-btn').addEventListener('click', () => {
+                colorInputs.forEach(({storageKey}) => localStorage.removeItem(storageKey));
+                applyCustomColors();
+                // Reset input values to reflect the change
+                colorInputs.forEach(({id, cssVar}) => {
+                    document.getElementById(id).value = getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim();
+                });
+                showToast("Colors reset to default!");
+            });
+        };
+
+        // --- Main Initialization ---
+        const initializeAdminPanel = (user) => {
+            const pageId = window.location.hash.substring(1) || 'dashboard';
+            showPage(pageId);
+            const addForm = document.getElementById('add-product-form');
+            const editForm = document.getElementById('edit-product-form');
+            setupProductForm(addForm, 'add-');
+            setupProductForm(editForm, 'edit-');
+            loadAdminProfile(user);
+            setupDataListeners();
+            loadDashboardStats();
+            setupSettingsPage();
+            lucide.createIcons();
+
+            window.onpopstate = (event) => {
+                if (event.state && event.state.pageId) {
+                    showPage(event.state.pageId);
+                }
+            };
+        };
+
+        // Initialize on load
+        document.addEventListener('DOMContentLoaded', initializeAppearance);
+
+    </script>
+</body>
+</html>
