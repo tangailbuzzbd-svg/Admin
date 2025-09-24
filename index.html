@@ -166,6 +166,7 @@
                     <a href="#products" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="products"><i data-lucide="package" class="w-5 h-5 mr-3"></i><span>Products</span></a>
                     <a href="#add-product" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="add-product"><i data-lucide="plus-circle" class="w-5 h-5 mr-3"></i><span>Add Product</span></a>
                     <a href="#banners" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="banners"><i data-lucide="image" class="w-5 h-5 mr-3"></i><span>Banners</span></a>
+                    <a href="#coupons" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="coupons"><i data-lucide="ticket-percent" class="w-5 h-5 mr-3"></i><span>Coupons</span></a>
                     <a href="#orders" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="orders"><i data-lucide="shopping-cart" class="w-5 h-5 mr-3"></i><span>Orders</span></a>
                     <a href="#users" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="users"><i data-lucide="users" class="w-5 h-5 mr-3"></i><span>Users</span></a>
                     <a href="#delivery" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="delivery"><i data-lucide="truck" class="w-5 h-5 mr-3"></i><span>Delivery</span></a>
@@ -224,6 +225,7 @@
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Total Products</p><p class="text-3xl font-bold text-text-primary" id="total-products-stat">0</p></div><div class="bg-pink-100 text-pink-600 rounded-full p-3"><i data-lucide="archive" class="w-6 h-6"></i></div></div>
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Total Users</p><p class="text-3xl font-bold text-text-primary" id="total-users">0</p></div><div class="bg-red-100 text-red-600 rounded-full p-3"><i data-lucide="users" class="w-6 h-6"></i></div></div>
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Total Delivery Men</p><p class="text-3xl font-bold text-text-primary" id="total-delivery-men">0</p></div><div class="bg-indigo-100 text-indigo-600 rounded-full p-3"><i data-lucide="user-check" class="w-6 h-6"></i></div></div>
+                             <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Active Coupons</p><p class="text-3xl font-bold text-text-primary" id="total-active-coupons">0</p></div><div class="bg-cyan-100 text-cyan-600 rounded-full p-3"><i data-lucide="ticket-percent" class="w-6 h-6"></i></div></div>
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Pending Orders</p><p class="text-3xl font-bold text-text-primary" id="total-pending">0</p></div><div class="bg-yellow-100 text-yellow-600 rounded-full p-3"><i data-lucide="clock" class="w-6 h-6"></i></div></div>
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Confirmed Orders</p><p class="text-3xl font-bold text-text-primary" id="total-confirmed">0</p></div><div class="bg-theme-bg-light text-theme-primary rounded-full p-3"><i data-lucide="check-circle" class="w-6 h-6"></i></div></div>
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between"><div><p class="text-sm font-medium text-text-secondary">Shipped Orders</p><p class="text-3xl font-bold text-text-primary" id="total-shipped">0</p></div><div class="bg-teal-100 text-teal-600 rounded-full p-3"><i data-lucide="ship" class="w-6 h-6"></i></div></div>
@@ -282,6 +284,66 @@
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             <div class="lg-col-span-1"><div class="bg-secondary p-8 rounded-lg shadow-md"><h2 class="text-2xl font-bold mb-6 text-text-primary">Add New Banner</h2><form id="add-banner-form"><div class="mb-4"><label for="banner-image" class="block text-text-primary font-medium mb-2">Banner Image URL</label><input type="url" id="banner-image" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="https://example.com/banner.jpg"></div><div class="mb-4"><label for="banner-link" class="block text-text-primary font-medium mb-2">Link (Optional)</label><input type="url" id="banner-link" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="/products/promo"></div><button type="submit" class="w-full bg-theme-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-theme-primary-hover disabled:bg-opacity-70">Add Banner</button></form></div></div>
                             <div class="lg-col-span-2"><div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">Current Banners</h3><div id="banners-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="text-text-primary">Loading...</div></div></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Coupons Page -->
+                    <div id="coupons-page" class="page-content hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div class="lg:col-span-1">
+                                <div class="bg-secondary p-8 rounded-lg shadow-md">
+                                    <h2 class="text-2xl font-bold mb-6 text-text-primary">Add New Coupon</h2>
+                                    <form id="add-coupon-form" class="space-y-4">
+                                        <div>
+                                            <label for="coupon-code" class="block text-text-primary font-medium mb-2">Coupon Code</label>
+                                            <input type="text" id="coupon-code" required placeholder="e.g., SUMMER25" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary uppercase">
+                                        </div>
+                                        <div>
+                                            <label for="coupon-type" class="block text-text-primary font-medium mb-2">Discount Type</label>
+                                            <select id="coupon-type" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                                <option value="percentage">Percentage</option>
+                                                <option value="fixed">Fixed Amount</option>
+                                            </select>
+                                        </div>
+                                        <div>
+                                            <label for="coupon-value" class="block text-text-primary font-medium mb-2">Value (e.g., 25 or 100)</label>
+                                            <input type="number" id="coupon-value" required min="0" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                        </div>
+                                        <div>
+                                            <label for="coupon-expiry" class="block text-text-primary font-medium mb-2">Expiry Date</label>
+                                            <input type="date" id="coupon-expiry" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                        </div>
+                                        <div>
+                                            <label for="coupon-min-spend" class="block text-text-primary font-medium mb-2">Minimum Spend (Optional)</label>
+                                            <input type="number" id="coupon-min-spend" min="0" placeholder="e.g., 500" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                        </div>
+                                        <button type="submit" class="w-full bg-theme-primary text-white font-bold py-3 px-4 rounded-lg hover:bg-theme-primary-hover disabled:bg-opacity-70">Add Coupon</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="lg:col-span-2">
+                                <div class="bg-secondary p-6 rounded-lg shadow-md">
+                                    <h3 class="text-xl font-semibold text-text-primary mb-4">All Coupons</h3>
+                                    <div class="overflow-x-auto">
+                                        <table class="w-full text-left">
+                                            <thead>
+                                                <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700">
+                                                    <th class="px-4 py-3">Code</th>
+                                                    <th class="px-4 py-3">Type</th>
+                                                    <th class="px-4 py-3">Value</th>
+                                                    <th class="px-4 py-3">Min. Spend</th>
+                                                    <th class="px-4 py-3">Expires</th>
+                                                    <th class="px-4 py-3">Status</th>
+                                                    <th class="px-4 py-3">Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y border-color" id="all-coupons-body">
+                                                <tr class="text-text-primary"><td colspan="7" class="px-4 py-3 text-center">Loading...</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -592,7 +654,7 @@
             currentPinWrapper: document.getElementById('current-pin-wrapper'),
         };
         
-        const PAGE_TITLES = { dashboard: 'Dashboard', products: 'All Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
+        const PAGE_TITLES = { dashboard: 'Dashboard', products: 'All Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
 
         const CATEGORY_MAP = {
             'electronics': 'Electronics',
@@ -931,6 +993,16 @@
                 const usersSnap = await getCountFromServer(collection(db, "users"));
                 const productsSnap = await getCountFromServer(collection(db, "products"));
                 const deliveryMenSnap = await getCountFromServer(collection(db, "deliveryMen"));
+                
+                // FIX: Fetch all coupons and filter client-side to avoid complex query permission issues.
+                const allCouponsSnap = await getDocs(collection(db, "coupons"));
+                const todayStr = new Date().toISOString().split('T')[0];
+                let activeCouponsCount = 0;
+                allCouponsSnap.forEach(doc => {
+                    if (doc.data().expiryDate >= todayStr) {
+                        activeCouponsCount++;
+                    }
+                });
 
                 const productsData = (await getDocs(collection(db, "products"))).docs.map(d => d.data());
                 const totalStockValue = productsData.reduce((sum, product) => sum + ((product.mainPrice || 0) * (product.stock || 0)), 0);
@@ -940,6 +1012,7 @@
                 document.getElementById('total-users').textContent = usersSnap.data().count;
                 document.getElementById('total-products-stat').textContent = productsSnap.data().count;
                 document.getElementById('total-delivery-men').textContent = deliveryMenSnap.data().count;
+                document.getElementById('total-active-coupons').textContent = activeCouponsCount;
                 document.getElementById('total-pending').textContent = statusCounts.pending || 0;
                 document.getElementById('total-confirmed').textContent = statusCounts.confirmed || 0;
                 document.getElementById('total-shipped').textContent = statusCounts.shipped || 0;
@@ -1183,6 +1256,35 @@
             lucide.createIcons();
         };
 
+        const renderCoupons = (snapshot) => {
+            const rowRenderer = (doc) => {
+                const d = doc.data();
+                const now = new Date();
+                const expiry = new Date(d.expiryDate);
+                const isActive = expiry >= now;
+
+                const valueText = d.type === 'percentage' ? `${d.value}%` : `৳${d.value}`;
+                const statusBadge = isActive 
+                    ? `<span class="px-2 py-1 text-xs font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">Active</span>`
+                    : `<span class="px-2 py-1 text-xs font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-100">Expired</span>`;
+
+                return `<tr class="text-text-primary">
+                    <td class="px-4 py-3 text-sm font-semibold">${d.code}</td>
+                    <td class="px-4 py-3 text-sm">${d.type}</td>
+                    <td class="px-4 py-3 text-sm">${valueText}</td>
+                    <td class="px-4 py-3 text-sm">${d.minSpend > 0 ? `৳${d.minSpend}` : 'N/A'}</td>
+                    <td class="px-4 py-3 text-sm">${d.expiryDate}</td>
+                    <td class="px-4 py-3 text-xs">${statusBadge}</td>
+                    <td class="px-4 py-3">
+                        <button class="delete-btn text-red-500 hover:text-red-700" data-id="${doc.id}" data-coll="coupons">
+                            <i data-lucide="trash-2" class="w-5 h-5"></i>
+                        </button>
+                    </td>
+                </tr>`;
+            };
+            renderTable(snapshot, 'all-coupons-body', rowRenderer);
+        };
+
         // --- Product Form Logic ---
         const getProductFormHTML = (prefix) => {
             const categoryOptions = Object.entries(CATEGORY_MAP).map(([key, value]) => `<option value="${key}">${value}</option>`).join('');
@@ -1201,7 +1303,10 @@
                     <div><label for="${prefix}product-offer-price" class="block text-text-primary font-medium mb-2">Offer Price (৳)</label><input type="number" id="${prefix}product-offer-price" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"></div>
                     <div><label for="${prefix}product-discount" class="block text-text-primary font-medium mb-2">Discount (%)</label><input type="number" id="${prefix}product-discount" readonly class="w-full px-4 py-2 bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg"></div>
                 </div>
-                <div><label for="${prefix}product-stock" class="block text-text-primary font-medium mb-2">Stock Count</label><input type="number" id="${prefix}product-stock" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" value="0"></div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div><label for="${prefix}product-stock" class="block text-text-primary font-medium mb-2">Stock Count</label><input type="number" id="${prefix}product-stock" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" value="0"></div>
+                    <div><label for="${prefix}product-rating" class="block text-text-primary font-medium mb-2">Rating (0-5)</label><input type="number" id="${prefix}product-rating" step="0.1" min="0" max="5" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" value="0"></div>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-color">
                     <div class="flex items-center justify-between">
                         <span class="text-text-primary font-medium">On Offer</span>
@@ -1350,6 +1455,7 @@
                 offerPrice: parseFloat(form.querySelector(`#${prefix}product-offer-price`).value) || 0,
                 discount: parseFloat(form.querySelector(`#${prefix}product-discount`).value) || 0,
                 stock: parseInt(form.querySelector(`#${prefix}product-stock`).value, 10) || 0,
+                rating: parseFloat(form.querySelector(`#${prefix}product-rating`).value) || 0,
                 imageUrl: form.querySelector(`#${prefix}product-main-image`).value,
                 thumbnails,
                 category: form.querySelector(`#${prefix}product-category`).value,
@@ -1408,6 +1514,34 @@
                     e.target.reset();
                 } catch(err) {
                     showToast('Failed to add banner!', 'error');
+                } finally {
+                    setButtonLoading(button, false);
+                }
+            } else if (formId === 'add-coupon-form') {
+                setButtonLoading(button, true, 'Adding...');
+                try {
+                    const code = e.target['coupon-code'].value.toUpperCase();
+                    // Basic check for duplicate coupon code
+                    const existingCouponQuery = query(collection(db, "coupons"), where("code", "==", code));
+                    const existingCouponSnap = await getDocs(existingCouponQuery);
+
+                    if (!existingCouponSnap.empty) {
+                        throw new Error("Coupon code already exists.");
+                    }
+                    
+                    await addDoc(collection(db, 'coupons'), {
+                        code: code,
+                        type: e.target['coupon-type'].value,
+                        value: parseFloat(e.target['coupon-value'].value),
+                        expiryDate: e.target['coupon-expiry'].value,
+                        minSpend: parseFloat(e.target['coupon-min-spend'].value) || 0,
+                        createdAt: serverTimestamp()
+                    });
+                    showToast('Coupon added successfully!');
+                    e.target.reset();
+                } catch (err) {
+                    console.error("Error adding coupon:", err);
+                    showToast(err.message || 'Failed to add coupon!', 'error');
                 } finally {
                     setButtonLoading(button, false);
                 }
@@ -1493,7 +1627,7 @@
                     text = "This only removes the user's data, not their authentication account. This action cannot be undone.";
                 } else if (collection === 'deliveryMen') {
                     title = "Delete Delivery Man?";
-                    text = "This will permanently delete the delivery man's data. Their login account will NOT be deleted. Consider 'Blocking' the account instead. This action is irreversible.";
+                    text = "This will permanently delete the delivery man's data from this panel only. Their login account will NOT be deleted from Firebase Authentication. To permanently remove their login access, you must manually delete them from the Firebase Console's Authentication tab. Consider 'Blocking' the account instead. This action is irreversible.";
                 }
 
                 showConfirmationModal(async () => {
@@ -1674,6 +1808,7 @@
                 form.querySelector('#edit-product-discount').value = data.discount || 0;
                 form.querySelector('#edit-product-main-image').value = data.imageUrl || '';
                 form.querySelector('#edit-product-stock').value = data.stock || 0;
+                form.querySelector('#edit-product-rating').value = data.rating || 0;
                 form.querySelector('#edit-product-details').value = data.details || '';
                 
                 const mainCategorySelect = form.querySelector('#edit-product-category');
@@ -1937,32 +2072,61 @@
         const setupDataListeners = () => {
             cleanupListeners(); // Clear any existing listeners
             
-            // Recent Data for Dashboard
-            const unsubOrders = onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc"), limit(5)), snap => renderTable(snap, 'recent-orders-body', renderOrderRow_Recent), handleSnapshotError('Recent Orders'));
-            const unsubUsers = onSnapshot(query(collection(db, "users"), orderBy("createdAt", "desc"), limit(5)), snap => renderTable(snap, 'recent-users-body', renderUserRow_Recent), handleSnapshotError('Recent Users'));
+            // FIX: Remove server-side orderBy and limit. Sort and slice data on the client to avoid permission errors.
+            // This is less efficient as it loads all documents, but it bypasses restrictive security rules or missing indexes.
 
-            // Full Data for Pages
-            const unsubAllProducts = onSnapshot(query(collection(db, "products"), orderBy("createdAt", "desc")), snap => {
-                allProducts = snap.docs;
+            // Recent Data for Dashboard
+            const unsubOrders = onSnapshot(collection(db, "orders"), snap => {
+                const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0)).slice(0, 5);
+                const slicedSnapshot = { empty: sortedDocs.length === 0, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) };
+                renderTable(slicedSnapshot, 'recent-orders-body', renderOrderRow_Recent);
+            }, handleSnapshotError('Recent Orders'));
+
+            const unsubUsers = onSnapshot(collection(db, "users"), snap => {
+                const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0)).slice(0, 5);
+                const slicedSnapshot = { empty: sortedDocs.length === 0, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) };
+                renderTable(slicedSnapshot, 'recent-users-body', renderUserRow_Recent);
+            }, handleSnapshotError('Recent Users'));
+
+            // Full Data for Pages (All sorted client-side)
+            const unsubAllProducts = onSnapshot(collection(db, "products"), snap => {
+                allProducts = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
                 renderProductFilters();
                 renderFilteredProducts();
             }, handleSnapshotError('All Products'));
             
-            const unsubAllOrders = onSnapshot(query(collection(db, "orders"), orderBy("createdAt", "desc")), snap => renderTable(snap, 'all-orders-body', renderOrderRow_All), handleSnapshotError('All Orders'));
-            const unsubAllUsers = onSnapshot(query(collection(db, "users"), orderBy("createdAt", "desc")), snap => renderTable(snap, 'all-users-body', renderUserRow_All), handleSnapshotError('All Users'));
-            const unsubBanners = onSnapshot(query(collection(db, "banners"), orderBy("createdAt", "desc")), renderBanners, handleSnapshotError('Banners'));
+            const unsubAllOrders = onSnapshot(collection(db, "orders"), snap => {
+                const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+                renderTable({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) }, 'all-orders-body', renderOrderRow_All);
+            }, handleSnapshotError('All Orders'));
+
+            const unsubAllUsers = onSnapshot(collection(db, "users"), snap => {
+                 const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+                renderTable({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) }, 'all-users-body', renderUserRow_All);
+            }, handleSnapshotError('All Users'));
+
+            const unsubBanners = onSnapshot(collection(db, "banners"), snap => {
+                const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+                renderBanners({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) });
+            }, handleSnapshotError('Banners'));
+
+            const unsubCoupons = onSnapshot(collection(db, "coupons"), snap => {
+                const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+                renderCoupons({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) });
+            }, handleSnapshotError('Coupons'));
             
-            const unsubDeliveryMen = onSnapshot(query(collection(db, "deliveryMen"), orderBy("createdAt", "desc")), 
+            const unsubDeliveryMen = onSnapshot(collection(db, "deliveryMen"), 
                 snap => {
-                    allDeliveryMen = snap.docs; // keep this for the orders page dropdown
-                    renderDeliverySection(snap);
+                    const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+                    allDeliveryMen = sortedDocs; // keep this for the orders page dropdown
+                    renderDeliverySection({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) });
                 }, 
                 handleSnapshotError('Delivery Men')
             );
             
             listenForNotifications();
             
-            unsubscribeListeners.push(unsubOrders, unsubUsers, unsubAllProducts, unsubAllOrders, unsubAllUsers, unsubBanners, unsubDeliveryMen);
+            unsubscribeListeners.push(unsubOrders, unsubUsers, unsubAllProducts, unsubAllOrders, unsubAllUsers, unsubBanners, unsubCoupons, unsubDeliveryMen);
         };
 
         // --- Settings Page Logic ---
@@ -2038,6 +2202,10 @@
     </script>
 </body>
 </html>
+
+
+
+
 
 
 
