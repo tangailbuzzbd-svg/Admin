@@ -10,17 +10,17 @@
     <style>
         :root {
             /* Default Light Mode Colors */
-            --c-bg-primary-light: #f3f4f6; /* gray-100 */
+            --c-bg-primary-light: #ffffff; /* white */
             --c-bg-secondary-light: #ffffff; /* white */
-            --c-text-primary-light: #374151; /* gray-700 */
+            --c-text-primary-light: #1f2937; /* dark gray */
             --c-text-secondary-light: #6b7280; /* gray-500 */
             --c-border-light: #e5e7eb; /* gray-200 */
             
             /* Default Dark Mode Colors */
             --c-bg-primary-dark: #111827; /* gray-900 */
-            --c-bg-secondary-dark: #1f2937; /* gray-800 */
-            --c-text-primary-dark: #d1d5db; /* gray-300 */
-            --c-text-secondary-dark: #9ca3af; /* gray-400 */
+            --c-bg-secondary-dark: #111827; /* gray-900 */
+            --c-text-primary-dark: #f3f4f6; /* light gray */
+            --c-text-secondary-dark: #d1d5db; /* gray-300 */
             --c-border-dark: #374151; /* gray-700 */
         }
         body { 
@@ -171,7 +171,6 @@
                     <a href="#users" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="users"><i data-lucide="users" class="w-5 h-5 mr-3"></i><span>Users</span></a>
                     <a href="#delivery" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="delivery"><i data-lucide="truck" class="w-5 h-5 mr-3"></i><span>Delivery</span></a>
                     <a href="#settings" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="settings"><i data-lucide="settings" class="w-5 h-5 mr-3"></i><span>Settings</span></a>
-                    <a href="#chat" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="chat"><i data-lucide="message-square" class="w-5 h-5 mr-3"></i><span>Live Chat</span></a>
                 </nav>
             </aside>
 
@@ -476,74 +475,7 @@
                                         <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-600 peer-checked:bg-theme-primary peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                                     </label>
                                 </div>
-                                <div class="mt-6 space-y-4">
-                                    <div>
-                                        <h4 class="text-lg font-medium text-text-primary mb-2">Login Screen</h4>
-                                        <div class="p-4 border rounded-lg border-color space-y-3">
-                                            <div class="flex items-center justify-between">
-                                                <label for="login-bg-url" class="text-sm text-text-secondary">Background Image URL</label>
-                                                <input type="url" id="login-bg-url" placeholder="https://..." class="w-1/2 px-2 py-1 border rounded-lg bg-gray-50 dark:bg-gray-700 text-sm">
-                                            </div>
-                                             <div class="flex items-center justify-between">
-                                                <label for="login-profile-url" class="text-sm text-text-secondary">Profile Picture URL</label>
-                                                <input type="url" id="login-profile-url" placeholder="https://..." class="w-1/2 px-2 py-1 border rounded-lg bg-gray-50 dark:bg-gray-700 text-sm">
-                                            </div>
-                                            <div class="flex justify-end pt-2 space-x-2">
-                                                <button id="reset-login-appearance-btn" class="text-xs text-text-secondary hover:text-text-primary">Reset</button>
-                                                <button id="save-login-appearance-btn" class="px-3 py-1 bg-theme-primary text-white rounded-lg hover:bg-theme-primary-hover text-xs">Save</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div>
-                                        <h4 class="text-lg font-medium text-text-primary mb-2">Custom Colors</h4>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 border-t border-color">
-                                            <!-- Light Mode Colors -->
-                                            <div class="space-y-3">
-                                                <p class="font-semibold text-text-primary">Light Mode</p>
-                                                <div class="flex items-center justify-between">
-                                                    <label for="light-bg-color" class="text-sm text-text-secondary">Background</label>
-                                                    <input type="color" id="light-bg-color" class="p-1 h-8 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg">
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <label for="light-text-color" class="text-sm text-text-secondary">Text</label>
-                                                    <input type="color" id="light-text-color" class="p-1 h-8 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg">
-                                                </div>
-                                            </div>
-                                            <!-- Dark Mode Colors -->
-                                            <div class="space-y-3">
-                                                <p class="font-semibold text-text-primary">Dark Mode</p>
-                                                 <div class="flex items-center justify-between">
-                                                    <label for="dark-bg-color" class="text-sm text-text-secondary">Background</label>
-                                                    <input type="color" id="dark-bg-color" class="p-1 h-8 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg">
-                                                </div>
-                                                <div class="flex items-center justify-between">
-                                                    <label for="dark-text-color" class="text-sm text-text-secondary">Text</label>
-                                                    <input type="color" id="dark-text-color" class="p-1 h-8 w-14 block bg-white border border-gray-200 cursor-pointer rounded-lg">
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="flex justify-end pt-4 border-t border-color">
-                                         <button id="reset-colors-btn" class="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-sm">Reset Colors to Default</button>
-                                    </div>
-                                </div>
                             </div>
-                        </div>
-                    </div>
-
-                    <!-- Chat Page -->
-                    <div id="chat-page" class="page-content hidden h-full flex flex-col">
-                        <div class="flex-1 bg-secondary rounded-lg shadow-md flex flex-col overflow-hidden">
-                            <div id="chat-messages" class="flex-1 p-4 space-y-4 overflow-y-auto border-b border-color">
-                                <!-- Chat messages will be dynamically inserted here -->
-                                <p class="text-center text-text-secondary">No messages yet. Start the conversation!</p>
-                            </div>
-                            <form id="chat-form" class="p-4 flex items-center space-x-4">
-                                <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-theme-primary">
-                                <button type="submit" class="bg-theme-primary text-white p-3 rounded-full hover:bg-theme-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-theme-primary disabled:opacity-50">
-                                    <i data-lucide="send" class="w-5 h-5"></i>
-                                </button>
-                            </form>
                         </div>
                     </div>
                 </main>
@@ -620,7 +552,7 @@
             SECURITY NOTE:
             - The Firebase configuration is exposed on the client-side. In a production environment,
               it's crucial to secure your data using Firestore Security Rules.
-            - Admin PINs are stored as plaintext in Firestore. This is not recommended. For a production
+            - Admin PINs are stored as plaintext. This is not recommended. For a production
               system, PINs/passwords should be hashed using a secure, one-way algorithm (e.g., bcrypt)
               on a server-side environment (like Cloud Functions) before being stored.
             - Deleting delivery men only removes their Firestore record, not their Firebase Authentication
@@ -674,12 +606,9 @@
             pinSetupError: document.getElementById('pin-setup-error'),
             pinSetupTitle: document.getElementById('pin-setup-title'),
             currentPinWrapper: document.getElementById('current-pin-wrapper'),
-            chatMessagesContainer: document.getElementById('chat-messages'),
-            chatForm: document.getElementById('chat-form'),
-            chatInput: document.getElementById('chat-input')
         };
         
-        const PAGE_TITLES = { dashboard: 'Dashboard', products: 'All Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings', chat: 'Live Chat' };
+        const PAGE_TITLES = { dashboard: 'Dashboard', products: 'All Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
 
         const CATEGORY_MAP = {
             'electronics': 'Electronics',
@@ -945,30 +874,6 @@
             if(document.getElementById('dark-mode-toggle')) {
                 document.getElementById('dark-mode-toggle').checked = isDark;
             }
-            applyCustomColors();
-        };
-
-        const applyCustomColors = () => {
-            const root = document.documentElement;
-            const isDark = root.classList.contains('dark');
-            const defaultColors = {
-                lightBg: getComputedStyle(root).getPropertyValue('--c-bg-primary-light').trim(),
-                lightText: getComputedStyle(root).getPropertyValue('--c-text-primary-light').trim(),
-                darkBg: getComputedStyle(root).getPropertyValue('--c-bg-primary-dark').trim(),
-                darkText: getComputedStyle(root).getPropertyValue('--c-text-primary-dark').trim()
-            };
-            const colors = {
-                lightBg: localStorage.getItem('custom-light-bg') || defaultColors.lightBg,
-                lightText: localStorage.getItem('custom-light-text') || defaultColors.lightText,
-                darkBg: localStorage.getItem('custom-dark-bg') || defaultColors.darkBg,
-                darkText: localStorage.getItem('custom-dark-text') || defaultColors.darkText
-            };
-            root.style.setProperty('--c-bg-primary', isDark ? colors.darkBg : colors.lightBg);
-            root.style.setProperty('--c-text-primary', isDark ? colors.darkText : colors.lightText);
-            // Derive secondary colors for simplicity
-            root.style.setProperty('--c-bg-secondary', isDark ? '#1f2937' : '#ffffff');
-            root.style.setProperty('--c-text-secondary', isDark ? '#9ca3af' : '#6b7280');
-            root.style.setProperty('--c-border', isDark ? '#374151' : '#e5e7eb');
         };
 
         const initializeAppearance = () => {
@@ -1627,22 +1532,6 @@
                 } finally {
                     setButtonLoading(button, false);
                 }
-            } else if (formId === 'chat-form') {
-                const messageText = UI.chatInput.value.trim();
-                if (messageText === '') return;
-                try {
-                    await addDoc(collection(db, 'chats'), {
-                        senderId: auth.currentUser.uid,
-                        senderName: currentUserProfile?.name || 'Admin',
-                        senderImageUrl: currentUserProfile?.imageUrl || 'https://placehold.co/32x32/e2e8f0/64748b?text=A',
-                        message: messageText,
-                        createdAt: serverTimestamp(),
-                    });
-                    UI.chatInput.value = ''; // Clear input field
-                } catch (err) {
-                    console.error("Error sending message:", err);
-                    showToast('Failed to send message!', 'error');
-                }
             }
         });
 
@@ -2191,64 +2080,6 @@
                 initializeAppearance();
                 showToast("Login screen appearance reset!");
             });
-            
-            const colorInputs = [
-                { id: 'light-bg-color', storageKey: 'custom-light-bg', cssVar: '--c-bg-primary-light' },
-                { id: 'light-text-color', storageKey: 'custom-light-text', cssVar: '--c-text-primary-light' },
-                { id: 'dark-bg-color', storageKey: 'custom-dark-bg', cssVar: '--c-bg-primary-dark' },
-                { id: 'dark-text-color', storageKey: 'custom-dark-text', cssVar: '--c-text-primary-dark' },
-            ];
-            
-            colorInputs.forEach(({id, storageKey, cssVar}) => {
-                const input = document.getElementById(id);
-                const savedColor = localStorage.getItem(storageKey) || getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim();
-                input.value = savedColor;
-                input.addEventListener('input', (e) => {
-                    localStorage.setItem(storageKey, e.target.value);
-                    applyCustomColors();
-                });
-            });
-
-            document.getElementById('reset-colors-btn').addEventListener('click', () => {
-                colorInputs.forEach(({storageKey}) => localStorage.removeItem(storageKey));
-                applyCustomColors();
-                // Reset input values to reflect the change
-                colorInputs.forEach(({id, cssVar}) => {
-                    document.getElementById(id).value = getComputedStyle(document.documentElement).getPropertyValue(cssVar).trim();
-                });
-                showToast("Colors reset to default!");
-            });
-        };
-        
-        // --- Live Chat Logic ---
-        const renderMessage = (msg) => {
-            const isSelf = msg.senderId === auth.currentUser?.uid;
-            const alignClass = isSelf ? 'self-end' : 'self-start';
-            const colorClass = isSelf ? 'bg-theme-primary text-white' : 'bg-gray-100 dark:bg-gray-700 text-text-primary';
-            const messageSender = isSelf ? 'You' : msg.senderName;
-            const messageTime = msg.createdAt?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            return `
-                <div class="flex flex-col ${alignClass} max-w-xs md:max-w-md">
-                    <p class="text-xs text-text-secondary mb-1">${messageSender} - ${messageTime}</p>
-                    <div class="p-3 rounded-lg shadow-md ${colorClass} break-words">
-                        ${msg.message}
-                    </div>
-                </div>
-            `;
-        };
-
-        const setupChatListeners = () => {
-            const unsub = onSnapshot(collection(db, 'chats'), (snapshot) => {
-                const messages = snapshot.docs.map(doc => doc.data());
-                messages.sort((a, b) => (a.createdAt?.toMillis() || 0) - (b.createdAt?.toMillis() || 0));
-                
-                const messageHtml = messages.map(msg => renderMessage(msg)).join('');
-                UI.chatMessagesContainer.innerHTML = messageHtml || '<p class="text-center text-text-secondary">No messages yet. Start the conversation!</p>';
-                lucide.createIcons();
-                // Scroll to the bottom of the chat window
-                UI.chatMessagesContainer.scrollTop = UI.chatMessagesContainer.scrollHeight;
-            }, handleSnapshotError('Chat Messages'));
-            unsubscribeListeners.push(unsub);
         };
         
         // --- Main Initialization ---
@@ -2263,7 +2094,6 @@
             setupDataListeners();
             loadDashboardStats();
             setupSettingsPage();
-            setupChatListeners(); // New listener for chat
             lucide.createIcons();
 
             window.onpopstate = (event) => {
