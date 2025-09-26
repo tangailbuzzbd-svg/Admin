@@ -10,19 +10,22 @@
     <style>
         :root {
             /* Default Light Mode Colors */
-            --c-bg-primary-light: #ffffff; /* white */
-            --c-bg-secondary-light: #ffffff; /* white */
-            --c-text-primary-light: #1f2937; /* dark gray */
-            --c-text-secondary-light: #6b7280; /* gray-500 */
-            --c-border-light: #e5e7eb; /* gray-200 */
-            
-            /* Default Dark Mode Colors */
-            --c-bg-primary-dark: #111827; /* gray-900 */
-            --c-bg-secondary-dark: #111827; /* gray-900 */
-            --c-text-primary-dark: #f3f4f6; /* light gray */
-            --c-text-secondary-dark: #d1d5db; /* gray-300 */
-            --c-border-dark: #374151; /* gray-700 */
+            --c-bg-primary: #ffffff; /* white */
+            --c-bg-secondary: #ffffff; /* white */
+            --c-text-primary: #1f2937; /* dark gray */
+            --c-text-secondary: #6b7280; /* gray-500 */
+            --c-border: #e5e7eb; /* gray-200 */
         }
+        
+        html.dark {
+            /* Dark Mode Colors */
+            --c-bg-primary: #111827; /* gray-900 */
+            --c-bg-secondary: #111827; /* gray-900 */
+            --c-text-primary: #f3f4f6; /* light gray */
+            --c-text-secondary: #d1d5db; /* gray-300 */
+            --c-border: #374151; /* gray-700 */
+        }
+        
         body { 
             font-family: 'Inter', sans-serif;
             background-color: var(--c-bg-primary);
@@ -1101,36 +1104,36 @@
             const statusText = status.charAt(0).toUpperCase() + status.slice(1);
 
             return `
-            <div class="bg-gray-800 p-6 rounded-lg shadow-md flex flex-col space-y-4 relative">
+            <div class="bg-secondary p-6 rounded-lg shadow-md flex flex-col space-y-4 relative">
                 <div class="absolute top-2 right-2 flex space-x-1">
-                    <button class="view-delivery-man-btn p-2 rounded-full text-blue-400 hover:text-blue-300 hover:bg-white/10" data-id="${manId}" title="View Details">
+                    <button class="view-delivery-man-btn p-2 rounded-full text-blue-400 dark:text-blue-300 hover:text-blue-300 dark:hover:text-blue-200 hover:bg-gray-100 dark:hover:bg-white/10" data-id="${manId}" title="View Details">
                         <i data-lucide="eye" class="w-5 h-5"></i>
                     </button>
-                    <button class="account-status-toggle-btn p-2 rounded-full ${status === 'frozen' ? 'text-yellow-400 hover:text-yellow-300' : 'text-green-400 hover:text-green-300'} hover:bg-white/10" data-id="${manId}" data-status="${status}" title="${status === 'frozen' ? 'Unfreeze Account' : 'Block/Freeze Account'}">
+                    <button class="account-status-toggle-btn p-2 rounded-full ${status === 'frozen' ? 'text-yellow-400' : 'text-green-400'} hover:text-yellow-300 dark:hover:text-yellow-300 hover:bg-gray-100 dark:hover:bg-white/10" data-id="${manId}" data-status="${status}" title="${status === 'frozen' ? 'Unfreeze Account' : 'Block/Freeze Account'}">
                         <i data-lucide="${status === 'frozen' ? 'play' : 'lock'}" class="w-5 h-5"></i>
                     </button>
-                     <button class="delete-btn p-2 rounded-full text-red-500 hover:text-red-400 hover:bg-white/10" data-id="${manId}" data-coll="deliveryMen" title="Delete Account">
+                     <button class="delete-btn p-2 rounded-full text-red-500 dark:text-red-400 hover:text-red-400 dark:hover:text-red-300 hover:bg-gray-100 dark:hover:bg-white/10" data-id="${manId}" data-coll="deliveryMen" title="Delete Account">
                         <i data-lucide="trash-2" class="w-5 h-5"></i>
                     </button>
                 </div>
                 
                 <div class="flex-shrink-0">
                     <div class="flex items-center space-x-3 mb-2 pr-20">
-                        <h4 class="text-xl font-bold text-white">${d.name || 'N/A'}</h4>
+                        <h4 class="text-xl font-bold text-primary">${d.name || 'N/A'}</h4>
                         <span class="text-xs font-bold px-2 py-1 ${statusBadgeColor} text-white rounded-full">${statusText}</span>
                     </div>
-                    <p class="text-sm text-gray-400">${d.email || 'N/A'}</p>
-                    <p class="text-sm text-gray-400">Phone: ${d.phone || 'N/A'}</p>
+                    <p class="text-sm text-secondary">${d.email || 'N/A'}</p>
+                    <p class="text-sm text-secondary">Phone: ${d.phone || 'N/A'}</p>
                 </div>
                 
-                <div class="grid grid-cols-2 gap-4 text-center py-4 border-y border-gray-700">
+                <div class="grid grid-cols-2 gap-4 text-center py-4 border-y border-color">
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wider">Total Delivered</p>
-                        <p class="text-2xl font-semibold text-white">${totalDelivered}</p>
+                        <p class="text-xs text-secondary uppercase tracking-wider">Total Delivered</p>
+                        <p class="text-2xl font-semibold text-primary">${totalDelivered}</p>
                     </div>
                     <div>
-                        <p class="text-xs text-gray-400 uppercase tracking-wider">Cash Collected</p>
-                        <p class="text-2xl font-semibold text-white">৳${Math.round(cashCollected)}</p>
+                        <p class="text-xs text-secondary uppercase tracking-wider">Cash Collected</p>
+                        <p class="text-2xl font-semibold text-primary">৳${Math.round(cashCollected)}</p>
                     </div>
                 </div>
             </div>`;
@@ -1690,6 +1693,8 @@
                     
                     await batch.commit();
                     showToast('Status updated successfully!');
+                    UI.orderDetailsModal.classList.add('hidden'); // Close the modal
+                    
 
                 } catch (err) {
                     console.error("Failed to update status/stock: ", err);
