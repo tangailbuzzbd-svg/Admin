@@ -27,6 +27,35 @@
         }
         
         body { 
+            font-family: 'Inter', sans-serif;<!DOCTYPE html>
+<html lang="en" class="theme-indigo">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Default Light Mode Colors */
+            --c-bg-primary: #ffffff; /* white */
+            --c-bg-secondary: #ffffff; /* white */
+            --c-text-primary: #1f2937; /* dark gray */
+            --c-text-secondary: #6b7280; /* gray-500 */
+            --c-border: #e5e7eb; /* gray-200 */
+        }
+        
+        html.dark {
+            /* Dark Mode Colors */
+            --c-bg-primary: #111827; /* gray-900 */
+            --c-bg-secondary: #111827; /* gray-900 */
+            --c-text-primary: #f3f4f6; /* light gray */
+            --c-text-secondary: #d1d5db; /* gray-300 */
+            --c-border: #374151; /* gray-700 */
+        }
+        
+        body { 
             font-family: 'Inter', sans-serif;
             background-color: var(--c-bg-primary);
             color: var(--c-text-primary);
