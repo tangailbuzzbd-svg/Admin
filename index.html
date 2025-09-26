@@ -171,6 +171,7 @@
                     <a href="#users" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="users"><i data-lucide="users" class="w-5 h-5 mr-3"></i><span>Users</span></a>
                     <a href="#delivery" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="delivery"><i data-lucide="truck" class="w-5 h-5 mr-3"></i><span>Delivery</span></a>
                     <a href="#settings" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="settings"><i data-lucide="settings" class="w-5 h-5 mr-3"></i><span>Settings</span></a>
+                    <a href="#chat" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="chat"><i data-lucide="message-square" class="w-5 h-5 mr-3"></i><span>Live Chat</span></a>
                 </nav>
             </aside>
 
@@ -529,6 +530,22 @@
                             </div>
                         </div>
                     </div>
+
+                    <!-- Chat Page -->
+                    <div id="chat-page" class="page-content hidden h-full flex flex-col">
+                        <div class="flex-1 bg-secondary rounded-lg shadow-md flex flex-col overflow-hidden">
+                            <div id="chat-messages" class="flex-1 p-4 space-y-4 overflow-y-auto border-b border-color">
+                                <!-- Chat messages will be dynamically inserted here -->
+                                <p class="text-center text-text-secondary">No messages yet. Start the conversation!</p>
+                            </div>
+                            <form id="chat-form" class="p-4 flex items-center space-x-4">
+                                <input type="text" id="chat-input" placeholder="Type a message..." class="flex-1 px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                <button type="submit" class="bg-theme-primary text-white p-3 rounded-full hover:bg-theme-primary-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-theme-primary disabled:opacity-50">
+                                    <i data-lucide="send" class="w-5 h-5"></i>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </main>
             </div>
         </div>
@@ -597,7 +614,7 @@
     <script type="module">
         import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, getDocs, addDoc, serverTimestamp, query, orderBy, limit, where, getCountFromServer, doc, getDoc, deleteDoc, updateDoc, writeBatch, increment, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getFirestore, collection, onSnapshot, getDocs, addDoc, serverTimestamp, query, where, getCountFromServer, doc, getDoc, deleteDoc, updateDoc, writeBatch, increment, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         /*
             SECURITY NOTE:
@@ -616,6 +633,11 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
+        let currentUserProfile = null;
+        
+        // Use a persistent user ID for the anonymous session if no custom token is available.
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+        const userId = auth.currentUser?.uid || crypto.randomUUID();
 
         // --- State Management & Constants---
         let allProducts = [];
@@ -652,9 +674,12 @@
             pinSetupError: document.getElementById('pin-setup-error'),
             pinSetupTitle: document.getElementById('pin-setup-title'),
             currentPinWrapper: document.getElementById('current-pin-wrapper'),
+            chatMessagesContainer: document.getElementById('chat-messages'),
+            chatForm: document.getElementById('chat-form'),
+            chatInput: document.getElementById('chat-input')
         };
         
-        const PAGE_TITLES = { dashboard: 'Dashboard', products: 'All Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
+        const PAGE_TITLES = { dashboard: 'Dashboard', products: 'All Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings', chat: 'Live Chat' };
 
         const CATEGORY_MAP = {
             'electronics': 'Electronics',
@@ -762,6 +787,10 @@
             if (user) {
                 const userIsAdmin = await isAdmin(user.uid);
                 if (userIsAdmin) {
+                    const adminDoc = await getDoc(doc(db, "admins", user.uid));
+                    if(adminDoc.exists()) {
+                        currentUserProfile = { id: adminDoc.id, ...adminDoc.data() };
+                    }
                     await checkPinStatus(user);
                 } else {
                     await signOut(auth);
@@ -1598,6 +1627,22 @@
                 } finally {
                     setButtonLoading(button, false);
                 }
+            } else if (formId === 'chat-form') {
+                const messageText = UI.chatInput.value.trim();
+                if (messageText === '') return;
+                try {
+                    await addDoc(collection(db, 'chats'), {
+                        senderId: auth.currentUser.uid,
+                        senderName: currentUserProfile?.name || 'Admin',
+                        senderImageUrl: currentUserProfile?.imageUrl || 'https://placehold.co/32x32/e2e8f0/64748b?text=A',
+                        message: messageText,
+                        createdAt: serverTimestamp(),
+                    });
+                    UI.chatInput.value = ''; // Clear input field
+                } catch (err) {
+                    console.error("Error sending message:", err);
+                    showToast('Failed to send message!', 'error');
+                }
             }
         });
 
@@ -2174,7 +2219,38 @@
                 showToast("Colors reset to default!");
             });
         };
+        
+        // --- Live Chat Logic ---
+        const renderMessage = (msg) => {
+            const isSelf = msg.senderId === auth.currentUser?.uid;
+            const alignClass = isSelf ? 'self-end' : 'self-start';
+            const colorClass = isSelf ? 'bg-theme-primary text-white' : 'bg-gray-100 dark:bg-gray-700 text-text-primary';
+            const messageSender = isSelf ? 'You' : msg.senderName;
+            const messageTime = msg.createdAt?.toDate().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            return `
+                <div class="flex flex-col ${alignClass} max-w-xs md:max-w-md">
+                    <p class="text-xs text-text-secondary mb-1">${messageSender} - ${messageTime}</p>
+                    <div class="p-3 rounded-lg shadow-md ${colorClass} break-words">
+                        ${msg.message}
+                    </div>
+                </div>
+            `;
+        };
 
+        const setupChatListeners = () => {
+            const unsub = onSnapshot(collection(db, 'chats'), (snapshot) => {
+                const messages = snapshot.docs.map(doc => doc.data());
+                messages.sort((a, b) => (a.createdAt?.toMillis() || 0) - (b.createdAt?.toMillis() || 0));
+                
+                const messageHtml = messages.map(msg => renderMessage(msg)).join('');
+                UI.chatMessagesContainer.innerHTML = messageHtml || '<p class="text-center text-text-secondary">No messages yet. Start the conversation!</p>';
+                lucide.createIcons();
+                // Scroll to the bottom of the chat window
+                UI.chatMessagesContainer.scrollTop = UI.chatMessagesContainer.scrollHeight;
+            }, handleSnapshotError('Chat Messages'));
+            unsubscribeListeners.push(unsub);
+        };
+        
         // --- Main Initialization ---
         const initializeAdminPanel = (user) => {
             const pageId = window.location.hash.substring(1) || 'dashboard';
@@ -2187,6 +2263,7 @@
             setupDataListeners();
             loadDashboardStats();
             setupSettingsPage();
+            setupChatListeners(); // New listener for chat
             lucide.createIcons();
 
             window.onpopstate = (event) => {
@@ -2202,16 +2279,3 @@
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
