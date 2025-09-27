@@ -20,36 +20,7 @@
         html.dark {
             /* Dark Mode Colors */
             --c-bg-primary: #111827; /* gray-900 */
-            --c-bg-secondary: #111827; /* gray-900 */
-            --c-text-primary: #f3f4f6; /* light gray */
-            --c-text-secondary: #d1d5db; /* gray-300 */
-            --c-border: #374151; /* gray-700 */
-        }
-        
-        body { 
-            font-family: 'Inter', sans-serif;<!DOCTYPE html>
-<html lang="en" class="theme-indigo">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        :root {
-            /* Default Light Mode Colors */
-            --c-bg-primary: #ffffff; /* white */
-            --c-bg-secondary: #ffffff; /* white */
-            --c-text-primary: #1f2937; /* dark gray */
-            --c-text-secondary: #6b7280; /* gray-500 */
-            --c-border: #e5e7eb; /* gray-200 */
-        }
-        
-        html.dark {
-            /* Dark Mode Colors */
-            --c-bg-primary: #111827; /* gray-900 */
-            --c-bg-secondary: #111827; /* gray-900 */
+            --c-bg-secondary: #1f2937; /* gray-800 */
             --c-text-primary: #f3f4f6; /* light gray */
             --c-text-secondary: #d1d5db; /* gray-300 */
             --c-border: #374151; /* gray-700 */
@@ -1174,22 +1145,26 @@
             container.innerHTML = '<div class="text-text-primary text-center xl:col-span-2">Calculating stats...</div>';
 
             try {
-                // 1. Fetch all delivered orders once to calculate stats
-                const ordersQuery = query(collection(db, "orders"), where("status", "==", "delivered"));
+                // 1. Fetch all orders (needed to calculate stats for all delivery men)
+                // We fetch all orders and filter/calculate client-side to prevent complex index/permission issues.
+                const ordersQuery = query(collection(db, "orders"));
                 const ordersSnapshot = await getDocs(ordersQuery);
 
                 // 2. Process orders to calculate stats for each delivery man
                 const deliveryStats = {};
-                ordersSnapshot.forEach(orderDoc => {
+                ordersSnapshot.docs.forEach(orderDoc => {
                     const order = orderDoc.data();
                     const manId = order.assignedDeliveryManId;
-                    if (!manId) return;
-
-                    if (!deliveryStats[manId]) {
-                        deliveryStats[manId] = { totalDelivered: 0, cashCollected: 0 };
+                    
+                    // We only count orders that were successfully delivered and assigned
+                    if (manId && order.status === 'delivered') {
+                        if (!deliveryStats[manId]) {
+                            deliveryStats[manId] = { totalDelivered: 0, cashCollected: 0 };
+                        }
+                        deliveryStats[manId].totalDelivered++;
+                        // Assuming totalAmount includes everything collected
+                        deliveryStats[manId].cashCollected += order.totalAmount || 0;
                     }
-                    deliveryStats[manId].totalDelivered++;
-                    deliveryStats[manId].cashCollected += order.totalAmount || 0;
                 });
                 
                 // 3. Render cards
@@ -1906,6 +1881,7 @@
                 if (!manDoc.exists()) throw new Error("Delivery man not found");
                 
                 const data = manDoc.data();
+                // FIX: Use query to fetch assigned orders for this specific man
                 const assignedOrdersQuery = query(collection(db, "orders"), where("assignedDeliveryManId", "==", deliveryManId));
                 const ordersSnapshot = await getDocs(assignedOrdersQuery);
                 
