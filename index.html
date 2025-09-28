@@ -647,7 +647,10 @@
                 warning: 'bg-yellow-500 text-black'
             };
 
-            toast.className = `fixed bottom-5 right-5 py-2 px-4 rounded-lg shadow-lg transition-transform transform translate-y-0 opacity-100 ${typeClasses[type] || typeClasses.success}`;
+            toast.className = `fixed bottom-5 right-5 py-2 px-4 rounded-lg shadow-lg transition-transform transform translate-y-20 opacity-0 ${typeClasses[type] || typeClasses.success}`;
+            setTimeout(() => {
+                toast.className = toast.className.replace('translate-y-20 opacity-0', 'translate-y-0 opacity-100');
+            }, 10); // show fast
             setTimeout(() => {
                 toast.className = toast.className.replace('translate-y-0 opacity-100', 'translate-y-20 opacity-0');
             }, 3000);
@@ -920,6 +923,7 @@
                 const ordersData = ordersSnapshot.docs.map(doc => doc.data());
                 
                 const statusCounts = ordersData.reduce((acc, order) => {
+                    // Ensure that the status is always retrieved, defaulting to 'pending' if missing (as intended)
                     const status = order.status || 'pending';
                     acc[status] = (acc[status] || 0) + 1;
                     return acc;
@@ -942,6 +946,7 @@
                 });
 
                 const productsData = (await getDocs(collection(db, "products"))).docs.map(d => d.data());
+                // Calculate Total Stock Value: (Main Price * Stock) for all products
                 const totalStockValue = productsData.reduce((sum, product) => sum + ((product.mainPrice || 0) * (product.stock || 0)), 0);
 
                 document.getElementById('total-orders').textContent = ordersData.length;
@@ -1503,6 +1508,7 @@
                     const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
                     const newUserUid = userCredential.user.uid;
 
+                    // Only add to deliveryMen collection, NOT users.
                     await setDoc(doc(db, 'deliveryMen', newUserUid), {
                         name: name,
                         email: email,
@@ -1511,6 +1517,8 @@
                         accountStatus: 'active',
                         createdAt: serverTimestamp()
                     });
+                    
+                    // IMPORTANT: We do not add anything to 'users' collection here, ensuring separation.
 
                     await signOut(secondaryAuth);
                     showToast('Delivery man added successfully!');
@@ -1881,15 +1889,19 @@
                 if (!manDoc.exists()) throw new Error("Delivery man not found");
                 
                 const data = manDoc.data();
-                // FIX: Use query to fetch assigned orders for this specific man
+                // Fetch all orders assigned to this man
                 const assignedOrdersQuery = query(collection(db, "orders"), where("assignedDeliveryManId", "==", deliveryManId));
                 const ordersSnapshot = await getDocs(assignedOrdersQuery);
                 
                 let totalDeliveredCount = 0, totalProductsDelivered = 0, totalCashCollectedCOD = 0, totalNormalDeliveredCount = 0, subTotalDelivered = 0, grandTotalCollected = 0;
                 let currentlyAssignedOrdersHtml = '';
+                let deliveryHistoryHtml = '';
+                
+                const deliveredOrders = [];
 
                 ordersSnapshot.docs.forEach(orderDoc => {
                     const order = orderDoc.data();
+                    
                     if (order.status === 'delivered') {
                         totalDeliveredCount++;
                         const orderSubTotal = order.items?.reduce((sum, item) => sum + (item.price * item.quantity), 0) || 0;
@@ -1905,10 +1917,33 @@
                         } else {
                             totalNormalDeliveredCount++;
                         }
-                    } else {
+                        
+                        // Add to delivered list for history
+                        deliveredOrders.push({ id: orderDoc.id, data: order });
+                        
+                    } else if (order.status !== 'cancelled') {
+                        // Current/Pending/Shipped orders
                         currentlyAssignedOrdersHtml += `<li class="flex justify-between items-center text-sm"><span>ID: ${orderDoc.id.slice(0, 8)}</span> ${getStatusBadge(order.status)}</li>`;
                     }
                 });
+
+                // Sort delivered orders by creation date (most recent first)
+                deliveredOrders.sort((a, b) => (b.data.createdAt?.toMillis() || 0) - (a.data.createdAt?.toMillis() || 0));
+                
+                if (deliveredOrders.length > 0) {
+                     deliveredOrders.slice(0, 5).forEach(order => {
+                        const date = order.data.createdAt?.toDate().toLocaleDateString() || 'N/A';
+                        deliveryHistoryHtml += `
+                            <li class="flex justify-between items-center text-sm py-1 border-b border-color/50">
+                                <span>Order ID: ${order.id.slice(0, 8)}</span>
+                                <span class="font-semibold text-text-primary">৳${(order.data.totalAmount || 0).toFixed(2)} (${date})</span>
+                            </li>
+                        `;
+                    });
+                } else {
+                    deliveryHistoryHtml = '<p class="text-text-secondary text-sm">No delivered orders found in history.</p>';
+                }
+
 
                 if (currentlyAssignedOrdersHtml === '') {
                     currentlyAssignedOrdersHtml = '<p class="text-text-secondary text-sm">No currently assigned orders.</p>';
@@ -1936,8 +1971,12 @@
                         </div>
                     </div>
                     <div class="mt-4 pt-4 border-t border-color">
-                        <h4 class="font-semibold text-text-primary mb-2">Currently Assigned Orders</h4>
+                        <h4 class="font-semibold text-text-primary mb-2">Currently Assigned Orders (${ordersSnapshot.docs.length - totalDeliveredCount})</h4>
                         <ul class="space-y-2">${currentlyAssignedOrdersHtml}</ul>
+                    </div>
+                    <div class="mt-4 pt-4 border-t border-color">
+                        <h4 class="font-semibold text-text-primary mb-2">Delivery History (Last 5)</h4>
+                        <ul class="space-y-1">${deliveryHistoryHtml}</ul>
                     </div>
                 `;
                  lucide.createIcons();
@@ -2026,8 +2065,9 @@
                 renderTable(slicedSnapshot, 'recent-orders-body', renderOrderRow_Recent);
             }, handleSnapshotError('Recent Orders'));
 
+            // Filter the users collection to exclude deliveryMen based on UID if they somehow exist
             const unsubUsers = onSnapshot(collection(db, "users"), snap => {
-                const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0)).slice(0, 5);
+                const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0)).filter(doc => !allDeliveryMen.some(man => man.id === doc.id)).slice(0, 5);
                 const slicedSnapshot = { empty: sortedDocs.length === 0, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) };
                 renderTable(slicedSnapshot, 'recent-users-body', renderUserRow_Recent);
             }, handleSnapshotError('Recent Users'));
@@ -2045,7 +2085,8 @@
             }, handleSnapshotError('All Orders'));
 
             const unsubAllUsers = onSnapshot(collection(db, "users"), snap => {
-                 const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+                 // Filter the users collection to exclude deliveryMen
+                 const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0)).filter(doc => !allDeliveryMen.some(man => man.id === doc.id));
                 renderTable({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) }, 'all-users-body', renderUserRow_All);
             }, handleSnapshotError('All Users'));
 
