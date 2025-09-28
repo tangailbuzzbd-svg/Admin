@@ -77,6 +77,14 @@
         .text-theme-primary { color: var(--c-text-theme); }
         .bg-theme-bg-light { background-color: var(--c-bg-light); }
         .peer:checked ~ .peer-checked\:bg-theme-primary { background-color: var(--c-primary); }
+        
+        /* Custom style for pending order highlighting */
+        .pending-order {
+            background-color: #fffbeb; /* Light yellow background */
+        }
+        html.dark .pending-order {
+            background-color: #2b2b23; /* Darker yellow/gray for dark mode */
+        }
     </style>
 </head>
 <body class="bg-primary">
@@ -238,7 +246,7 @@
                              <div class="stat-card bg-secondary p-6 rounded-lg shadow-md flex items-center justify-between lg:col-span-2"><div><p class="text-sm font-medium text-text-secondary">Total Stock Value</p><p class="text-3xl font-bold text-text-primary" id="total-stock-value">৳0</p></div><div class="bg-cyan-100 text-cyan-600 rounded-full p-3"><i data-lucide="database" class="w-6 h-6"></i></div></div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
-                            <div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">Recent Orders</h3><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Status</th></tr></thead><tbody class="divide-y border-color" id="recent-orders-body"><tr class="text-text-primary"><td colspan="4" class="px-4 py-3 text-center">Loading...</td></tr></tbody></table></div></div>
+                            <div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">Recent Orders</h3><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Sl. No.</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Status</th></tr></thead><tbody class="divide-y border-color" id="recent-orders-body"><tr class="text-text-primary"><td colspan="5" class="px-4 py-3 text-center">Loading...</td></tr></tbody></table></div></div>
                             <div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">New Users</h3><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">User</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Join Date</th></tr></thead><tbody class="divide-y border-color" id="recent-users-body"><tr class="text-text-primary"><td colspan="3" class="px-4 py-3 text-center">Loading...</td></tr></tbody></table></div></div>
                         </div>
                     </div>
@@ -356,8 +364,8 @@
                              <h3 class="text-xl font-semibold text-text-primary mb-4">All Orders</h3>
                              <div class="overflow-x-auto">
                                  <table class="w-full text-left">
-                                     <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer Name</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Date & Time</th><th class="px-4 py-3">Items</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Payment Method</th><th class="px-4 py-3">Delivery Charge</th><th class="px-4 py-3">Assign Delivery Man</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr></thead>
-                                     <tbody class="divide-y border-color" id="all-orders-body"><tr class="text-text-primary"><td colspan="12" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
+                                     <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Sl. No.</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer Name</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Date & Time</th><th class="px-4 py-3">Items</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Payment Method</th><th class="px-4 py-3">Delivery Charge</th><th class="px-4 py-3">Assign Delivery Man</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr></thead>
+                                     <tbody class="divide-y border-color" id="all-orders-body"><tr class="text-text-primary"><td colspan="13" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
                                  </table>
                              </div>
                          </div>
@@ -408,7 +416,7 @@
                                  </div>
                              </div>
                             <div class="lg:col-span-2">
-                                <div class="bg-secondary p-6 rounded-lg shadow-md">
+                                 <div class="bg-secondary p-6 rounded-lg shadow-md">
                                     <h3 class="text-xl font-semibold text-text-primary mb-4">All Delivery Men</h3>
                                     <div id="delivery-man-cards-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
                                          <div class="text-text-primary text-center xl:col-span-2">Loading...</div>
@@ -748,7 +756,9 @@
                 await signInWithEmailAndPassword(auth, e.target.email.value, e.target.password.value);
             } catch (error) {
                 console.error("Login failed:", error.code);
-                if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
+                if (error.code === 'auth/operation-not-allowed') {
+                    UI.loginError.textContent = "Email/Password sign-in is not enabled in Firebase Authentication settings.";
+                } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
                     UI.loginError.textContent = "Incorrect email or password.";
                 } else if (error.code === 'auth/too-many-requests') {
                     UI.loginError.textContent = "Too many failed login attempts. Please try again later.";
@@ -929,7 +939,9 @@
                     return acc;
                 }, {});
 
-                const totalSales = ordersData.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+                // Filter for delivered orders to calculate Total Sales
+                const deliveredOrdersData = ordersData.filter(order => order.status === 'delivered');
+                const totalSales = deliveredOrdersData.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
                 
                 const usersSnap = await getCountFromServer(collection(db, "users"));
                 const productsSnap = await getCountFromServer(collection(db, "products"));
@@ -945,7 +957,7 @@
                     }
                 });
 
-                const productsData = (await getDocs(collection(db, "products"))).docs.map(d => d.data());
+                const productsData = (await getDocs(query(collection(db, "products")))).docs.map(d => d.data());
                 // Calculate Total Stock Value: (Main Price * Stock) for all products
                 const totalStockValue = productsData.reduce((sum, product) => sum + ((product.mainPrice || 0) * (product.stock || 0)), 0);
 
@@ -972,21 +984,39 @@
             const body = document.getElementById(bodyId);
             if (!body) return;
             body.innerHTML = '';
+            
+            // Client-side sorting: Newest first
+            const sortedDocs = snapshot.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+
             if (snapshot.empty) {
-                const colSpan = body.parentElement.querySelector('thead th').parentElement.children.length;
+                const colSpan = body.parentElement.querySelector('thead tr').children.length;
                 body.innerHTML = `<tr><td colspan="${colSpan}" class="p-4 text-center text-text-secondary">No data found.</td></tr>`;
                 return;
             }
-            snapshot.forEach(doc => body.insertAdjacentHTML('beforeend', rowRenderer(doc)));
+            
+            // Render rows with serial number (slNo)
+            sortedDocs.forEach((doc, index) => body.insertAdjacentHTML('beforeend', rowRenderer(doc, index + 1)));
             lucide.createIcons();
         };
 
         const getStatusBadge = (status) => { 
             const colors = { pending: 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900/50 dark:text-yellow-300', confirmed: 'bg-green-100 text-green-800 dark:bg-green-900/50 dark:text-green-300', shipped: 'bg-purple-100 text-purple-800 dark:bg-purple-900/50 dark:text-purple-300', 'out-for-delivery': 'bg-orange-100 text-orange-800 dark:bg-orange-900/50 dark:text-orange-300', delivered: 'bg-blue-100 text-blue-800 dark:bg-blue-900/50 dark:text-blue-300', cancelled: 'bg-red-100 text-red-800 dark:bg-red-900/50 dark:text-red-300' }; 
-            const text = (status || '').replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
-            return `<span class="px-2 py-1 font-semibold leading-tight rounded-full ${colors[status] || ''}">${text}</span>`; 
+            
+            // FIX: Use simple string manipulation to replace hyphens and capitalize words
+            const text = (status || '').replace(/-/g, ' '); 
+            const formattedText = text.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+            return `<span class="px-2 py-1 font-semibold leading-tight rounded-full ${colors[status] || ''}">${formattedText}</span>`; 
         };
-        const renderOrderRow_Recent = doc => { const d = doc.data(); return `<tr class="text-text-primary"><td class="px-4 py-3 text-sm">${doc.id.slice(0, 8)}</td><td class="px-4 py-3 text-sm">${d.userName || 'N/A'}</td><td class="px-4 py-3 text-sm">৳${d.totalAmount || 0}</td><td class="px-4 py-3 text-xs">${getStatusBadge(d.status)}</td></tr>`; };
+        
+        // Updated renderOrderRow_Recent to include Sl. No. and respect the sorting (index is now slNo)
+        const renderOrderRow_Recent = (doc, slNo) => { 
+            const d = doc.data(); 
+            const orderIdDisplay = d.orderId || doc.id.substring(0, 6); // Use d.orderId or fallback
+            const isPending = d.status === 'pending';
+            const rowClass = isPending ? 'pending-order' : 'text-text-primary';
+            return `<tr class="${rowClass}"><td class="px-4 py-3 text-sm">${slNo}</td><td class="px-4 py-3 text-sm font-mono" title="Full ID: ${doc.id}">#${orderIdDisplay}</td><td class="px-4 py-3 text-sm">${d.userName || 'N/A'}</td><td class="px-4 py-3 text-sm">৳${d.totalAmount || 0}</td><td class="px-4 py-3 text-xs">${getStatusBadge(d.status)}</td></tr>`; 
+        };
         const renderUserRow_Recent = doc => { const d = doc.data(); return `<tr class="text-text-primary"><td class="px-4 py-3 text-sm">${d.name || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.email || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td></tr>`; };
         
         const renderFilteredProducts = () => {
@@ -1055,12 +1085,28 @@
                 }).join('');
             return `<select class="delivery-man-assign border rounded p-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600" data-id="${orderId}"><option value="">Unassigned</option>${options}</select>`;
         };
-        const getStatusDropdown = (id, currentStatus) => { const statuses = ['pending', 'confirmed', 'shipped', 'out-for-delivery', 'delivered', 'cancelled']; return `<select class="status-change border rounded p-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600" data-id="${id}">${statuses.map(s => `<option value="${s}" ${s === currentStatus ? 'selected' : ''}>${s.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase())}</option>`).join('')}</select>`; };
-        const renderOrderRow_All = doc => {
+        const getStatusDropdown = (id, currentStatus) => { 
+            const statuses = ['pending', 'confirmed', 'shipped', 'out-for-delivery', 'delivered', 'cancelled']; 
+            
+            // Helper function for display text
+            const getDisplayText = (s) => s.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+
+            return `<select class="status-change border rounded p-1 bg-gray-50 dark:bg-gray-700 border-gray-300 dark:border-gray-600" data-id="${id}">
+                ${statuses.map(s => `<option value="${s}" ${s === currentStatus ? 'selected' : ''}>${getDisplayText(s)}</option>`).join('')}
+            </select>`; 
+        };
+        
+        // Updated renderOrderRow_All to include Sl. No. and highlight pending orders
+        const renderOrderRow_All = (doc, slNo) => {
             const d = doc.data();
+            const orderIdDisplay = d.orderId || doc.id.substring(0, 6); // Use d.orderId or fallback
             const itemsHtml = d.items?.map(item => `<div class="whitespace-nowrap">${item.name} (x${item.quantity})</div>`).join('') || 'N/A';
-            return `<tr class="text-text-primary">
-                <td class="px-4 py-3 text-sm">${doc.id.slice(0, 8)}</td>
+            const isPending = d.status === 'pending';
+            const rowClass = isPending ? 'pending-order' : 'text-text-primary';
+
+            return `<tr class="${rowClass}">
+                <td class="px-4 py-3 text-sm">${slNo}</td>
+                <td class="px-4 py-3 text-sm font-mono" title="Full ID: ${doc.id}">#${orderIdDisplay}</td>
                 <td class="px-4 py-3 text-sm">${d.userName || 'N/A'}</td>
                 <td class="px-4 py-3 text-sm">${d.userMobile || 'N/A'}</td>
                 <td class="px-4 py-3 text-sm">${d.createdAt?.toDate().toLocaleString() || 'N/A'}</td>
@@ -1827,6 +1873,7 @@
                 }
 
                 const data = orderDoc.data();
+                const orderIdDisplay = data.orderId || orderDoc.id.substring(0, 6); // Use d.orderId or fallback
                 const itemsHtml = data.items?.map(item => `
                     <div class="flex items-center justify-between py-2 border-b border-color">
                         <div class="flex items-center">
@@ -1842,15 +1889,19 @@
         
                 const deliveryManName = data.assignedDeliveryManId ? (allDeliveryMen.find(d => d.id === data.assignedDeliveryManId)?.data().name || 'N/A') : 'Unassigned';
 
+                // Get the status dropdown for quick actions in the modal
+                const statusDropdownHtml = getStatusDropdown(orderId, data.status);
+
                 UI.orderDetailsContent.innerHTML = `
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
-                        <div><strong class="text-text-secondary">Order ID:</strong> <span class="font-mono">${orderDoc.id}</span></div>
+                        <div><strong class="text-text-secondary">Order ID:</strong> <span class="font-mono" title="Full ID: ${orderDoc.id}">#${orderIdDisplay}</span></div>
                         <div><strong class="text-text-secondary">Date:</strong> ${data.createdAt?.toDate().toLocaleString() || 'N/A'}</div>
                         <div><strong class="text-text-secondary">Customer:</strong> ${data.userName || 'N/A'}</div>
                         <div><strong class="text-text-secondary">Mobile:</strong> ${data.userMobile || 'N/A'}</div>
                         <div class="sm:col-span-2"><strong class="text-text-secondary">Location:</strong> ${data.userLocation || 'N/A'}</div>
                         <div><strong class="text-text-secondary">Payment:</strong> ${data.paymentMethod || 'N/A'}</div>
                         <div><strong class="text-text-secondary">Status:</strong> ${getStatusBadge(data.status)}</div>
+                        <div class="flex items-center space-x-2"><strong class="text-text-secondary">Change Status:</strong> ${statusDropdownHtml}</div>
                         <div><strong class="text-text-secondary">Assigned To:</strong> ${deliveryManName}</div>
                         <div><strong class="text-text-secondary">Delivery Charge:</strong> ৳${data.deliveryCharge || 0}</div>
                     </div>
@@ -1923,7 +1974,7 @@
                         
                     } else if (order.status !== 'cancelled') {
                         // Current/Pending/Shipped orders
-                        currentlyAssignedOrdersHtml += `<li class="flex justify-between items-center text-sm"><span>ID: ${orderDoc.id.slice(0, 8)}</span> ${getStatusBadge(order.status)}</li>`;
+                        currentlyAssignedOrdersHtml += `<li class="flex justify-between items-center text-sm"><span>ID: #${(order.orderId || orderDoc.id.substring(0, 6))}</span> ${getStatusBadge(order.status)}</li>`;
                     }
                 });
 
@@ -1933,9 +1984,10 @@
                 if (deliveredOrders.length > 0) {
                      deliveredOrders.slice(0, 5).forEach(order => {
                         const date = order.data.createdAt?.toDate().toLocaleDateString() || 'N/A';
+                        const orderIdDisplay = order.data.orderId || order.id.substring(0, 6);
                         deliveryHistoryHtml += `
                             <li class="flex justify-between items-center text-sm py-1 border-b border-color/50">
-                                <span>Order ID: ${order.id.slice(0, 8)}</span>
+                                <span class="font-mono" title="Full ID: ${order.id}">Order ID: #${orderIdDisplay}</span>
                                 <span class="font-semibold text-text-primary">৳${(order.data.totalAmount || 0).toFixed(2)} (${date})</span>
                             </li>
                         `;
@@ -2055,11 +2107,9 @@
         const setupDataListeners = () => {
             cleanupListeners(); // Clear any existing listeners
             
-            // FIX: Remove server-side orderBy and limit. Sort and slice data on the client to avoid permission errors.
-            // This is less efficient as it loads all documents, but it bypasses restrictive security rules or missing indexes.
-
             // Recent Data for Dashboard
             const unsubOrders = onSnapshot(collection(db, "orders"), snap => {
+                // Client-side sorting: Newest first
                 const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0)).slice(0, 5);
                 const slicedSnapshot = { empty: sortedDocs.length === 0, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) };
                 renderTable(slicedSnapshot, 'recent-orders-body', renderOrderRow_Recent);
@@ -2080,6 +2130,7 @@
             }, handleSnapshotError('All Products'));
             
             const unsubAllOrders = onSnapshot(collection(db, "orders"), snap => {
+                // Client-side sorting: Newest first
                 const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
                 renderTable({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) }, 'all-orders-body', renderOrderRow_All);
             }, handleSnapshotError('All Orders'));
