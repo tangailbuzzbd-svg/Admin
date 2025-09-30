@@ -174,6 +174,11 @@
                 </div>
                 <nav class="mt-6">
                     <a href="#dashboard" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary active" data-page="dashboard"><i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i><span>Dashboard</span></a>
+                    <a href="#chat" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary relative" data-page="chat">
+                        <i data-lucide="message-square" class="w-5 h-5 mr-3"></i>
+                        <span>Live Chat</span>
+                        <span id="chat-notification-bubble" class="absolute left-4 top-2 w-2 h-2 bg-red-500 rounded-full hidden animate-pulse"></span>
+                    </a>
                     <a href="#products" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="products"><i data-lucide="package" class="w-5 h-5 mr-3"></i><span>Products</span></a>
                     <a href="#add-product" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="add-product"><i data-lucide="plus-circle" class="w-5 h-5 mr-3"></i><span>Add Product</span></a>
                     <a href="#banners" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="banners"><i data-lucide="image" class="w-5 h-5 mr-3"></i><span>Banners</span></a>
@@ -248,6 +253,52 @@
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
                             <div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">Recent Orders</h3><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Sl. No.</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Status</th></tr></thead><tbody class="divide-y border-color" id="recent-orders-body"><tr class="text-text-primary"><td colspan="5" class="px-4 py-3 text-center">Loading...</td></tr></tbody></table></div></div>
                             <div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">New Users</h3><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">User</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Join Date</th></tr></thead><tbody class="divide-y border-color" id="recent-users-body"><tr class="text-text-primary"><td colspan="3" class="px-4 py-3 text-center">Loading...</td></tr></tbody></table></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Live Chat Page -->
+                    <div id="chat-page" class="page-content hidden">
+                        <div class="h-[calc(100vh-10rem)] bg-secondary rounded-lg shadow-md flex">
+                            <!-- Chat List -->
+                            <div class="w-1/3 border-r border-color flex flex-col">
+                                <div class="p-4 border-b border-color">
+                                    <h3 class="text-lg font-semibold text-text-primary">Conversations</h3>
+                                </div>
+                                <div id="chat-list-container" class="flex-1 overflow-y-auto">
+                                    <p class="p-4 text-center text-text-secondary">Loading chats...</p>
+                                </div>
+                            </div>
+                            <!-- Chat Window -->
+                            <div class="w-2/3 flex flex-col">
+                                <div id="chat-window-placeholder" class="flex flex-col items-center justify-center h-full text-center text-text-secondary">
+                                    <i data-lucide="message-square" class="w-16 h-16 mb-4"></i>
+                                    <h3 class="text-xl font-semibold">Select a conversation</h3>
+                                    <p>Choose a user from the list to start chatting.</p>
+                                </div>
+                                <div id="chat-window-main" class="hidden flex-col h-full">
+                                    <!-- Chat Header -->
+                                    <div class="p-4 border-b border-color flex items-center space-x-3">
+                                        <img id="chat-header-avatar" src="https://placehold.co/40x40" class="w-10 h-10 rounded-full object-cover">
+                                        <div>
+                                            <h3 id="chat-header-name" class="font-semibold text-text-primary">User Name</h3>
+                                            <p id="chat-header-status" class="text-xs text-green-500">Online</p>
+                                        </div>
+                                    </div>
+                                    <!-- Messages -->
+                                    <div id="messages-container" class="flex-1 p-4 overflow-y-auto space-y-4">
+                                        <!-- Messages will be injected here -->
+                                    </div>
+                                    <!-- Message Input -->
+                                    <div class="p-4 border-t border-color">
+                                        <form id="chat-message-form" class="flex items-center space-x-2">
+                                            <input type="text" id="chat-message-input" placeholder="Type your message..." autocomplete="off" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                            <button type="submit" class="p-3 bg-theme-primary text-white rounded-full hover:bg-theme-primary-hover disabled:bg-opacity-70 flex-shrink-0">
+                                                <i data-lucide="send" class="w-5 h-5"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -596,6 +647,8 @@
         let notifications = [];
         let confirmCallback = null;
         let unsubscribeListeners = [];
+        let currentChatUserId = null;
+        let unsubscribeMessages = null;
 
         const UI = {
             loadingSpinner: document.getElementById('loading-spinner'),
@@ -626,7 +679,7 @@
             currentPinWrapper: document.getElementById('current-pin-wrapper'),
         };
         
-        const PAGE_TITLES = { dashboard: 'Dashboard', products: 'All Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
+        const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
 
         const CATEGORY_MAP = {
             'electronics': 'Electronics',
@@ -651,6 +704,51 @@
         };
 
         // --- Helper & Utility Functions ---
+        const formatDateDivider = (date) => {
+            const now = new Date();
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterdayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+
+            if (date >= todayStart) {
+                return 'Today';
+            }
+            if (date >= yesterdayStart) {
+                return 'Yesterday';
+            }
+            // Example: September 30, 2025
+            return date.toLocaleDateString([], { day: 'numeric', month: 'long', year: 'numeric' });
+        };
+
+        const formatTimestamp = (timestamp) => {
+            if (!timestamp || !timestamp.toDate) {
+                return '';
+            }
+            const date = timestamp.toDate();
+            const now = new Date();
+            const diffSeconds = Math.round((now - date) / 1000);
+
+            if (diffSeconds < 60) {
+                return 'Just now';
+            }
+            if (diffSeconds < 3600) {
+                return `${Math.floor(diffSeconds / 60)} min ago`;
+            }
+
+            const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+            const yesterdayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
+
+            if (date >= todayStart) {
+                // Return time like "10:30 AM" for today
+                return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+            }
+            if (date >= yesterdayStart) {
+                return 'Yesterday';
+            }
+
+            // Return date like "30/09/2025" for older messages
+            return date.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' });
+        };
+        
         const showToast = (message, type = 'success') => {
             const toast = document.getElementById('toast');
             const toastMessage = document.getElementById('toast-message');
@@ -745,13 +843,13 @@
                 }
             } catch (error) {
                 console.error("Error checking PIN status:", error);
-                showToast("Could not verify security settings.", 'error');
-                await signOut(auth);
+                showToast("Could not check PIN status. Please try again.", 'error');
+                showScreen('login-screen'); // Fallback on error
             }
         };
 
-        onAuthStateChanged(auth, async (user) => {
-            showScreen('loading-spinner');
+    onAuthStateChanged(auth, async (user) => {
+        showScreen('loading-spinner');
             if (user) {
                 const userIsAdmin = await isAdmin(user.uid);
                 if (userIsAdmin) {
@@ -1266,7 +1364,10 @@
             const list = document.getElementById('banners-list');
             list.innerHTML = '';
             if (snapshot.empty) { list.innerHTML = `<p class="text-center text-text-secondary col-span-full">No banners have been added.</p>`; return; }
-            snapshot.forEach(doc => {
+            
+            const sortedDocs = snapshot.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+
+            sortedDocs.forEach(doc => {
                 const d = doc.data();
                 list.insertAdjacentHTML('beforeend', `<div class="relative group"><img src="${d.imageUrl}" onerror="this.src='https://placehold.co/400x160/e2e8f0/64748b?text=Banner'" class="w-full h-40 object-cover rounded-lg shadow-md"><div class="absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"><button class="delete-btn text-white" data-id="${doc.id}" data-coll="banners"><i data-lucide="trash-2" class="w-8 h-8"></i></button></div></div>`);
             });
@@ -1538,7 +1639,6 @@
                 setButtonLoading(button, true, 'Adding...');
                 try {
                     const code = e.target['coupon-code'].value.toUpperCase();
-                    // Basic check for duplicate coupon code
                     const existingCouponQuery = query(collection(db, "coupons"), where("code", "==", code));
                     const existingCouponSnap = await getDocs(existingCouponQuery);
 
@@ -1579,7 +1679,6 @@
                     const userCredential = await createUserWithEmailAndPassword(secondaryAuth, email, password);
                     const newUserUid = userCredential.user.uid;
 
-                    // Only add to deliveryMen collection, NOT users.
                     await setDoc(doc(db, 'deliveryMen', newUserUid), {
                         name: name,
                         email: email,
@@ -1589,8 +1688,6 @@
                         createdAt: serverTimestamp()
                     });
                     
-                    // IMPORTANT: We do not add anything to 'users' collection here, ensuring separation.
-
                     await signOut(secondaryAuth);
                     showToast('Delivery man added successfully!');
                     e.target.reset();
@@ -1611,12 +1708,41 @@
                     const newName = document.getElementById('admin-name').value;
                     const newImageUrl = document.getElementById('admin-image').value;
                     await updateDoc(doc(db, "admins", user.uid), { name: newName, imageUrl: newImageUrl });
-                    await loadAdminProfile(user); // Refresh UI
+                    await loadAdminProfile(user);
                     showToast("Profile updated successfully!");
                 } catch(err) {
                     showToast("Failed to update profile!", 'error');
                 } finally {
                     setButtonLoading(button, false);
+                }
+            } else if (formId === 'chat-message-form') {
+                const input = document.getElementById('chat-message-input');
+                const messageText = input.value.trim();
+
+                if (messageText && currentChatUserId) {
+                    input.value = ''; 
+                    try {
+                        const messageData = {
+                            sender: 'admin',
+                            text: messageText,
+                            timestamp: serverTimestamp(),
+                            adminId: auth.currentUser.uid
+                        };
+                        const chatRef = doc(db, 'live_chats', currentChatUserId);
+                        
+                        await addDoc(collection(chatRef, 'messages'), messageData);
+                        
+                        await updateDoc(chatRef, {
+                            lastMessage: messageText,
+                            lastMessageTimestamp: serverTimestamp(),
+                            isReadByAdmin: true,
+                            isReadByUser: false
+                        });
+                    } catch (err) {
+                        console.error("Error sending message:", err);
+                        showToast("Failed to send message!", 'error');
+                        input.value = messageText;
+                    }
                 }
             }
         });
@@ -1628,63 +1754,46 @@
                 const pageId = navLink.dataset.page;
                 history.pushState({pageId}, '', `#${pageId}`);
                 showPage(pageId);
+                return;
+            }
+    
+            const chatListItem = e.target.closest('.chat-list-item');
+            if (chatListItem) {
+                openChat(chatListItem.dataset.userId);
+                return;
             }
 
             const themeOption = e.target.closest('.theme-option');
             if (themeOption) {
                 applyTheme(themeOption.dataset.theme);
+                return;
             }
             
             const deleteBtn = e.target.closest('.delete-btn');
             if (deleteBtn) {
-                const collection = deleteBtn.dataset.coll;
+                const collectionName = deleteBtn.dataset.coll;
                 const id = deleteBtn.dataset.id;
                 let title = "Are you sure?";
-                let text = "This action cannot be undone.";
+                let text = `Do you really want to delete this ${collectionName.slice(0,-1)}? This action cannot be undone.`;
 
-                if (collection === 'users') {
+                if (collectionName === 'users') {
                     title = "Delete User?";
                     text = "This only removes the user's data, not their authentication account. This action cannot be undone.";
-                } else if (collection === 'deliveryMen') {
+                } else if (collectionName === 'deliveryMen') {
                     title = "Delete Delivery Man?";
-                    text = "This will permanently delete the delivery man's data from this panel only. Their login account will NOT be deleted from Firebase Authentication. To permanently remove their login access, you must manually delete them from the Firebase Console's Authentication tab. Consider 'Blocking' the account instead. This action is irreversible.";
+                    text = "This will permanently delete the delivery man's data. Their login account will NOT be deleted. Consider 'Blocking' the account instead. This action is irreversible.";
                 }
 
                 showConfirmationModal(async () => {
                     try {
-                        // IMPORTANT: This does not delete the Firebase Auth user, only the Firestore document.
-                        // A Cloud Function would be needed for a full cleanup.
-                        await deleteDoc(doc(db, collection, id));
-                        showToast('Item deleted successfully!');
+                        await deleteDoc(doc(db, collectionName, id));
+                        showToast(`${collectionName.slice(0, -1)} deleted successfully!`);
                     } catch (err) {
-                        console.error("Delete failed:", err);
-                        showToast('Failed to delete item.', 'error');
+                        showToast(`Failed to delete ${collectionName.slice(0, -1)}!`, 'error');
+                        console.error(`Error deleting from ${collectionName}:`, err);
                     }
                 }, title, text);
-            }
-
-            const editBtn = e.target.closest('.edit-btn');
-            if(editBtn) {
-                loadProductForEdit(editBtn.dataset.id);
-            }
-            
-             if (e.target.closest('#logout-button')) {
-                signOut(auth);
-            }
-
-            const removeThumbnailBtn = e.target.closest('.remove-thumbnail-btn');
-            if (removeThumbnailBtn) {
-                removeThumbnailBtn.parentElement.remove();
-            }
-
-            const removeSpecBtn = e.target.closest('.remove-spec-btn');
-            if(removeSpecBtn) {
-                removeSpecBtn.parentElement.remove();
-            }
-
-            const refreshBtn = e.target.closest('#manual-refresh-button');
-            if(refreshBtn) {
-                manualDataRefresh();
+                return;
             }
 
             if (e.target.closest('#new-order-alert-close-btn')) {
@@ -1705,7 +1814,7 @@
                 const currentStatus = accountStatusToggleBtn.dataset.status;
                 const newStatus = currentStatus === 'active' ? 'frozen' : 'active';
                 const actionText = newStatus === 'frozen' ? 'block' : 'unblock';
-                const modalText = `Are you sure you want to ${actionText} this account? This prevents them from being assigned new orders. Note: This does NOT prevent them from logging in. To fully block access, you must disable their account in the Firebase Console.`;
+                const modalText = `Are you sure you want to ${actionText} this account? This prevents them from being assigned new orders.`;
 
                 showConfirmationModal(async () => {
                     try {
@@ -1734,6 +1843,11 @@
                 renderProductFilters();
                 renderFilteredProducts();
             }
+            
+            const removeBtn = e.target.closest('.remove-spec-btn, .remove-thumbnail-btn');
+            if (removeBtn) {
+                removeBtn.parentElement.remove();
+            }
         });
 
         document.addEventListener('change', async (e) => {
@@ -1742,7 +1856,6 @@
                 applyDarkMode(e.target.checked);
             }
 
-             // Order Status Change
             if (e.target.classList.contains('status-change')) {
                 const orderId = e.target.dataset.id;
                 const newStatus = e.target.value;
@@ -1759,13 +1872,14 @@
 
                     const batch = writeBatch(db);
                     
-                    if (newStatus === 'confirmed' && oldStatus !== 'confirmed') {
+                    const affectsStock = (status) => ['pending', 'shipped', 'out-for-delivery', 'delivered'].includes(status);
+
+                    if (!affectsStock(oldStatus) && affectsStock(newStatus)) {
                         for (const item of orderData.items) {
                             const productRef = doc(db, 'products', item.productId);
                             batch.update(productRef, { stock: increment(-item.quantity) });
                         }
-                    }
-                    else if (oldStatus === 'confirmed' && newStatus !== 'confirmed') {
+                    } else if (affectsStock(oldStatus) && !affectsStock(newStatus)) {
                         for (const item of orderData.items) {
                             const productRef = doc(db, 'products', item.productId);
                             batch.update(productRef, { stock: increment(item.quantity) });
@@ -1776,9 +1890,9 @@
                     
                     await batch.commit();
                     showToast('Status updated successfully!');
-                    UI.orderDetailsModal.classList.add('hidden'); // Close the modal
-                    
-
+                    if (!UI.orderDetailsModal.classList.contains('hidden')) {
+                        showOrderDetails(orderId); 
+                    }
                 } catch (err) {
                     console.error("Failed to update status/stock: ", err);
                     showToast('Failed to update status!', 'error');
@@ -1789,7 +1903,6 @@
                 }
             }
 
-            // Delivery Man Assign
             if (e.target.classList.contains('delivery-man-assign')) {
                 const orderId = e.target.dataset.id;
                 const deliveryManId = e.target.value;
@@ -2065,6 +2178,138 @@
 
         UI.deliveryManModalCloseBtn.addEventListener('click', () => UI.deliveryManDetailsModal.classList.add('hidden'));
 
+        // --- Live Chat Logic ---
+        const renderChatList = (chats) => {
+            const container = document.getElementById('chat-list-container');
+            container.innerHTML = '';
+            if (chats.length === 0) {
+                container.innerHTML = '<p class="p-4 text-center text-text-secondary">No active conversations.</p>';
+                return;
+            }
+
+            const unreadChatsExist = chats.some(chat => !chat.isReadByAdmin);
+            document.getElementById('chat-notification-bubble').classList.toggle('hidden', !unreadChatsExist);
+
+            chats.forEach(chat => {
+                const isActive = chat.userId === currentChatUserId;
+                const isUnread = !chat.isReadByAdmin;
+
+                const itemHtml = `
+                    <div class="chat-list-item cursor-pointer flex items-center p-4 border-b border-color ${isActive ? 'bg-theme-bg-light' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}" data-user-id="${chat.userId}">
+                        <div class="relative">
+                            <img src="${chat.userAvatar || 'https://placehold.co/40x40/e2e8f0/64748b?text=U'}" class="w-10 h-10 rounded-full object-cover">
+                            ${isUnread ? '<span class="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800"></span>' : ''}
+                        </div>
+                        <div class="ml-3 flex-1 overflow-hidden">
+                            <p class="font-semibold text-text-primary truncate">${chat.userName}</p>
+                            <p class="text-xs text-text-secondary truncate">${chat.lastMessage || 'No messages yet.'}</p>
+                        </div>
+                        <div class="text-xs text-text-secondary whitespace-nowrap">
+                            ${formatTimestamp(chat.lastMessageTimestamp)}
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', itemHtml);
+            });
+        };
+
+        const renderMessages = (messages) => {
+            const container = document.getElementById('messages-container');
+            container.innerHTML = '';
+            let lastMessageDateString = null;
+
+            // Ensure messages are sorted by timestamp on the client-side as a safeguard.
+            // This prevents messages from appearing out of order due to latency.
+            const sortedMessages = messages
+                .filter(msg => msg.timestamp && msg.timestamp.toDate) // Filter out any messages without a valid timestamp
+                .sort((a, b) => a.timestamp.toMillis() - b.timestamp.toMillis());
+
+            sortedMessages.forEach(msg => {
+                // The filter above makes this check redundant, but it's kept for safety
+                if (!msg.timestamp || !msg.timestamp.toDate) return;
+
+                const messageDate = msg.timestamp.toDate();
+                const messageDateString = messageDate.toDateString();
+
+                if (messageDateString !== lastMessageDateString) {
+                    const dividerHtml = `
+                        <div class="flex justify-center my-4">
+                            <span class="px-3 py-1 text-xs font-semibold text-gray-500 bg-gray-200 dark:bg-gray-700 dark:text-gray-400 rounded-full">
+                                ${formatDateDivider(messageDate)}
+                            </span>
+                        </div>
+                    `;
+                    container.insertAdjacentHTML('beforeend', dividerHtml);
+                    lastMessageDateString = messageDateString;
+                }
+                
+                const isFromAdmin = msg.sender === 'admin';
+                const messageTime = messageDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+
+                // Display the user's name above their messages, similar to the provided screenshot.
+                const senderNameHtml = !isFromAdmin ? `<p class="text-xs text-text-secondary mb-1">${document.getElementById('chat-header-name').textContent || 'User'}</p>` : '';
+
+                const messageHtml = `
+                     <div class="flex flex-col ${isFromAdmin ? 'items-end' : 'items-start'}">
+                        ${senderNameHtml}
+                        <div class="max-w-xs md:max-w-md p-3 rounded-xl ${isFromAdmin ? 'bg-theme-primary text-white rounded-br-none' : 'bg-white dark:bg-gray-700 text-text-primary rounded-bl-none shadow-md'}">
+                            <p class="text-sm whitespace-pre-wrap break-words">${msg.text}</p>
+                            <p class="text-xs ${isFromAdmin ? 'text-white/70' : 'text-black/50 dark:text-white/50'} mt-1 text-right">${messageTime}</p>
+                        </div>
+                    </div>
+                `;
+                container.insertAdjacentHTML('beforeend', messageHtml);
+            });
+            // Scroll to the latest message
+            container.scrollTop = container.scrollHeight;
+        };
+        
+        const openChat = async (userId) => {
+            if (currentChatUserId === userId) return;
+            currentChatUserId = userId;
+            
+            document.getElementById('chat-window-placeholder').classList.add('hidden');
+            document.getElementById('chat-window-main').classList.remove('hidden');
+            document.getElementById('chat-window-main').classList.add('flex');
+            
+            // Unsubscribe from previous chat's messages
+            if (unsubscribeMessages) unsubscribeMessages();
+
+            // Fetch user info for the header
+            const userDoc = await getDoc(doc(db, 'users', userId));
+            if (userDoc.exists()) {
+                const userData = userDoc.data();
+                document.getElementById('chat-header-name').textContent = userData.name || 'Unknown User';
+                document.getElementById('chat-header-avatar').src = userData.photoURL || `https://placehold.co/40x40/e2e8f0/64748b?text=${(userData.name || 'U').charAt(0)}`;
+            } else {
+                 document.getElementById('chat-header-name').textContent = 'User (Not Found)';
+                 document.getElementById('chat-header-avatar').src = 'https://placehold.co/40x40';
+            }
+
+            // Mark chat as read
+            await updateDoc(doc(db, 'live_chats', userId), { isReadByAdmin: true });
+
+            // Listen for new messages
+            const messagesQuery = query(collection(db, `live_chats/${userId}/messages`), { orderBy: 'timestamp' });
+            unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
+                const messages = snapshot.docs.map(doc => doc.data());
+                renderMessages(messages);
+            }, handleSnapshotError('Chat Messages'));
+            
+            // Re-render chat list to update the active state - the main listener will handle this
+            // We just need to trigger a re-render if the list is already loaded
+            const chatListContainer = document.getElementById('chat-list-container');
+            if (chatListContainer.children.length > 1) { // Check if not just the placeholder
+                const items = chatListContainer.querySelectorAll('.chat-list-item');
+                items.forEach(item => {
+                    const isActive = item.dataset.userId === currentChatUserId;
+                    item.classList.toggle('bg-theme-bg-light', isActive);
+                    item.classList.toggle('hover:bg-gray-100', !isActive);
+                    item.classList.toggle('dark:hover:bg-gray-700', !isActive);
+                });
+            }
+        };
+
         // --- Notification Logic ---
         const handleNotificationClick = (alpineData) => {
             alpineData.notificationsOpen = !alpineData.notificationsOpen;
@@ -2122,10 +2367,28 @@
             setTimeout(() => UI.newOrderAlert.classList.add('hidden'), 300);
         };
         
-        const manualDataRefresh = async () => {
+        const manualDataRefresh = async (event) => {
+            const button = event.currentTarget;
+            if (!button) return;
+
+            const icon = button.querySelector('svg');
+            
+            if (icon) {
+                icon.classList.add('animate-spin');
+            }
+            button.disabled = true;
+
             showToast("Refreshing data...");
             await loadDashboardStats();
             showToast("Data refreshed successfully!");
+            
+            // Using a timeout to ensure the user sees the spin animation
+            setTimeout(() => {
+                if (icon) {
+                    icon.classList.remove('animate-spin');
+                }
+                button.disabled = false;
+            }, 500);
         };
 
         // --- Data Listeners Setup ---
@@ -2166,14 +2429,14 @@
                 renderTable({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) }, 'all-users-body', renderUserRow_All);
             }, handleSnapshotError('All Users'));
 
+            // FIX: The original listener for banners was incorrect and was trying to render coupons.
+            // This has been split into two correct listeners.
             const unsubBanners = onSnapshot(collection(db, "banners"), snap => {
-                const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
-                renderBanners({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) });
+                renderBanners(snap);
             }, handleSnapshotError('Banners'));
 
             const unsubCoupons = onSnapshot(collection(db, "coupons"), snap => {
-                const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
-                renderCoupons({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) });
+                renderCoupons(snap);
             }, handleSnapshotError('Coupons'));
             
             const unsubDeliveryMen = onSnapshot(collection(db, "deliveryMen"), 
@@ -2185,9 +2448,14 @@
                 handleSnapshotError('Delivery Men')
             );
             
+            const unsubChats = onSnapshot(query(collection(db, "live_chats"), { orderBy: 'lastMessageTimestamp', direction: 'desc' }), (snapshot) => {
+                const chats = snapshot.docs.map(doc => ({ userId: doc.id, ...doc.data() }));
+                renderChatList(chats);
+            }, handleSnapshotError('Live Chats'));
+
             listenForNotifications();
             
-            unsubscribeListeners.push(unsubOrders, unsubUsers, unsubAllProducts, unsubAllOrders, unsubAllUsers, unsubBanners, unsubCoupons, unsubDeliveryMen);
+            unsubscribeListeners.push(unsubOrders, unsubUsers, unsubAllProducts, unsubAllOrders, unsubAllUsers, unsubBanners, unsubCoupons, unsubDeliveryMen, unsubChats);
         };
 
         // --- Settings Page Logic ---
@@ -2218,6 +2486,7 @@
             setupProductForm(addForm, 'add-');
             setupProductForm(editForm, 'edit-');
             document.getElementById('order-search-input').addEventListener('input', renderFilteredOrders);
+            document.getElementById('manual-refresh-button').addEventListener('click', manualDataRefresh);
             loadAdminProfile(user);
             setupDataListeners();
             loadDashboardStats();
