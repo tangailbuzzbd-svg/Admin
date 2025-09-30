@@ -361,7 +361,13 @@
                     <!-- Orders Page -->
                     <div id="orders-page" class="page-content hidden">
                          <div class="bg-secondary p-6 rounded-lg shadow-md">
-                             <h3 class="text-xl font-semibold text-text-primary mb-4">All Orders</h3>
+                             <div class="flex flex-col sm:flex-row justify-between items-center mb-4 gap-4">
+                                 <h3 class="text-xl font-semibold text-text-primary">All Orders</h3>
+                                 <div class="relative w-full sm:w-72">
+                                     <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary"></i>
+                                     <input type="text" id="order-search-input" placeholder="Search by Order ID..." class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                 </div>
+                             </div>
                              <div class="overflow-x-auto">
                                  <table class="w-full text-left">
                                      <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Sl. No.</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer Name</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Date & Time</th><th class="px-4 py-3">Items</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Payment Method</th><th class="px-4 py-3">Delivery Charge</th><th class="px-4 py-3">Assign Delivery Man</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr></thead>
@@ -584,6 +590,7 @@
 
         // --- State Management & Constants---
         let allProducts = [];
+        let allOrders = [];
         let currentProductCategoryFilter = 'all';
         let allDeliveryMen = [];
         let notifications = [];
@@ -667,6 +674,24 @@
         const handleSnapshotError = (context) => (error) => {
             console.error(`Error loading ${context}:`, error);
             showToast(`Could not load ${context}!`, 'error');
+        };
+
+        const renderFilteredOrders = () => {
+            const searchTerm = document.getElementById('order-search-input').value.toLowerCase().trim();
+            const filteredDocs = allOrders.filter(doc => {
+                const order = doc.data();
+                const orderId = order.orderId || doc.id;
+                return orderId.toLowerCase().includes(searchTerm);
+            });
+
+            const filteredSnapshot = {
+                empty: filteredDocs.length === 0,
+                docs: filteredDocs,
+                forEach: cb => filteredDocs.forEach(cb)
+            };
+            
+            // Re-render the table with only the filtered documents
+            renderTable(filteredSnapshot, 'all-orders-body', renderOrderRow_All);
         };
 
         const setButtonLoading = (button, isLoading, text = 'Loading...') => {
@@ -2130,9 +2155,9 @@
             }, handleSnapshotError('All Products'));
             
             const unsubAllOrders = onSnapshot(collection(db, "orders"), snap => {
-                // Client-side sorting: Newest first
-                const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
-                renderTable({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) }, 'all-orders-body', renderOrderRow_All);
+                // Client-side sorting: Newest first, store all orders, then render
+                allOrders = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+                renderFilteredOrders();
             }, handleSnapshotError('All Orders'));
 
             const unsubAllUsers = onSnapshot(collection(db, "users"), snap => {
@@ -2192,6 +2217,7 @@
             const editForm = document.getElementById('edit-product-form');
             setupProductForm(addForm, 'add-');
             setupProductForm(editForm, 'edit-');
+            document.getElementById('order-search-input').addEventListener('input', renderFilteredOrders);
             loadAdminProfile(user);
             setupDataListeners();
             loadDashboardStats();
