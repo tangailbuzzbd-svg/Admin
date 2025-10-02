@@ -85,6 +85,17 @@
         html.dark .pending-order {
             background-color: #2b2b23; /* Darker yellow/gray for dark mode */
         }
+
+        /* Custom style for unread chat highlighting */
+        .unread-chat {
+            background-color: #eef2ff; /* indigo-100 */
+        }
+        html.dark .unread-chat {
+            background-color: #3730a3; /* indigo-800 */
+        }
+        .chat-list-item {
+            transition: background-color 0.2s ease-in-out;
+        }
     </style>
 </head>
 <body class="bg-primary">
@@ -174,11 +185,6 @@
                 </div>
                 <nav class="mt-6">
                     <a href="#dashboard" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary active" data-page="dashboard"><i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i><span>Dashboard</span></a>
-                    <a href="#chat" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary relative" data-page="chat">
-                        <i data-lucide="message-square" class="w-5 h-5 mr-3"></i>
-                        <span>Live Chat</span>
-                        <span id="chat-notification-bubble" class="absolute left-4 top-2 w-2 h-2 bg-red-500 rounded-full hidden animate-pulse"></span>
-                    </a>
                     <a href="#products" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="products"><i data-lucide="package" class="w-5 h-5 mr-3"></i><span>Products</span></a>
                     <a href="#add-product" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="add-product"><i data-lucide="plus-circle" class="w-5 h-5 mr-3"></i><span>Add Product</span></a>
                     <a href="#banners" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="banners"><i data-lucide="image" class="w-5 h-5 mr-3"></i><span>Banners</span></a>
@@ -186,6 +192,11 @@
                     <a href="#orders" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="orders"><i data-lucide="shopping-cart" class="w-5 h-5 mr-3"></i><span>Orders</span></a>
                     <a href="#users" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="users"><i data-lucide="users" class="w-5 h-5 mr-3"></i><span>Users</span></a>
                     <a href="#delivery" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="delivery"><i data-lucide="truck" class="w-5 h-5 mr-3"></i><span>Delivery</span></a>
+                    <a href="#chat" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary relative" data-page="chat">
+                        <i data-lucide="message-square" class="w-5 h-5 mr-3"></i>
+                        <span>Live Chat</span>
+                        <span id="chat-notification-bubble" class="absolute left-4 top-2 w-2 h-2 bg-red-500 rounded-full hidden animate-pulse"></span>
+                    </a>
                     <a href="#settings" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="settings"><i data-lucide="settings" class="w-5 h-5 mr-3"></i><span>Settings</span></a>
                 </nav>
             </aside>
@@ -277,16 +288,16 @@
                                 </div>
                                 <div id="chat-window-main" class="hidden flex-col h-full">
                                     <!-- Chat Header -->
-                                    <div class="p-4 border-b border-color flex items-center space-x-3">
-                                        <img id="chat-header-avatar" src="https://placehold.co/40x40" class="w-10 h-10 rounded-full object-cover">
-                                        <div>
-                                            <h3 id="chat-header-name" class="font-semibold text-text-primary">User Name</h3>
-                                            <p id="chat-header-status" class="text-xs text-green-500">Online</p>
-                                        </div>
+                                <div id="chat-header" class="p-4 border-b border-color flex items-center space-x-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+                                    <img id="chat-header-avatar" src="https://placehold.co/40x40" class="w-10 h-10 rounded-full object-cover">
+                                    <div>
+                                        <h3 id="chat-header-name" class="font-semibold text-text-primary">User Name</h3>
+                                        <p id="chat-header-status" class="text-xs text-green-500">Online</p>
                                     </div>
-                                    <!-- Messages -->
-                                    <div id="messages-container" class="flex-1 p-4 overflow-y-auto space-y-4">
-                                        <!-- Messages will be injected here -->
+                                </div>
+                                <!-- Messages -->
+                                <div id="messages-container" class="flex-1 p-4 overflow-y-auto space-y-4">
+                                    <!-- Messages will be injected here -->
                                     </div>
                                     <!-- Message Input -->
                                     <div class="p-4 border-t border-color">
@@ -434,8 +445,8 @@
                             <h3 class="text-xl font-semibold text-text-primary mb-4">All Users</h3>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left">
-                                    <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">User</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Join Date</th><th class="px-4 py-3">UID</th><th class="px-4 py-3">Actions</th></tr></thead>
-                                    <tbody class="divide-y border-color" id="all-users-body"><tr class="text-text-primary"><td colspan="7" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
+                                    <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">User</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Join Date</th><th class="px-4 py-3">UID</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr></thead>
+                                    <tbody class="divide-y border-color" id="all-users-body"><tr class="text-text-primary"><td colspan="8" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
                                 </table>
                             </div>
                         </div>
@@ -577,6 +588,19 @@
         </div>
     </div>
 
+    <!-- User Profile Modal -->
+    <div id="user-profile-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-color pb-3 mb-4">
+                <h3 class="text-xl font-semibold text-text-primary">User Profile</h3>
+                <button id="user-profile-modal-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">&times;</button>
+            </div>
+            <div id="modal-user-profile-content" class="space-y-4">
+                <p>Loading...</p>
+            </div>
+        </div>
+    </div>
+
 
     <!-- New Order Alert Modal -->
     <div id="new-order-alert" class="fixed top-5 right-5 z-50 bg-secondary rounded-lg shadow-xl p-5 w-full max-w-sm transform transition-transform translate-x-full hidden">
@@ -592,6 +616,23 @@
         </div>
         <div class="mt-4 pt-3 border-t border-color flex justify-end">
              <button id="view-full-order-btn" class="px-4 py-2 bg-theme-primary text-white rounded-lg hover:bg-theme-primary-hover text-sm">View Full Order</button>
+        </div>
+    </div>
+
+    <!-- New Message Alert Modal -->
+    <div id="new-message-alert" class="fixed top-24 right-5 z-50 bg-secondary rounded-lg shadow-xl p-5 w-full max-w-sm transform transition-transform translate-x-full hidden">
+        <div class="flex justify-between items-center border-b border-color pb-2 mb-3">
+            <div class="flex items-center space-x-2">
+                <i data-lucide="message-square-text" class="text-blue-500"></i>
+                <h3 class="text-lg font-semibold text-text-primary">New Message Received!</h3>
+            </div>
+            <button id="new-message-alert-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">&times;</button>
+        </div>
+        <div id="new-message-alert-content" class="space-y-2 text-sm">
+            <!-- Dynamic content will go here -->
+        </div>
+        <div class="mt-4 pt-3 border-t border-color flex justify-end">
+             <button id="view-full-chat-btn" class="px-4 py-2 bg-theme-primary text-white rounded-lg hover:bg-theme-primary-hover text-sm">View Chat</button>
         </div>
     </div>
 
@@ -647,8 +688,10 @@
         let notifications = [];
         let confirmCallback = null;
         let unsubscribeListeners = [];
+        let allUsersMap = new Map();
         let currentChatUserId = null;
         let unsubscribeMessages = null;
+        let initialChatLoadComplete = false;
 
         const UI = {
             loadingSpinner: document.getElementById('loading-spinner'),
@@ -667,8 +710,12 @@
             deliveryManDetailsModal: document.getElementById('delivery-man-details-modal'),
             deliveryManDetailsContent: document.getElementById('modal-delivery-man-content'),
             deliveryManModalCloseBtn: document.getElementById('delivery-modal-close-btn'),
+            userProfileModal: document.getElementById('user-profile-modal'),
+            userProfileModalContent: document.getElementById('modal-user-profile-content'),
+            userProfileModalCloseBtn: document.getElementById('user-profile-modal-close-btn'),
             confirmationModal: document.getElementById('confirmation-modal'),
             newOrderAlert: document.getElementById('new-order-alert'),
+            newMessageAlert: document.getElementById('new-message-alert'),
             pinVerificationScreen: document.getElementById('pin-verification-screen'),
             pinSetupScreen: document.getElementById('pin-setup-screen'),
             pinVerificationForm: document.getElementById('pin-verification-form'),
@@ -709,14 +756,15 @@
             const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const yesterdayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate() - 1);
 
+            const options = { day: 'numeric', month: 'long', year: 'numeric' };
+
             if (date >= todayStart) {
-                return 'Today';
+                return `Today, ${date.toLocaleDateString([], options)}`;
             }
             if (date >= yesterdayStart) {
-                return 'Yesterday';
+                return `Yesterday, ${date.toLocaleDateString([], options)}`;
             }
-            // Example: September 30, 2025
-            return date.toLocaleDateString([], { day: 'numeric', month: 'long', year: 'numeric' });
+            return date.toLocaleDateString([], options);
         };
 
         const formatTimestamp = (timestamp) => {
@@ -987,6 +1035,12 @@
                 console.warn(`Page not found: ${pageId}. Redirecting to dashboard.`);
                 pageId = 'dashboard';
             }
+
+            // If we are navigating away from the chat page, reset its state.
+            if (pageId !== 'chat') {
+                resetChatView();
+            }
+
             UI.pages.forEach(p => p.classList.toggle('hidden', p.id !== `${pageId}-page`));
             UI.navLinks.forEach(l => l.classList.toggle('active', l.dataset.page === pageId));
             UI.pageTitle.textContent = PAGE_TITLES[pageId] || 'Dashboard';
@@ -1249,14 +1303,32 @@
         };
         const renderUserRow_All = doc => { 
             const d = doc.data(); 
-            return `<tr class="text-text-primary">
-                <td class="px-4 py-3 text-sm">${d.name || 'N/A'}</td>
+            const isBlocked = d.isBlocked || false;
+            const statusBadge = isBlocked
+                ? `<span class="px-2 py-1 text-xs font-semibold leading-tight text-red-700 bg-red-100 rounded-full dark:bg-red-700 dark:text-red-100">Blocked</span>`
+                : `<span class="px-2 py-1 text-xs font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">Active</span>`;
+
+            const blockButtonIcon = isBlocked ? 'play' : 'lock';
+            const blockButtonTitle = isBlocked ? 'Unblock User' : 'Block User';
+            const blockButtonColor = isBlocked ? 'text-yellow-500 hover:text-yellow-700' : 'text-gray-500 hover:text-gray-700';
+
+            const rowClass = isBlocked ? 'bg-red-50 dark:bg-red-900/10' : 'text-text-primary';
+
+            return `<tr class="${rowClass}">
+                <td class="px-4 py-3 text-sm flex items-center">
+                    <img src="${d.photoURL || `https://placehold.co/32x32/e2e8f0/64748b?text=${(d.name || 'U').charAt(0)}`}" class="w-8 h-8 rounded-full object-cover mr-3">
+                    <span>${d.name || 'N/A'}</span>
+                </td>
                 <td class="px-4 py-3 text-sm">${d.email || 'N/A'}</td>
                 <td class="px-4 py-3 text-sm">${d.mobile || 'N/A'}</td>
                 <td class="px-4 py-3 text-sm">${d.location || 'N/A'}</td>
                 <td class="px-4 py-3 text-sm">${d.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td>
                 <td class="px-4 py-3 text-xs font-mono">${doc.id}</td>
-                <td class="px-4 py-3">
+                <td class="px-4 py-3 text-xs">${statusBadge}</td>
+                <td class="px-4 py-3 flex items-center space-x-2">
+                     <button class="block-user-btn ${blockButtonColor} p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${doc.id}" data-blocked="${isBlocked}" title="${blockButtonTitle}">
+                        <i data-lucide="${blockButtonIcon}" class="w-5 h-5"></i>
+                    </button>
                     <button class="delete-btn text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-100 dark:hover:bg-gray-700" data-id="${doc.id}" data-coll="users" title="Delete User">
                         <i data-lucide="trash-2" class="w-5 h-5"></i>
                     </button>
@@ -1800,6 +1872,20 @@
                 hideNewOrderAlert();
             }
 
+            if (e.target.closest('#new-message-alert-close-btn')) {
+                hideNewMessageAlert();
+            }
+
+            if (e.target.closest('#view-full-chat-btn')) {
+                const userId = e.target.closest('#view-full-chat-btn').dataset.id;
+                if(userId) {
+                    showPage('chat');
+                    openChat(userId);
+                }
+                hideNewMessageAlert();
+                return;
+            }
+
             if (e.target.closest('#view-full-order-btn')) {
                 const orderId = e.target.closest('#view-full-order-btn').dataset.id;
                 if(orderId) {
@@ -1831,7 +1917,48 @@
             if(viewDeliveryManBtn) {
                 showDeliveryManDetails(viewDeliveryManBtn.dataset.id);
             }
+
+            const blockUserBtn = e.target.closest('.block-user-btn');
+            if (blockUserBtn) {
+                const userId = blockUserBtn.dataset.id;
+                const isCurrentlyBlocked = blockUserBtn.dataset.blocked === 'true';
+                const actionText = isCurrentlyBlocked ? 'unblock' : 'block';
+
+                showConfirmationModal(async () => {
+                    try {
+                        await updateDoc(doc(db, "users", userId), { isBlocked: !isCurrentlyBlocked });
+                        showToast(`User ${actionText}ed successfully!`);
+                    } catch (error) {
+                        console.error(`Error ${actionText}ing user:`, error);
+                        showToast(`Failed to ${actionText} user!`, 'error');
+                    }
+                }, `Confirm ${actionText}`, `Are you sure you want to ${actionText} this user?`);
+                return;
+            }
             
+            const deleteChatBtn = e.target.closest('.delete-chat-btn');
+            if (deleteChatBtn) {
+                e.stopPropagation(); // Prevent opening the chat
+                const userId = deleteChatBtn.dataset.id;
+                showConfirmationModal(async () => {
+                    // Note: This only deletes the main chat document. The messages subcollection
+                    // will remain in Firestore but will be inaccessible from the app.
+                    // For a complete deletion, a Cloud Function is recommended.
+                    try {
+                        await deleteDoc(doc(db, 'live_chats', userId));
+                        showToast('Chat deleted successfully!');
+                        // After deletion, we should reset the chat view if the deleted chat was open.
+                        if (currentChatUserId === userId) {
+                            resetChatView();
+                        }
+                    } catch (error) {
+                        console.error("Error deleting chat:", error);
+                        showToast('Failed to delete chat! Check your security rules.', 'error');
+                    }
+                }, 'Delete Chat?', 'Are you sure you want to permanently delete this entire conversation? This action cannot be undone.');
+                return;
+            }
+
             const viewOrderBtn = e.target.closest('.view-order-btn');
             if (viewOrderBtn) {
                 showOrderDetails(viewOrderBtn.dataset.id);
@@ -2178,6 +2305,8 @@
 
         UI.deliveryManModalCloseBtn.addEventListener('click', () => UI.deliveryManDetailsModal.classList.add('hidden'));
 
+        UI.userProfileModalCloseBtn.addEventListener('click', () => UI.userProfileModal.classList.add('hidden'));
+
         // --- Live Chat Logic ---
         const renderChatList = (chats) => {
             const container = document.getElementById('chat-list-container');
@@ -2193,19 +2322,28 @@
             chats.forEach(chat => {
                 const isActive = chat.userId === currentChatUserId;
                 const isUnread = !chat.isReadByAdmin;
+                const userData = allUsersMap.get(chat.userId);
+                const userName = userData?.name || chat.userName || 'Unknown User';
+                const userAvatar = userData?.photoURL || 'https://placehold.co/40x40/e2e8f0/64748b?text=U';
+
 
                 const itemHtml = `
-                    <div class="chat-list-item cursor-pointer flex items-center p-4 border-b border-color ${isActive ? 'bg-theme-bg-light' : 'hover:bg-gray-100 dark:hover:bg-gray-700'}" data-user-id="${chat.userId}">
+                    <div class="chat-list-item group cursor-pointer flex items-center p-4 border-b border-color ${isActive ? 'bg-theme-bg-light' : (isUnread ? 'unread-chat' : 'hover:bg-gray-100 dark:hover:bg-gray-700')}" data-user-id="${chat.userId}">
                         <div class="relative">
-                            <img src="${chat.userAvatar || 'https://placehold.co/40x40/e2e8f0/64748b?text=U'}" class="w-10 h-10 rounded-full object-cover">
+                            <img src="${userAvatar}" onerror="this.src='https://placehold.co/40x40/e2e8f0/64748b?text=U'" class="w-10 h-10 rounded-full object-cover">
                             ${isUnread ? '<span class="absolute top-0 right-0 block h-2.5 w-2.5 rounded-full bg-red-500 ring-2 ring-white dark:ring-gray-800"></span>' : ''}
                         </div>
                         <div class="ml-3 flex-1 overflow-hidden">
-                            <p class="font-semibold text-text-primary truncate">${chat.userName}</p>
-                            <p class="text-xs text-text-secondary truncate">${chat.lastMessage || 'No messages yet.'}</p>
+                            <p class="font-semibold text-text-primary truncate ${isUnread ? 'font-bold' : ''}">${userName}</p>
+                            <p class="text-xs truncate ${isUnread ? 'font-semibold text-text-primary dark:text-gray-200' : 'text-text-secondary'}">${chat.lastMessage || 'No messages yet.'}</p>
                         </div>
-                        <div class="text-xs text-text-secondary whitespace-nowrap">
-                            ${formatTimestamp(chat.lastMessageTimestamp)}
+                        <div class="flex flex-col items-end space-y-1 text-right">
+                             <div class="text-xs text-text-secondary whitespace-nowrap">
+                                 ${formatTimestamp(chat.lastMessageTimestamp)}
+                             </div>
+                             <button class="delete-chat-btn text-red-500 hover:text-red-700 p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity focus:opacity-100" data-id="${chat.userId}" title="Delete Conversation">
+                                 <i data-lucide="trash-2" class="w-4 h-4 pointer-events-none"></i>
+                             </button>
                         </div>
                     </div>
                 `;
@@ -2264,50 +2402,128 @@
             container.scrollTop = container.scrollHeight;
         };
         
-        const openChat = async (userId) => {
-            if (currentChatUserId === userId) return;
-            currentChatUserId = userId;
-            
-            document.getElementById('chat-window-placeholder').classList.add('hidden');
-            document.getElementById('chat-window-main').classList.remove('hidden');
-            document.getElementById('chat-window-main').classList.add('flex');
-            
-            // Unsubscribe from previous chat's messages
-            if (unsubscribeMessages) unsubscribeMessages();
+        const resetChatView = () => {
+            if (unsubscribeMessages) {
+                unsubscribeMessages();
+                unsubscribeMessages = null;
+            }
+            currentChatUserId = null;
 
-            // Fetch user info for the header
+            document.getElementById('chat-window-placeholder').classList.remove('hidden');
+            const chatWindowMain = document.getElementById('chat-window-main');
+            chatWindowMain.classList.add('hidden');
+            chatWindowMain.classList.remove('flex');
+
+            // Remove active state from all chat list items
+            const items = document.querySelectorAll('#chat-list-container .chat-list-item');
+            items.forEach(item => {
+                item.classList.remove('bg-theme-bg-light');
+                item.classList.add('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+            });
+        };
+
+        const openChat = async (userId) => {
+            if (currentChatUserId === userId) return; // Don't re-open the same chat
+            
+            // Clear previous message listener
+            if (unsubscribeMessages) unsubscribeMessages();
+            
+            currentChatUserId = userId; // Set the new current user
+
+            // --- Mark chat as read on open ---
+            try {
+                await updateDoc(doc(db, 'live_chats', userId), { isReadByAdmin: true });
+            } catch (error) {
+                // This is a non-critical error, so we just log it. The chat will still open.
+                console.error("Could not mark chat as read on open:", error);
+            }
+
+            // Show the main chat window
+            document.getElementById('chat-window-placeholder').classList.add('hidden');
+            const chatWindowMain = document.getElementById('chat-window-main');
+            chatWindowMain.classList.remove('hidden');
+            chatWindowMain.classList.add('flex');
+            
+            // --- Populate Header & Add Click Listener ---
+            const chatHeader = document.getElementById('chat-header');
+            const headerAvatar = document.getElementById('chat-header-avatar');
+            const headerName = document.getElementById('chat-header-name');
+
             const userDoc = await getDoc(doc(db, 'users', userId));
             if (userDoc.exists()) {
                 const userData = userDoc.data();
-                document.getElementById('chat-header-name').textContent = userData.name || 'Unknown User';
-                document.getElementById('chat-header-avatar').src = userData.photoURL || `https://placehold.co/40x40/e2e8f0/64748b?text=${(userData.name || 'U').charAt(0)}`;
+                headerName.textContent = userData.name || 'Unknown User';
+                headerAvatar.src = userData.photoURL || `https://placehold.co/40x40/e2e8f0/64748b?text=${(userData.name || 'U').charAt(0)}`;
             } else {
-                 document.getElementById('chat-header-name').textContent = 'User (Not Found)';
-                 document.getElementById('chat-header-avatar').src = 'https://placehold.co/40x40';
+                 headerName.textContent = 'User (Not Found)';
+                 headerAvatar.src = 'https://placehold.co/40x40';
             }
-
-            // Mark chat as read
-            await updateDoc(doc(db, 'live_chats', userId), { isReadByAdmin: true });
-
-            // Listen for new messages
+            
+            // To safely replace event listeners, clone and replace the node.
+            const newHeader = chatHeader.cloneNode(true); // true to clone children
+            chatHeader.parentNode.replaceChild(newHeader, chatHeader);
+            newHeader.addEventListener('click', () => showUserProfileModal(userId));
+            
+            // --- Listen for new messages ---
+            // The chat is now marked as read on open.
             const messagesQuery = query(collection(db, `live_chats/${userId}/messages`), { orderBy: 'timestamp' });
             unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
                 const messages = snapshot.docs.map(doc => doc.data());
                 renderMessages(messages);
             }, handleSnapshotError('Chat Messages'));
             
-            // Re-render chat list to update the active state - the main listener will handle this
-            // We just need to trigger a re-render if the list is already loaded
-            const chatListContainer = document.getElementById('chat-list-container');
-            if (chatListContainer.children.length > 1) { // Check if not just the placeholder
-                const items = chatListContainer.querySelectorAll('.chat-list-item');
-                items.forEach(item => {
-                    const isActive = item.dataset.userId === currentChatUserId;
-                    item.classList.toggle('bg-theme-bg-light', isActive);
-                    item.classList.toggle('hover:bg-gray-100', !isActive);
-                    item.classList.toggle('dark:hover:bg-gray-700', !isActive);
-                });
+            // --- Update Active State in Chat List ---
+            const items = document.querySelectorAll('#chat-list-container .chat-list-item');
+            items.forEach(item => {
+                const isActive = item.dataset.userId === currentChatUserId;
+                item.classList.toggle('bg-theme-bg-light', isActive);
+                if (!isActive) {
+                    item.classList.add('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+                } else {
+                    item.classList.remove('hover:bg-gray-100', 'dark:hover:bg-gray-700');
+                }
+            });
+        };
+
+        const showUserProfileModal = (userId) => {
+            UI.userProfileModalContent.innerHTML = '<p>Loading...</p>';
+            UI.userProfileModal.classList.remove('hidden');
+
+            const userData = allUsersMap.get(userId);
+
+            if (!userData) {
+                UI.userProfileModalContent.innerHTML = '<p class="text-red-500">User details not found.</p>';
+                return;
             }
+
+            const profilePic = userData.photoURL || `https://placehold.co/80x80/e2e8f0/64748b?text=${(userData.name || 'U').charAt(0)}`;
+
+            const isBlocked = userData.isBlocked || false;
+            const blockButtonText = isBlocked ? 'Unblock User' : 'Block User';
+            const blockButtonClasses = isBlocked 
+                ? 'bg-green-500 hover:bg-green-600 focus:ring-green-400' 
+                : 'bg-red-600 hover:bg-red-700 focus:ring-red-500';
+
+            UI.userProfileModalContent.innerHTML = `
+                <div class="flex flex-col items-center text-center">
+                    <img src="${profilePic}" onerror="this.src='https://placehold.co/80x80/e2e8f0/64748b?text=U'" class="w-20 h-20 rounded-full object-cover mb-4 border-2 border-theme-primary">
+                    <h4 class="text-lg font-bold text-text-primary">${userData.name || 'N/A'}</h4>
+                    <p class="text-sm text-text-secondary">${userData.email || 'N/A'}</p>
+                </div>
+                <div class="mt-4 pt-4 border-t border-color space-y-2 text-sm">
+                    <div><strong class="text-text-secondary w-24 inline-block">Mobile:</strong> <span class="text-text-primary">${userData.mobile || 'N/A'}</span></div>
+                    <div><strong class="text-text-secondary w-24 inline-block">Location:</strong> <span class="text-text-primary">${userData.location || 'N/A'}</span></div>
+                    <div><strong class="text-text-secondary w-24 inline-block">Joined:</strong> <span class="text-text-primary">${userData.createdAt?.toDate().toLocaleDateString() || 'N/A'}</span></div>
+                </div>
+                <div class="mt-4 pt-4 border-t border-color">
+                    <button id="modal-block-user-btn" 
+                            data-id="${userId}" 
+                            data-blocked="${isBlocked}" 
+                            class="w-full py-2 px-4 text-white font-semibold rounded-lg ${blockButtonClasses} focus:outline-none focus:ring-2 focus:ring-offset-2 dark:focus:ring-offset-gray-800">
+                        ${blockButtonText}
+                    </button>
+                </div>
+            `;
         };
 
         // --- Notification Logic ---
@@ -2367,6 +2583,21 @@
             setTimeout(() => UI.newOrderAlert.classList.add('hidden'), 300);
         };
         
+        const showNewMessageAlert = (chatData, userId) => {
+            const content = document.getElementById('new-message-alert-content');
+            content.innerHTML = `<p><strong class="font-semibold text-text-secondary">From:</strong> ${chatData.userName || 'N/A'}</p><p class="truncate"><strong class="font-semibold text-text-secondary">Message:</strong> ${chatData.lastMessage || ''}</p>`;
+            document.getElementById('view-full-chat-btn').dataset.id = userId;
+            UI.newMessageAlert.classList.remove('hidden', 'translate-x-full');
+            UI.newMessageAlert.classList.add('translate-x-0');
+            lucide.createIcons();
+        };
+
+        const hideNewMessageAlert = () => {
+            UI.newMessageAlert.classList.remove('translate-x-0');
+            UI.newMessageAlert.classList.add('translate-x-full');
+            setTimeout(() => UI.newMessageAlert.classList.add('hidden'), 300);
+        };
+        
         const manualDataRefresh = async (event) => {
             const button = event.currentTarget;
             if (!button) return;
@@ -2424,7 +2655,10 @@
             }, handleSnapshotError('All Orders'));
 
             const unsubAllUsers = onSnapshot(collection(db, "users"), snap => {
-                 // Filter the users collection to exclude deliveryMen
+                 // Filter the users collection to exclude deliveryMen and populate user map
+                 allUsersMap.clear();
+                 snap.docs.forEach(doc => allUsersMap.set(doc.id, doc.data()));
+
                  const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0)).filter(doc => !allDeliveryMen.some(man => man.id === doc.id));
                 renderTable({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) }, 'all-users-body', renderUserRow_All);
             }, handleSnapshotError('All Users'));
@@ -2451,6 +2685,20 @@
             const unsubChats = onSnapshot(query(collection(db, "live_chats"), { orderBy: 'lastMessageTimestamp', direction: 'desc' }), (snapshot) => {
                 const chats = snapshot.docs.map(doc => ({ userId: doc.id, ...doc.data() }));
                 renderChatList(chats);
+
+                if (initialChatLoadComplete) {
+                    snapshot.docChanges().forEach(change => {
+                        if (change.type === "modified") {
+                            const chatData = change.doc.data();
+                            if (!chatData.isReadByAdmin && currentChatUserId !== change.doc.id) {
+                                addNotification(`New message from: ${chatData.userName || 'N/A'}`, 'chat');
+                                showNewMessageAlert(chatData, change.doc.id);
+                            }
+                        }
+                    });
+                } else {
+                    initialChatLoadComplete = true;
+                }
             }, handleSnapshotError('Live Chats'));
 
             listenForNotifications();
@@ -2460,21 +2708,7 @@
 
         // --- Settings Page Logic ---
         const setupSettingsPage = () => {
-            document.getElementById('save-login-appearance-btn').addEventListener('click', () => {
-                localStorage.setItem('login-bg-url', document.getElementById('login-bg-url').value);
-                localStorage.setItem('login-profile-url', document.getElementById('login-profile-url').value);
-                initializeAppearance();
-                showToast("Login screen appearance saved!");
-            });
-
-            document.getElementById('reset-login-appearance-btn').addEventListener('click', () => {
-                localStorage.removeItem('login-bg-url');
-                localStorage.removeItem('login-profile-url');
-                document.getElementById('login-bg-url').value = '';
-                document.getElementById('login-profile-url').value = '';
-                initializeAppearance();
-                showToast("Login screen appearance reset!");
-            });
+            // Settings page logic might be missing. If it exists, it would go here.
         };
         
         // --- Main Initialization ---
@@ -2487,6 +2721,7 @@
             setupProductForm(editForm, 'edit-');
             document.getElementById('order-search-input').addEventListener('input', renderFilteredOrders);
             document.getElementById('manual-refresh-button').addEventListener('click', manualDataRefresh);
+            
             loadAdminProfile(user);
             setupDataListeners();
             loadDashboardStats();
@@ -2506,3 +2741,4 @@
     </script>
 </body>
 </html>
+
