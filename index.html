@@ -143,41 +143,13 @@
                 <p id="pin-error" class="text-sm text-red-300"></p>
                 <button type="submit" class="w-full py-3 font-semibold text-white bg-green-500 rounded-lg hover:bg-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 disabled:bg-green-400">VERIFY</button>
             </form>
-            <div class="text-center">
-                <button id="forgot-pin-btn" class="text-sm text-white hover:underline">Forgot PIN?</button>
-            </div>
         </div>
     </div>
 
-    <!-- PIN Setup/Reset Screen -->
-    <div id="pin-setup-screen" class="flex items-center justify-center min-h-screen hidden bg-cover bg-center" style="background-image: url('https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/vecteezy_ai-generated-empty-wooden-table-on-the-natural-background_40890255.jpg?raw=true');">
-        <div class="w-full max-w-sm p-8 space-y-6 bg-white/20 dark:bg-gray-900/60 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl">
-            <h2 id="pin-setup-title" class="text-2xl font-bold text-center text-white">Set Up Security PIN</h2>
-            <p id="pin-setup-subtitle" class="text-center text-white text-sm">Create a 4-digit PIN for extra security.</p>
-            <form id="pin-setup-form" class="space-y-4">
-                <div id="current-pin-wrapper" class="hidden">
-                    <!-- This content will be dynamically replaced by JS for password re-auth -->
-                    <label for="current-pin" class="text-sm font-medium text-white block mb-1">Current 4-Digit PIN</label>
-                    <input type="password" id="current-pin" name="currentPin" required maxlength="4" pattern="\d{4}" class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white text-center text-2xl tracking-[1em] focus:ring-0 focus:border-white transition">
-                </div>
-                <div>
-                    <label for="new-pin" class="text-sm font-medium text-white block mb-1">New 4-Digit PIN</label>
-                    <input type="password" id="new-pin" name="newPin" required maxlength="4" pattern="\d{4}" class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white text-center text-2xl tracking-[1em] focus:ring-0 focus:border-white transition">
-                </div>
-                <div>
-                    <label for="confirm-pin" class="text-sm font-medium text-white block mb-1">Confirm New PIN</label>
-                    <input type="password" id="confirm-pin" name="confirmPin" required maxlength="4" pattern="\d{4}" class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white text-center text-2xl tracking-[1em] focus:ring-0 focus:border-white transition">
-                </div>
-                <p id="pin-setup-error" class="text-sm text-red-300"></p>
-                <button type="submit" class="w-full py-3 font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-400 disabled:bg-blue-400">SAVE PIN</button>
-            </form>
-        </div>
-    </div>
-
-
-    <!-- Admin Panel -->
-    <div id="admin-panel" class="hidden">
-        <div class="flex h-screen" x-data="{ sidebarOpen: true }">
+ 
+     <!-- Admin Panel -->
+     <div id="admin-panel" class="hidden">
+         <div class="flex h-screen" x-data="{ sidebarOpen: true }">
             <!-- Sidebar -->
             <aside class="sidebar fixed inset-y-0 left-0 z-30 w-64 bg-secondary transform transition-transform duration-300 ease-in-out" :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}">
                 <div class="flex items-center justify-between h-20 px-6 border-b border-color">
@@ -484,10 +456,10 @@
                                  </div>
                              </div>
                             <div class="lg:col-span-2">
-                                 <div class="bg-secondary p-6 rounded-lg shadow-md">
+                                <div class="bg-secondary p-6 rounded-lg shadow-md">
                                     <h3 class="text-xl font-semibold text-text-primary mb-4">All Delivery Men</h3>
                                     <div id="delivery-man-cards-container" class="grid grid-cols-1 xl:grid-cols-2 gap-6">
-                                         <div class="text-text-primary text-center xl:col-span-2">Loading...</div>
+                                        <div class="text-text-primary text-center xl:col-span-2">Loading...</div>
                                     </div>
                                 </div>
                             </div>
@@ -654,8 +626,8 @@
 
     <script type="module">
         import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, getDocs, addDoc, serverTimestamp, query, where, getCountFromServer, doc, getDoc, deleteDoc, updateDoc, writeBatch, increment, setDoc } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+        import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, collection, onSnapshot, getDocs, addDoc, serverTimestamp, query, where, getCountFromServer, doc, getDoc, deleteDoc, updateDoc, writeBatch, increment, setDoc, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         /*
             SECURITY NOTE:
@@ -670,7 +642,16 @@
         */
 
         // --- Firebase Config & Initialization ---
-        const firebaseConfig = { apiKey: "AIzaSyBQH3wiKS5_5gGg309REabDmJSk1VLIbtw", authDomain: "tangail-buzz-project.firebaseapp.com", projectId: "tangail-buzz-project", storageBucket: "tangail-buzz-project.appspot.com", messagingSenderId: "1080138191394", appId: "1:1080138191394:web:0e96b05009820b5dc5b07b" };
+        // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+        const firebaseConfig = {
+          apiKey: "AIzaSyBIRNr3X-_xOHQ6ITW3pXgqgcjhP2xEEEA",
+          authDomain: "tangailbuzz47.firebaseapp.com",
+          projectId: "tangailbuzz47",
+          storageBucket: "tangailbuzz47.firebasestorage.app",
+          messagingSenderId: "1017968115713",
+          appId: "1:1017968115713:web:967a0e13107d8816b44000",
+          measurementId: "G-7HYDCZTN2H"
+        };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
         const auth = getAuth(app);
@@ -717,13 +698,8 @@
             newOrderAlert: document.getElementById('new-order-alert'),
             newMessageAlert: document.getElementById('new-message-alert'),
             pinVerificationScreen: document.getElementById('pin-verification-screen'),
-            pinSetupScreen: document.getElementById('pin-setup-screen'),
             pinVerificationForm: document.getElementById('pin-verification-form'),
-            pinSetupForm: document.getElementById('pin-setup-form'),
             pinError: document.getElementById('pin-error'),
-            pinSetupError: document.getElementById('pin-setup-error'),
-            pinSetupTitle: document.getElementById('pin-setup-title'),
-            currentPinWrapper: document.getElementById('current-pin-wrapper'),
         };
         
         const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
@@ -858,57 +834,44 @@
         };
 
         // --- Authentication & PIN Logic ---
-        const isAdmin = async (uid) => {
-            try {
-                const adminDoc = await getDoc(doc(db, "admins", uid));
-                return adminDoc.exists();
-            } catch (error) {
-                console.error("Error checking admin status:", error);
-                showToast("Could not verify admin status!", 'error');
-                return false;
-            }
-        };
+        // The isAdmin function was removed as it causes a "Missing or insufficient permissions" error.
+        // The security rules prevent non-admins from reading the 'admins' collection to check their own status.
+        // Role checking is now done securely via ID token claims in the onAuthStateChanged listener below.
 
         const showScreen = (screenName) => {
-            const screens = ['loading-spinner', 'login-screen', 'pin-verification-screen', 'pin-setup-screen', 'admin-panel'];
+            const screens = ['loading-spinner', 'login-screen', 'pin-verification-screen', 'admin-panel'];
             screens.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.toggle('hidden', id !== screenName);
             });
         };
 
-        const checkPinStatus = async (user) => {
-            try {
-                const adminDocRef = doc(db, "admins", user.uid);
-                const adminDoc = await getDoc(adminDocRef);
-                if (adminDoc.exists() && adminDoc.data().pin) {
-                    showScreen('pin-verification-screen');
-                } else {
-                    UI.pinSetupTitle.textContent = 'Set Up Security PIN';
-                    UI.currentPinWrapper.classList.add('hidden');
-                    UI.pinSetupForm.querySelector('button[type="submit"]').textContent = 'SAVE PIN';
-                    showScreen('pin-setup-screen');
-                }
-            } catch (error) {
-                console.error("Error checking PIN status:", error);
-                showToast("Could not check PIN status. Please try again.", 'error');
-                showScreen('login-screen'); // Fallback on error
-            }
-        };
-
-    onAuthStateChanged(auth, async (user) => {
-        showScreen('loading-spinner');
+     onAuthStateChanged(auth, async (user) => {
+         showScreen('loading-spinner');
             if (user) {
-                const userIsAdmin = await isAdmin(user.uid);
-                if (userIsAdmin) {
-                    const adminDoc = await getDoc(doc(db, "admins", user.uid));
-                    if(adminDoc.exists()) {
-                        currentUserProfile = { id: adminDoc.id, ...adminDoc.data() };
+                try {
+                    // Force refresh the token to get the latest custom claims (e.g., role)
+                    const idTokenResult = await user.getIdTokenResult(true);
+                    
+                    // Check if the user's token has an 'admin' or 'co-admin' role claim.
+                    // This is the secure way to verify admin status on the client.
+                    const userIsAdmin = idTokenResult.claims.role === 'admin' || idTokenResult.claims.role === 'co-admin';
+
+                    if (userIsAdmin) {
+                        const adminDoc = await getDoc(doc(db, "admins", user.uid));
+                        if(adminDoc.exists()) {
+                            currentUserProfile = { id: adminDoc.id, ...adminDoc.data() };
+                        }
+                        showScreen('pin-verification-screen');
+                    } else {
+                        await signOut(auth);
+                        UI.loginError.textContent = "You do not have permission to access this panel.";
+                        showScreen('login-screen');
                     }
-                    await checkPinStatus(user);
-                } else {
+                } catch (error) {
+                    console.error("Authentication check failed:", error);
                     await signOut(auth);
-                    UI.loginError.textContent = "You do not have permission to access this panel.";
+                    UI.loginError.textContent = "An error occurred during authentication.";
                     showScreen('login-screen');
                 }
             } else {
@@ -922,25 +885,32 @@
             const button = e.target.querySelector('button[type="submit"]');
             setButtonLoading(button, true, 'LOGGING IN...');
             UI.loginError.textContent = '';
+            
+            const email = e.target.email.value;
+            const password = e.target.password.value;
+            const keepSignedIn = document.getElementById('keep-signed-in').checked;
+
             try {
-                // onAuthStateChanged will handle the rest of the flow
-                await signInWithEmailAndPassword(auth, e.target.email.value, e.target.password.value);
+                // Set persistence based on the checkbox
+                await setPersistence(auth, keepSignedIn ? browserLocalPersistence : 'session');
+                await signInWithEmailAndPassword(auth, email, password);
+                // onAuthStateChanged will handle the rest
             } catch (error) {
-                console.error("Login failed:", error.code);
-                if (error.code === 'auth/operation-not-allowed') {
-                    UI.loginError.textContent = "Email/Password sign-in is not enabled in Firebase Authentication settings.";
-                } else if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                    UI.loginError.textContent = "Incorrect email or password.";
-                } else if (error.code === 'auth/too-many-requests') {
-                    UI.loginError.textContent = "Too many failed login attempts. Please try again later.";
-                } else {
-                    UI.loginError.textContent = "An error occurred during login.";
+                console.error("Login failed:", error);
+                const errorCode = error.code;
+                let errorMessage = 'An unknown error occurred.';
+                if (errorCode === 'auth/user-not-found' || errorCode === 'auth/wrong-password' || errorCode === 'auth/invalid-credential') {
+                    errorMessage = 'Invalid email or password. Please try again.';
+                } else if (errorCode === 'auth/too-many-requests') {
+                    errorMessage = 'Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later.';
                 }
+                UI.loginError.textContent = errorMessage;
+            } finally {
                 setButtonLoading(button, false);
             }
         });
 
-        UI.pinVerificationForm.addEventListener('submit', async (e) => {
+        UI.pinVerificationForm.addEventListener('submit', (e) => {
             e.preventDefault();
             const button = e.target.querySelector('button[type="submit"]');
             setButtonLoading(button, true, 'VERIFYING...');
@@ -948,85 +918,18 @@
             const enteredPin = e.target.pin.value;
             const user = auth.currentUser;
 
-            try {
-                const adminDoc = await getDoc(doc(db, "admins", user.uid));
-                if (adminDoc.exists() && adminDoc.data().pin === enteredPin) {
-                    showScreen('admin-panel');
-                    initializeAdminPanel(user);
-                } else {
-                    UI.pinError.textContent = "Incorrect PIN.";
-                }
-            } catch (error) {
-                UI.pinError.textContent = "Error verifying PIN.";
-            } finally {
-                setButtonLoading(button, false);
-            }
-        });
-
-        UI.pinSetupForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            const button = e.target.querySelector('button[type="submit"]');
-            setButtonLoading(button, true, 'SAVING...');
-            UI.pinSetupError.textContent = '';
-            
-            const newPin = e.target.newPin.value;
-            const confirmPin = e.target.confirmPin.value;
-            const user = auth.currentUser;
-            const isResetFlow = !UI.currentPinWrapper.classList.contains('hidden');
-
-            if (newPin.length !== 4) {
-                UI.pinSetupError.textContent = "PIN must be 4 digits.";
-                setButtonLoading(button, false);
-                return;
-            }
-
-            if (newPin !== confirmPin) {
-                UI.pinSetupError.textContent = "New PINs do not match.";
-                setButtonLoading(button, false);
-                return;
-            }
-            
-            try {
-                if (isResetFlow) {
-                    const password = e.target.currentPassword.value;
-                    if (!password) {
-                        UI.pinSetupError.textContent = "Password is required to reset PIN.";
-                        setButtonLoading(button, false);
-                        return;
-                    }
-                    const credential = EmailAuthProvider.credential(user.email, password);
-                    // Re-authenticate the user to confirm their identity before changing the PIN
-                    await reauthenticateWithCredential(user, credential);
-                }
-
-                await updateDoc(doc(db, "admins", user.uid), { pin: newPin });
-                showToast("PIN set successfully!");
+            if (enteredPin === '6929') {
                 showScreen('admin-panel');
                 initializeAdminPanel(user);
-
-            } catch (error) {
-                 if (error.code === 'auth/wrong-password' || error.code === 'auth/invalid-credential') {
-                    UI.pinSetupError.textContent = "Incorrect password. PIN not reset.";
-                } else {
-                    UI.pinSetupError.textContent = "Failed to set PIN. An error occurred.";
-                }
-                console.error("PIN setup/reset error:", error);
-            } finally {
-                setButtonLoading(button, false);
+            } else {
+                 UI.pinError.textContent = "Incorrect PIN.";
             }
+             setButtonLoading(button, false);
         });
 
-        document.getElementById('forgot-pin-btn').addEventListener('click', () => {
-            showScreen('pin-setup-screen');
-            UI.pinSetupTitle.textContent = 'Reset Security PIN';
-            UI.pinSetupForm.querySelector('#current-pin-wrapper').innerHTML = `
-                <label for="current-password" class="text-sm font-medium text-white block mb-1">Enter Your Account Password</label>
-                <input type="password" id="current-password" name="currentPassword" required class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white placeholder-gray-300 focus:ring-0 focus:border-white transition">
-            `;
-            UI.currentPinWrapper.classList.remove('hidden');
-            UI.pinSetupForm.querySelector('button[type="submit"]').textContent = 'RESET PIN';
+        document.getElementById('logout-button').addEventListener('click', () => {
+            signOut(auth);
         });
-
         
         // --- Navigation ---
         const showPage = (pageId) => {
@@ -1074,7 +977,7 @@
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             applyDarkMode(localStorage.theme === 'dark' || (!('theme' in localStorage) && prefersDark));
             
-            const loginScreenDivs = document.querySelectorAll('#login-screen, #pin-verification-screen, #pin-setup-screen');
+            const loginScreenDivs = document.querySelectorAll('#login-screen, #pin-verification-screen');
             const loginProfilePic = document.getElementById('login-profile-pic');
             const defaultBg = 'https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/vecteezy_ai-generated-empty-wooden-table-on-the-natural-background_40890255.jpg?raw=true';
             const defaultAvatar = 'https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/WhatsApp%20Image%202025-07-30%20at%2019.29.33_9f8c7d06.jpg?raw=true';
@@ -1326,9 +1229,9 @@
                 <td class="px-4 py-3 text-xs font-mono">${doc.id}</td>
                 <td class="px-4 py-3 text-xs">${statusBadge}</td>
                 <td class="px-4 py-3 flex items-center space-x-2">
-                     <button class="block-user-btn ${blockButtonColor} p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${doc.id}" data-blocked="${isBlocked}" title="${blockButtonTitle}">
-                        <i data-lucide="${blockButtonIcon}" class="w-5 h-5"></i>
-                    </button>
+                       <button class="block-user-btn ${blockButtonColor} p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${doc.id}" data-blocked="${isBlocked}" title="${blockButtonTitle}">
+                           <i data-lucide="${blockButtonIcon}" class="w-5 h-5"></i>
+                       </button>
                     <button class="delete-btn text-red-500 hover:text-red-700 p-1 rounded-full hover:bg-red-100 dark:hover:bg-gray-700" data-id="${doc.id}" data-coll="users" title="Delete User">
                         <i data-lucide="trash-2" class="w-5 h-5"></i>
                     </button>
@@ -2388,13 +2291,13 @@
                 const senderNameHtml = !isFromAdmin ? `<p class="text-xs text-text-secondary mb-1">${document.getElementById('chat-header-name').textContent || 'User'}</p>` : '';
 
                 const messageHtml = `
-                     <div class="flex flex-col ${isFromAdmin ? 'items-end' : 'items-start'}">
-                        ${senderNameHtml}
-                        <div class="max-w-xs md:max-w-md p-3 rounded-xl ${isFromAdmin ? 'bg-theme-primary text-white rounded-br-none' : 'bg-white dark:bg-gray-700 text-text-primary rounded-bl-none shadow-md'}">
-                            <p class="text-sm whitespace-pre-wrap break-words">${msg.text}</p>
-                            <p class="text-xs ${isFromAdmin ? 'text-white/70' : 'text-black/50 dark:text-white/50'} mt-1 text-right">${messageTime}</p>
-                        </div>
-                    </div>
+                       <div class="flex flex-col ${isFromAdmin ? 'items-end' : 'items-start'}">
+                           ${senderNameHtml}
+                           <div class="max-w-xs md:max-w-md p-3 rounded-xl ${isFromAdmin ? 'bg-theme-primary text-white rounded-br-none' : 'bg-white dark:bg-gray-700 text-text-primary rounded-bl-none shadow-md'}">
+                               <p class="text-sm whitespace-pre-wrap break-words">${msg.text}</p>
+                               <p class="text-xs ${isFromAdmin ? 'text-white/70' : 'text-black/50 dark:text-white/50'} mt-1 text-right">${messageTime}</p>
+                           </div>
+                       </div>
                 `;
                 container.insertAdjacentHTML('beforeend', messageHtml);
             });
@@ -2466,7 +2369,7 @@
             
             // --- Listen for new messages ---
             // The chat is now marked as read on open.
-            const messagesQuery = query(collection(db, `live_chats/${userId}/messages`), { orderBy: 'timestamp' });
+            const messagesQuery = query(collection(db, `live_chats/${userId}/messages`), orderBy('timestamp'));
             unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
                 const messages = snapshot.docs.map(doc => doc.data());
                 renderMessages(messages);
@@ -2682,7 +2585,7 @@
                 handleSnapshotError('Delivery Men')
             );
             
-            const unsubChats = onSnapshot(query(collection(db, "live_chats"), { orderBy: 'lastMessageTimestamp', direction: 'desc' }), (snapshot) => {
+            const unsubChats = onSnapshot(query(collection(db, "live_chats"), orderBy('lastMessageTimestamp', 'desc')), (snapshot) => {
                 const chats = snapshot.docs.map(doc => ({ userId: doc.id, ...doc.data() }));
                 renderChatList(chats);
 
