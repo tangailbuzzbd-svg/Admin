@@ -673,6 +673,7 @@
         let currentChatUserId = null;
         let unsubscribeMessages = null;
         let initialChatLoadComplete = false;
+        let lastChatsSnapshot = []; // FIX: Live chat name shomoshshar jonno add kora hoyeche
 
         const UI = {
             loadingSpinner: document.getElementById('loading-spinner'),
@@ -1770,6 +1771,13 @@
                 }, title, text);
                 return;
             }
+            
+            // FIX: Product edit korar jonno button handler add kora hoyeche
+            const editBtn = e.target.closest('.edit-btn');
+            if (editBtn) {
+                loadProductForEdit(editBtn.dataset.id);
+                return;
+            }
 
             if (e.target.closest('#new-order-alert-close-btn')) {
                 hideNewOrderAlert();
@@ -2562,12 +2570,15 @@
                  allUsersMap.clear();
                  snap.docs.forEach(doc => allUsersMap.set(doc.id, doc.data()));
 
+                 // FIX: Live chat name shomoshshar jonno chat list re-render kora hocche
+                 if (lastChatsSnapshot.length > 0) {
+                     renderChatList(lastChatsSnapshot);
+                 }
+
                  const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0)).filter(doc => !allDeliveryMen.some(man => man.id === doc.id));
                 renderTable({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) }, 'all-users-body', renderUserRow_All);
             }, handleSnapshotError('All Users'));
-
-            // FIX: The original listener for banners was incorrect and was trying to render coupons.
-            // This has been split into two correct listeners.
+            
             const unsubBanners = onSnapshot(collection(db, "banners"), snap => {
                 renderBanners(snap);
             }, handleSnapshotError('Banners'));
@@ -2587,6 +2598,7 @@
             
             const unsubChats = onSnapshot(query(collection(db, "live_chats"), orderBy('lastMessageTimestamp', 'desc')), (snapshot) => {
                 const chats = snapshot.docs.map(doc => ({ userId: doc.id, ...doc.data() }));
+                lastChatsSnapshot = chats; // FIX: Live chat name shomoshshar jonno data store kora hocche
                 renderChatList(chats);
 
                 if (initialChatLoadComplete) {
