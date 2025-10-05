@@ -673,7 +673,8 @@
         let currentChatUserId = null;
         let unsubscribeMessages = null;
         let initialChatLoadComplete = false;
-        let lastChatsSnapshot = []; // FIX: Live chat name shomoshshar jonno add kora hoyeche
+        let lastChatsSnapshot = null; 
+        let initialUsersLoadComplete = false;
 
         const UI = {
             loadingSpinner: document.getElementById('loading-spinner'),
@@ -2569,9 +2570,10 @@
                  // Filter the users collection to exclude deliveryMen and populate user map
                  allUsersMap.clear();
                  snap.docs.forEach(doc => allUsersMap.set(doc.id, doc.data()));
+                 initialUsersLoadComplete = true;
 
-                 // FIX: Live chat name shomoshshar jonno chat list re-render kora hocche
-                 if (lastChatsSnapshot.length > 0) {
+                 // If chat data arrived first, render it now that we have user names.
+                 if (lastChatsSnapshot) {
                      renderChatList(lastChatsSnapshot);
                  }
 
@@ -2596,18 +2598,32 @@
                 handleSnapshotError('Delivery Men')
             );
             
-            const unsubChats = onSnapshot(query(collection(db, "live_chats"), orderBy('lastMessageTimestamp', 'desc')), (snapshot) => {
-                const chats = snapshot.docs.map(doc => ({ userId: doc.id, ...doc.data() }));
-                lastChatsSnapshot = chats; // FIX: Live chat name shomoshshar jonno data store kora hocche
-                renderChatList(chats);
+            const unsubChats = onSnapshot(query(collection(db, "live_chats")), (snapshot) => {
+                let chats = snapshot.docs.map(doc => ({ userId: doc.id, ...doc.data() }));
+                
+                // FIX: Client-side sorting to handle chats without lastMessageTimestamp
+                chats.sort((a, b) => {
+                    const timeA = a.lastMessageTimestamp?.toMillis() || a.createdAt?.toMillis() || 0;
+                    const timeB = b.lastMessageTimestamp?.toMillis() || b.createdAt?.toMillis() || 0;
+                    return timeB - timeA;
+                });
+
+                lastChatsSnapshot = chats; 
+                
+                // Only render if we have user data. Otherwise, the user listener will handle it.
+                if(initialUsersLoadComplete) {
+                    renderChatList(chats);
+                }
 
                 if (initialChatLoadComplete) {
                     snapshot.docChanges().forEach(change => {
-                        if (change.type === "modified") {
+                        if (change.type === "modified" || change.type === "added") { // Listen for added chats too
                             const chatData = change.doc.data();
                             if (!chatData.isReadByAdmin && currentChatUserId !== change.doc.id) {
-                                addNotification(`New message from: ${chatData.userName || 'N/A'}`, 'chat');
-                                showNewMessageAlert(chatData, change.doc.id);
+                                const userData = allUsersMap.get(change.doc.id);
+                                const userName = userData?.name || chatData.userName || 'A user';
+                                addNotification(`New message from: ${userName}`, 'chat');
+                                showNewMessageAlert({ ...chatData, userName }, change.doc.id);
                             }
                         }
                     });
@@ -2656,4 +2672,6 @@
     </script>
 </body>
 </html>
+
+
 
