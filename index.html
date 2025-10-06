@@ -289,11 +289,17 @@
                     <!-- Products Page -->
                     <div id="products-page" class="page-content hidden">
                         <div class="bg-secondary p-6 rounded-lg shadow-md">
-                            <div class="flex flex-wrap justify-between items-center mb-4">
+                            <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
                                 <h3 class="text-xl font-semibold text-text-primary">All Products</h3>
-                                <!-- Category Filters -->
-                                <div id="product-category-filters" class="flex flex-wrap items-center gap-2 mt-2 sm:mt-0">
-                                    <!-- Filter buttons will be dynamically inserted here -->
+                                <div class="flex flex-wrap items-center gap-4 mt-2 sm:mt-0">
+                                    <!-- Category Filters -->
+                                    <div id="product-category-filters" class="flex flex-wrap items-center gap-2">
+                                        <!-- Filter buttons will be dynamically inserted here -->
+                                    </div>
+                                    <!-- Sub-Category Filter Dropdown -->
+                                    <div id="product-subcategory-filter-container" class="hidden">
+                                        <!-- Dropdown will be inserted here by JS -->
+                                    </div>
                                 </div>
                             </div>
                             <div class="overflow-x-auto">
@@ -671,6 +677,7 @@
         let allProducts = [];
         let allOrders = [];
         let currentProductCategoryFilter = 'all';
+        let currentProductSubCategoryFilter = 'all';
         let currentOrderStatusFilter = 'all';
         let allDeliveryMen = [];
         let notifications = [];
@@ -1112,9 +1119,13 @@
         const renderFilteredProducts = () => {
             const body = document.getElementById('all-products-body');
             body.innerHTML = '';
-            const filteredProducts = allProducts.filter(doc => 
-                currentProductCategoryFilter === 'all' || doc.data().category === currentProductCategoryFilter
-            );
+            const filteredProducts = allProducts.filter(doc => {
+                const data = doc.data();
+                const categoryMatch = currentProductCategoryFilter === 'all' || data.category === currentProductCategoryFilter;
+                const subCategoryMatch = currentProductSubCategoryFilter === 'all' || data.subcategory === currentProductSubCategoryFilter;
+                return categoryMatch && subCategoryMatch;
+            });
+
             if (filteredProducts.length === 0) {
                 const colSpan = body.parentElement.querySelector('thead th').parentElement.children.length;
                 body.innerHTML = `<tr><td colspan="${colSpan}" class="p-4 text-center text-text-secondary">No products found.</td></tr>`;
@@ -1140,6 +1151,46 @@
             filtersContainer.innerHTML = buttonsHtml;
         };
         
+        const renderSubCategoryFilter = () => {
+            const container = document.getElementById('product-subcategory-filter-container');
+            const subCategories = SUB_CATEGORY_MAP[currentProductCategoryFilter];
+
+            if (!subCategories || subCategories.length === 0) {
+                container.innerHTML = '';
+                container.classList.add('hidden');
+                return;
+            }
+
+            const subCategoryCounts = allProducts
+                .filter(doc => doc.data().category === currentProductCategoryFilter)
+                .reduce((acc, doc) => {
+                    const sub = doc.data().subcategory;
+                    if (sub) acc[sub] = (acc[sub] || 0) + 1;
+                    return acc;
+                }, {});
+            
+            const totalInCategory = Object.values(subCategoryCounts).reduce((sum, count) => sum + count, 0);
+
+            let optionsHtml = `<option value="all">All Sub-categories (${totalInCategory})</option>`;
+            subCategories.forEach(sub => {
+                if (subCategoryCounts[sub]) {
+                    optionsHtml += `<option value="${sub}" ${currentProductSubCategoryFilter === sub ? 'selected' : ''}>${sub} (${subCategoryCounts[sub]})</option>`;
+                }
+            });
+
+            container.innerHTML = `
+                <select id="product-subcategory-select" class="w-full sm:w-auto px-3 py-1.5 text-sm rounded-full bg-gray-200 dark:bg-gray-700 text-text-primary border-transparent focus:border-theme-primary focus:ring-theme-primary">
+                    ${optionsHtml}
+                </select>
+            `;
+            container.classList.remove('hidden');
+            
+            document.getElementById('product-subcategory-select').addEventListener('change', (e) => {
+                currentProductSubCategoryFilter = e.target.value;
+                renderFilteredProducts();
+            });
+        };
+
         const renderProductRow_All = doc => { 
             const d = doc.data();
             const categoryName = CATEGORY_MAP[d.category] || d.category || 'N/A';
@@ -1942,8 +1993,11 @@
             const categoryFilterBtn = e.target.closest('.category-filter-btn');
             if(categoryFilterBtn) {
                 currentProductCategoryFilter = categoryFilterBtn.dataset.category;
+                currentProductSubCategoryFilter = 'all'; // Reset sub-category on main category change
                 renderProductFilters();
+                renderSubCategoryFilter();
                 renderFilteredProducts();
+                return;
             }
             
             const removeBtn = e.target.closest('.remove-spec-btn, .remove-thumbnail-btn');
@@ -2620,6 +2674,7 @@
             const unsubAllProducts = onSnapshot(collection(db, "products"), snap => {
                 allProducts = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
                 renderProductFilters();
+                renderSubCategoryFilter();
                 renderFilteredProducts();
             }, handleSnapshotError('All Products'));
             
