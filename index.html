@@ -260,7 +260,9 @@
                     <!-- Dashboard Page -->
                     <div id="dashboard-page" class="page-content">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                            <!-- UPDATED: Gradient Stat Card Style -->
+                            <!-- RE-ORGANIZED: Stat Cards for better logical flow -->
+                            
+                            <!-- Group 1: Key Financial & Inventory Metrics -->
                             <div class="stat-card bg-gradient-to-br from-purple-600 to-blue-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="orders" data-filter="delivered" title="Shudhu 'Delivered' order theke total sale hishab kora hoyeche">
                                 <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="dollar-sign" class="w-8 h-8"></i></div>
                                 <div><p class="text-sm font-medium text-blue-100">Total Sales</p><p class="text-3xl font-bold" id="total-sale">৳0</p></div>
@@ -269,30 +271,16 @@
                                 <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="shopping-bag" class="w-8 h-8"></i></div>
                                 <div><p class="text-sm font-medium text-teal-100">Total Orders</p><p class="text-3xl font-bold" id="total-orders">0</p></div>
                             </div>
-                            <div class="stat-card bg-gradient-to-br from-pink-500 to-rose-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="products">
-                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="archive" class="w-8 h-8"></i></div>
-                                <div><p class="text-sm font-medium text-rose-100">Total Products</p><p class="text-3xl font-bold" id="total-products-stat">0</p></div>
-                            </div>
+                            <div class="stat-card bg-gradient-to-br from-teal-400 to-cyan-600 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" title="Total value of all products currently in stock">
+                               <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="database" class="w-8 h-8"></i></div>
+                               <div><p class="text-sm font-medium text-cyan-100">Total Stock Value</p><p class="text-3xl font-bold" id="total-stock-value">৳0</p></div>
+                           </div>
                             <div class="stat-card bg-gradient-to-br from-lime-500 to-emerald-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="products" title="Total units of all products currently in stock">
                                 <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="layers" class="w-8 h-8"></i></div>
                                 <div><p class="text-sm font-medium text-emerald-100">Total Stock</p><p class="text-3xl font-bold" id="total-stock-count">0</p></div>
                             </div>
-                            <div class="stat-card bg-gradient-to-br from-red-500 to-orange-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="users">
-                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="users" class="w-8 h-8"></i></div>
-                                <div><p class="text-sm font-medium text-orange-100">Total Users</p><p class="text-3xl font-bold" id="total-users">0</p></div>
-                            </div>
-                            <div class="stat-card bg-gradient-to-br from-indigo-500 to-violet-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="delivery">
-                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="user-check" class="w-8 h-8"></i></div>
-                                <div><p class="text-sm font-medium text-violet-100">Total Delivery Men</p><p class="text-3xl font-bold" id="total-delivery-men">0</p></div>
-                            </div>
-                             <div class="stat-card bg-gradient-to-br from-amber-500 to-yellow-400 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="chat">
-                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="mail-unread" class="w-8 h-8"></i></div>
-                                <div><p class="text-sm font-medium text-yellow-100">Total Unseen SMS</p><p class="text-3xl font-bold" id="total-unseen-sms">0</p></div>
-                            </div>
-                            <div class="stat-card bg-gradient-to-br from-cyan-500 to-sky-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="coupons">
-                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="ticket-percent" class="w-8 h-8"></i></div>
-                                <div><p class="text-sm font-medium text-sky-100">Active Coupons</p><p class="text-3xl font-bold" id="total-active-coupons">0</p></div>
-                            </div>
+                           
+                            <!-- Group 2: Order Status Breakdown -->
                             <div class="stat-card bg-gradient-to-br from-yellow-400 to-orange-400 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="orders" data-filter="pending">
                                 <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="clock" class="w-8 h-8"></i></div>
                                 <div><p class="text-sm font-medium text-orange-100">Pending Orders</p><p class="text-3xl font-bold" id="total-pending">0</p></div>
@@ -317,10 +305,28 @@
                                 <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="x-circle" class="w-8 h-8"></i></div>
                                 <div><p class="text-sm font-medium text-red-100">Cancelled Orders</p><p class="text-3xl font-bold" id="total-cancelled">0</p></div>
                             </div>
-                            <div class="stat-card bg-gradient-to-br from-teal-400 to-cyan-600 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer lg:col-span-2 xl:col-span-1">
-                               <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="database" class="w-8 h-8"></i></div>
-                               <div><p class="text-sm font-medium text-cyan-100">Total Stock Value</p><p class="text-3xl font-bold" id="total-stock-value">৳0</p></div>
-                           </div>
+
+                            <!-- Group 3: Platform Metrics -->
+                            <div class="stat-card bg-gradient-to-br from-pink-500 to-rose-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="products">
+                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="archive" class="w-8 h-8"></i></div>
+                                <div><p class="text-sm font-medium text-rose-100">Total Products</p><p class="text-3xl font-bold" id="total-products-stat">0</p></div>
+                            </div>
+                             <div class="stat-card bg-gradient-to-br from-red-500 to-orange-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="users">
+                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="users" class="w-8 h-8"></i></div>
+                                <div><p class="text-sm font-medium text-orange-100">Total Users</p><p class="text-3xl font-bold" id="total-users">0</p></div>
+                            </div>
+                            <div class="stat-card bg-gradient-to-br from-indigo-500 to-violet-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="delivery">
+                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="user-check" class="w-8 h-8"></i></div>
+                                <div><p class="text-sm font-medium text-violet-100">Total Delivery Men</p><p class="text-3xl font-bold" id="total-delivery-men">0</p></div>
+                            </div>
+                            <div class="stat-card bg-gradient-to-br from-cyan-500 to-sky-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="coupons">
+                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="ticket-percent" class="w-8 h-8"></i></div>
+                                <div><p class="text-sm font-medium text-sky-100">Active Coupons</p><p class="text-3xl font-bold" id="total-active-coupons">0</p></div>
+                            </div>
+                            <div class="stat-card bg-gradient-to-br from-amber-500 to-yellow-400 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="chat">
+                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="mail-unread" class="w-8 h-8"></i></div>
+                                <div><p class="text-sm font-medium text-yellow-100">Total Unseen SMS</p><p class="text-3xl font-bold" id="total-unseen-sms">0</p></div>
+                            </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
                             <div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">Recent Orders</h3><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Sl. No.</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Status</th></tr></thead><tbody class="divide-y border-color" id="recent-orders-body"><tr class="text-text-primary"><td colspan="5" class="px-4 py-3 text-center">Loading...</td></tr></tbody></table></div></div>
@@ -754,7 +760,7 @@
           apiKey: "AIzaSyBIRNr3X-_xOHQ6ITW3pXgqgcjhP2xEEEA",
           authDomain: "tangailbuzz47.firebaseapp.com",
           projectId: "tangailbuzz47",
-          storageBucket: "tangailbuzz47.firebasestorage.app",
+          storageBucket: "tangailbuzz47.appspot.com",
           messagingSenderId: "1017968115713",
           appId: "1:1017968115713:web:967a0e13107d8816b44000",
           measurementId: "G-7HYDCZTN2H"
@@ -908,6 +914,136 @@
         const handleSnapshotError = (context) => (error) => {
             console.error(`Error loading ${context}:`, error);
             showToast(`Could not load ${context}!`, 'error');
+        };
+
+        // --- Sound Effects Logic ---
+        let audioCtx;
+        const initAudio = () => {
+            if (!audioCtx) {
+                try {
+                    audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                    // Some browsers require a "silent" sound to be played to fully unlock the audio context.
+                    const buffer = audioCtx.createBuffer(1, 1, 22050);
+                    const source = audioCtx.createBufferSource();
+                    source.buffer = buffer;
+                    source.connect(audioCtx.destination);
+                    source.start(0);
+                    console.log("AudioContext initialized and unlocked.");
+                } catch (e) {
+                    console.warn("Web Audio API is not supported in this browser.");
+                }
+            }
+        };
+
+        const playSound = async (type) => {
+            if (!audioCtx) {
+                console.warn("AudioContext not initialized. Cannot play sound.");
+                return;
+            }
+
+            if (audioCtx.state === 'suspended') {
+                await audioCtx.resume();
+            }
+
+            const oscillator = audioCtx.createOscillator();
+            const gainNode = audioCtx.createGain();
+            oscillator.connect(gainNode);
+            gainNode.connect(audioCtx.destination);
+            gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+
+            switch (type) {
+                case 'newOrder':
+                    // Two quick, high-pitched beeps
+                    oscillator.type = 'sine';
+                    oscillator.frequency.setValueAtTime(880, audioCtx.currentTime); // A5
+                    gainNode.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.05);
+                    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.15);
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.15);
+
+                    // Schedule the second beep
+                    const osc2 = audioCtx.createOscillator();
+                    const gain2 = audioCtx.createGain();
+                    osc2.connect(gain2);
+                    gain2.connect(audioCtx.destination);
+                    gain2.gain.setValueAtTime(0, audioCtx.currentTime + 0.15);
+                    osc2.type = 'sine';
+                    osc2.frequency.setValueAtTime(1046.5, audioCtx.currentTime + 0.15); // C6
+                    gain2.gain.linearRampToValueAtTime(0.5, audioCtx.currentTime + 0.15 + 0.05);
+                    gain2.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.15 + 0.15);
+                    osc2.start(audioCtx.currentTime + 0.15);
+                    osc2.stop(audioCtx.currentTime + 0.15 + 0.15);
+                    break;
+                case 'newMessage':
+                    // A single, softer beep
+                    oscillator.type = 'triangle';
+                    oscillator.frequency.setValueAtTime(659.25, audioCtx.currentTime); // E5
+                    gainNode.gain.linearRampToValueAtTime(0.4, audioCtx.currentTime + 0.05);
+                    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.2);
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.3);
+                    break;
+                case 'logout':
+                    // A descending tone
+                    oscillator.type = 'sawtooth';
+                    oscillator.frequency.setValueAtTime(440, audioCtx.currentTime); // A4
+                    oscillator.frequency.linearRampToValueAtTime(220, audioCtx.currentTime + 0.3);
+                    gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
+                    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.3);
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.4);
+                    break;
+                case 'login':
+                    // An ascending tone
+                    oscillator.type = 'square';
+                    oscillator.frequency.setValueAtTime(220, audioCtx.currentTime); // A3
+                    oscillator.frequency.linearRampToValueAtTime(440, audioCtx.currentTime + 0.2);
+                    gainNode.gain.linearRampToValueAtTime(0.3, audioCtx.currentTime + 0.05);
+                    gainNode.gain.linearRampToValueAtTime(0, audioCtx.currentTime + 0.2);
+                    oscillator.start(audioCtx.currentTime);
+                    oscillator.stop(audioCtx.currentTime + 0.3);
+                    break;
+            }
+        };
+
+        const playWelcomeMessage = () => {
+            if ('speechSynthesis' in window) {
+                // Using Bengali script for better pronunciation by TTS engines
+                const utterance = new SpeechSynthesisUtterance("হ্যালো অ্যাডমিন, টাঙ্গাইল বাজ অ্যাডমিন ওয়ার্ল্ডে আপনাকে স্বাগতম");
+
+                const setVoice = () => {
+                    const voices = window.speechSynthesis.getVoices();
+                    let femaleVoice = voices.find(voice => voice.lang === 'bn-BD' && (voice.name.toLowerCase().includes('female') || voice.gender === 'female'));
+                    if (!femaleVoice) {
+                        femaleVoice = voices.find(voice => voice.lang === 'bn-IN' && (voice.name.toLowerCase().includes('female') || voice.gender === 'female'));
+                    }
+                    if (!femaleVoice) {
+                        femaleVoice = voices.find(voice => voice.lang.startsWith('bn')); // Any Bengali voice as a fallback
+                    }
+                     if (!femaleVoice) {
+                        femaleVoice = voices.find(voice => voice.lang.startsWith('en') && voice.gender === 'female'); // Fallback to English female
+                    }
+
+                    if (femaleVoice) {
+                        utterance.voice = femaleVoice;
+                    }
+                    
+                    utterance.lang = 'bn-BD';
+                    utterance.rate = 0.9; // Slightly slower for clarity
+                    utterance.pitch = 1.1;
+
+                    window.speechSynthesis.speak(utterance);
+                };
+
+                // Voices can load asynchronously.
+                if (window.speechSynthesis.getVoices().length === 0) {
+                    window.speechSynthesis.onvoiceschanged = setVoice;
+                } else {
+                    setVoice();
+                }
+            } else {
+                console.warn("Speech Synthesis not supported in this browser.");
+            }
         };
 
         // --- Clock Logic ---
@@ -1084,6 +1220,7 @@
             const user = auth.currentUser;
 
             if (enteredPin === '6929') {
+                playWelcomeMessage(); // Play welcome voice message
                 showScreen('admin-panel');
                 initializeAdminPanel(user);
             } else {
@@ -1093,6 +1230,7 @@
         });
 
         document.getElementById('logout-button').addEventListener('click', () => {
+            playSound('logout');
             signOut(auth);
         });
         
@@ -2729,17 +2867,6 @@
             updateNotificationUI();
         };
 
-        const updateNotificationUI = () => {
-            if (notifications.length > 0) {
-                UI.notificationCountBadge.textContent = notifications.length;
-                UI.notificationCountBadge.classList.remove('hidden');
-                UI.notificationList.innerHTML = notifications.map(n => `<a href="#${n.page}" class="notification-item block p-3 text-sm text-text-primary hover:bg-gray-100 dark:hover:bg-gray-600">${n.text}</a>`).join('');
-            } else {
-                UI.notificationCountBadge.classList.add('hidden');
-                UI.notificationList.innerHTML = `<p class="p-4 text-sm text-text-secondary">No new notifications.</p>`;
-            }
-        };
-
         const listenForNotifications = () => {
             const startTime = new Date();
             const unsub = onSnapshot(query(collection(db, "orders"), where("createdAt", ">", startTime)), (snapshot) => {
@@ -2754,7 +2881,8 @@
             unsubscribeListeners.push(unsub);
         };
         
-        const showNewOrderAlert = (orderData, orderId) => {
+        const showNewOrderAlert = async (orderData, orderId) => {
+            await playSound('newOrder');
             const content = document.getElementById('new-order-alert-content');
             content.innerHTML = `<p><strong class="font-semibold text-text-secondary">Customer:</strong> ${orderData.userName || 'N/A'}</p><p><strong class="font-semibold text-text-secondary">Total:</strong> ৳${orderData.totalAmount || 0}</p>`;
             document.getElementById('view-full-order-btn').dataset.id = orderId;
@@ -2769,7 +2897,8 @@
             setTimeout(() => UI.newOrderAlert.classList.add('hidden'), 300);
         };
         
-        const showNewMessageAlert = (chatData, userId) => {
+        const showNewMessageAlert = async (chatData, userId) => {
+            await playSound('newMessage');
             const content = document.getElementById('new-message-alert-content');
             content.innerHTML = `<p><strong class="font-semibold text-text-secondary">From:</strong> ${chatData.userName || 'N/A'}</p><p class="truncate"><strong class="font-semibold text-text-secondary">Message:</strong> ${chatData.lastMessage || ''}</p>`;
             document.getElementById('view-full-chat-btn').dataset.id = userId;
@@ -2977,22 +3106,25 @@
         };
 
         // Initialize on load
-        document.addEventListener('DOMContentLoaded', initializeAppearance);
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeAppearance();
+            // Initialize AudioContext and Speech Synthesis on first user interaction to comply with browser policies
+            const primeAudioAndSpeech = () => {
+                initAudio();
+                // Prime the speech synthesis engine by getting voices list
+                if ('speechSynthesis' in window) {
+                    window.speechSynthesis.getVoices();
+                }
+                // Remove the listeners after the first interaction to avoid re-triggering
+                document.body.removeEventListener('click', primeAudioAndSpeech);
+                document.body.removeEventListener('keydown', primeAudioAndSpeech);
+            };
+
+            document.body.addEventListener('click', primeAudioAndSpeech);
+            document.body.addEventListener('keydown', primeAudioAndSpeech);
+        });
 
     </script>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
 
