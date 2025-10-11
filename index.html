@@ -1103,7 +1103,7 @@
             if (clockInterval) clearInterval(clockInterval);
             clockInterval = null;
         };
-		// --- BULK UPLOAD CSV LOGIC ---
+// --- BULK UPLOAD CSV LOGIC ---
 
 /**
  * CSV টেক্সট পার্স করে একটি JavaScript অবজেক্ট অ্যারেতে রূপান্তর করে।
@@ -1119,8 +1119,7 @@ const parseCSV = (csvText) => {
     const result = [];
 
     for (let i = 1; i < lines.length; i++) {
-        // NOTE: CSV তে কিছু ফিল্ডে কমা থাকতে পারে (যেমন "Samsung Q80B QLED 65-inch 4K TV","Samsung","2 Years","165000","155000","6%","10","4.6","Yes","Yes","image_url_here","Quantum Dot technology, Dolby Atmos, 120Hz refresh rate.")
-        // তাই এখানে রেগুলার এক্সপ্রেশন ব্যবহার করা হয়েছে যাতে ডাবল কোটেশনের ভেতরের কমা এড়িয়ে যাওয়া যায়।
+        // CSV তে কমা যুক্ত ডেটা (যেমন Description, Specifications) হ্যান্ডেল করার জন্য উন্নত Regex
         const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
 
         if (!values || values.length !== headers.length) {
@@ -1129,48 +1128,59 @@ const parseCSV = (csvText) => {
         }
 
         const obj = {};
+        let specificationDescription = ''; // Specifications Description এর জন্য অতিরিক্ত ভেরিয়েবল
+        let thumbnailURL = ''; // Thumbnail URL এর জন্য ভেরিয়েবল
+
         headers.forEach((header, index) => {
             let value = values[index].trim().replace(/^"|"$/g, ''); // ডাবল কোটেশন সরিয়ে দেওয়া
             let key;
 
-            // আপনার CSV header-কে কোডের key-তে রূপান্তর
+            // আপনার CSV header-কে কোডের key-তে রূপান্তর (Mapping)
             switch (header) {
                 case 'Product Name': key = 'name'; break;
                 case 'Main Price': key = 'mainPrice'; break;
                 case 'Offer Price': key = 'offerPrice'; break;
                 case 'Discount %': key = 'discount'; break;
                 case 'Stock Count': key = 'stock'; break;
-                case 'Rating': key = 'rating'; break;
+                // 'Rating' ফিল্ডটি CSV-তে নেই, তাই এটিকে বাদ দেওয়া হলো।
                 case 'On Offer': key = 'isOnOffer'; break;
                 case 'Refundable': key = 'isRefundable'; break;
-                case 'Image URL': key = 'imageUrl'; break;
+                case 'main Image URL': key = 'imageUrl'; break; // নতুন মেইন ইমেজ ফিল্ড
+                case 'thumbnil image URL': thumbnailURL = value; return; // Thumbnail URL ভেরিয়েবলে সেভ করা
                 case 'Description': key = 'details'; break;
-                case 'Sub-Category': key = 'subcategory'; break; // Subcategory ঠিক করা হলো
-                default: key = header.toLowerCase().replace(/\s/g, ''); // Brand, Category, Warranty
+                case 'Sub-Category': key = 'subcategory'; break;
+                case 'Category': key = 'category'; break;
+                case 'Brand': key = 'brand'; break;
+                case 'Warranty': key = 'warranty'; break;
+                case 'Specifications Description': specificationDescription = value; return; // Specification Description ভেরিয়েবলে সেভ করা
+                default: key = header.toLowerCase().replace(/\s/g, ''); 
             }
             
             // ডেটা টাইপ রূপান্তর: সংখ্যা, বুলিয়ান ইত্যাদি।
-            if (key === 'mainPrice' || key === 'offerPrice' || key === 'stock' || key === 'rating' || key === 'discount') {
+            if (key === 'mainPrice' || key === 'offerPrice' || key === 'stock' || key === 'discount') {
                 obj[key] = parseFloat(value) || 0;
-            } else if (key === 'isonoffer' || key === 'isrefundable') {
+            } else if (key === 'isOnOffer' || key === 'isRefundable') {
                 obj[key] = value.toLowerCase() === 'yes' || value.toLowerCase() === 'true' || false;
             } else {
                 obj[key] = value;
             }
         });
         
-        // *NOTE:* যেহেতু আপনার CSV তে specification এবং thumbnails আলাদা JSON কলামে নেই, 
-        // তাই JSON parsing logic টি এখানে বাদ দেওয়া হলো।
-        obj.specification = {}; 
-        obj.thumbnails = []; 
-
-        // ক্যাটাগরি কি চেক করা (ঐচ্ছিক, আপনার ক্যাটাগরি কি যদি ছোট হাতের অক্ষর হয়)
-        if (obj.category) {
-            obj.category = obj.category.toLowerCase().replace(/\s/g, '-').replace('&', 'and'); // যেমন: 'Electronics' -> 'electronics'
+        // *গুরুত্বপূর্ণ ফিক্স:* ক্যাটাগরি ID কে ছোট হাতের অক্ষরে রূপান্তর করা হচ্ছে
+        if (obj.category && typeof obj.category === 'string') {
+            obj.category = obj.category.toLowerCase().replace(/\s/g, '-').replace('&', 'and');
         }
 
+        // Thumbnail URL কে Array আকারে যুক্ত করা
+        obj.thumbnails = thumbnailURL ? [thumbnailURL] : []; 
+        
+        // Specifications Description কে একটি specification object এ যুক্ত করা (আপনার আপলোড ফর্ম অনুযায়ী)
+        obj.specification = specificationDescription ? { "Details": specificationDescription } : {};
 
-        // ক্যাটাগরি কি CHECK_MAP-এ আছে কিনা, সেটি চেক করে স্কিপ করার লজিকটি রাখা হলো
+        // যদি Rating না থাকে, তবে ০ সেট করা
+        obj.rating = obj.rating !== undefined ? Number(obj.rating) : 0; 
+
+        // যদি Category ID সঠিক না হয়, তবে প্রোডাক্ট স্কিপ করা
         if (obj.category && !CATEGORY_MAP[obj.category]) {
             console.warn(`Skipping product ${obj.name}: Invalid category key '${obj.category}'.`);
             continue;
@@ -1183,7 +1193,7 @@ const parseCSV = (csvText) => {
 
 
 /**
- * পার্স করা ডেটা Firestore-এ বাল্ক সেভ করে। (এই ফাংশনে কোনো পরিবর্তন দরকার নেই)
+ * পার্স করা ডেটা Firestore-এ বাল্ক সেভ করে।
  * @param {Array<Object>} products - প্রোডাক্ট ডেটার অ্যারে।
  */
 const saveBulkProducts = async (products) => {
@@ -1197,16 +1207,13 @@ const saveBulkProducts = async (products) => {
     let successfulCount = 0;
 
     for (const product of products) {
-        // নতুন প্রোডাক্টের জন্য একটি অটো-জেনারেটেড ID ডকুমেন্ট রেফারেন্স তৈরি করা
         const newDocRef = doc(productsCollectionRef);
-        
-        // প্রোডাক্ট মডেল/কোড না থাকলে Firestore ID ব্যবহার করা
         const productModel = product.model || newDocRef.id.substring(0, 8); 
 
         const productData = { 
             ...product,
             createdAt: serverTimestamp(),
-            // নিশ্চিত করা যে stock, price, rating ইত্যাদি সংখ্যা হিসেবে সেভ হচ্ছে
+            // নিশ্চিত করা যে data types ঠিক আছে
             mainPrice: Number(product.mainPrice || 0),
             offerPrice: Number(product.offerPrice || 0),
             discount: Number(product.discount || 0),
@@ -1215,28 +1222,32 @@ const saveBulkProducts = async (products) => {
             isOnOffer: product.isOnOffer || false,
             isRefundable: product.isRefundable || false,
             model: productModel,
-            // specification এবং thumbnails কে খালি Object/Array হিসেবে পাঠানো
+            // নতুন কাঠামোর ডেটা
             specification: product.specification || {},
             thumbnails: product.thumbnails || [],
+            imageUrl: product.imageUrl || '',
         };
 
         batch.set(newDocRef, productData);
         successfulCount++;
 
-        // ফায়ারবেস ব্যাচের সীমা (500) অতিক্রম করার ঝুঁকি কমানো 
         if (successfulCount % 499 === 0) { 
             console.log("Committing batch...");
             await batch.commit();
-            batch = writeBatch(db); // নতুন ব্যাচ শুরু করা
+            batch = writeBatch(db);
         }
     }
 
     if (successfulCount % 499 !== 0) {
-        await batch.commit(); // শেষ ব্যাচ কমিট করা
+        await batch.commit();
     }
 
     showToast(`${successfulCount} products uploaded successfully!`, 'success');
 };
+
+
+
+
 
 
 
