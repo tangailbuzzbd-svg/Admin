@@ -386,6 +386,11 @@
                             <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
                                 <h3 class="text-xl font-semibold text-text-primary">All Products</h3>
                                 <div class="flex flex-wrap items-center gap-4 mt-2 sm:mt-0">
+								<button id="bulk-upload-btn" class="bg-theme-primary text-white font-bold py-2 px-4 rounded-lg disabled:bg-opacity-70 btn-glow flex items-center space-x-2 mr-4">
+    <i data-lucide="upload-cloud" class="w-5 h-5"></i>
+    <span>Bulk Upload (CSV)</span>
+</button>
+<input type="file" id="csv-file-input" accept=".csv" class="hidden">
                                     <!-- Category Filters -->
                                     <div id="product-category-filters" class="flex flex-wrap items-center gap-2">
                                         <!-- Filter buttons will be dynamically inserted here -->
@@ -1098,6 +1103,142 @@
             if (clockInterval) clearInterval(clockInterval);
             clockInterval = null;
         };
+		// --- BULK UPLOAD CSV LOGIC ---
+
+/**
+ * CSV টেক্সট পার্স করে একটি JavaScript অবজেক্ট অ্যারেতে রূপান্তর করে।
+ * @param {string} csvText - CSV ফাইলের সম্পূর্ণ টেক্সট।
+ * @returns {Array<Object>} প্রোডাক্ট ডেটার অ্যারে।
+ */
+const parseCSV = (csvText) => {
+    const lines = csvText.split('\n').filter(line => line.trim() !== '');
+    if (lines.length === 0) return [];
+
+    // Header row কে কমা দ্বারা ভাগ করে key হিসেবে ব্যবহার করা
+    const headers = lines[0].split(',').map(header => header.trim());
+    const result = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        // NOTE: CSV তে কিছু ফিল্ডে কমা থাকতে পারে (যেমন "Samsung Q80B QLED 65-inch 4K TV","Samsung","2 Years","165000","155000","6%","10","4.6","Yes","Yes","image_url_here","Quantum Dot technology, Dolby Atmos, 120Hz refresh rate.")
+        // তাই এখানে রেগুলার এক্সপ্রেশন ব্যবহার করা হয়েছে যাতে ডাবল কোটেশনের ভেতরের কমা এড়িয়ে যাওয়া যায়।
+        const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
+
+        if (!values || values.length !== headers.length) {
+            console.warn(`Skipping line ${i + 1}: Column count mismatch. Values found: ${values ? values.length : 0}. Expected: ${headers.length}`);
+            continue;
+        }
+
+        const obj = {};
+        headers.forEach((header, index) => {
+            let value = values[index].trim().replace(/^"|"$/g, ''); // ডাবল কোটেশন সরিয়ে দেওয়া
+            let key;
+
+            // আপনার CSV header-কে কোডের key-তে রূপান্তর
+            switch (header) {
+                case 'Product Name': key = 'name'; break;
+                case 'Main Price': key = 'mainPrice'; break;
+                case 'Offer Price': key = 'offerPrice'; break;
+                case 'Discount %': key = 'discount'; break;
+                case 'Stock Count': key = 'stock'; break;
+                case 'Rating': key = 'rating'; break;
+                case 'On Offer': key = 'isOnOffer'; break;
+                case 'Refundable': key = 'isRefundable'; break;
+                case 'Image URL': key = 'imageUrl'; break;
+                case 'Description': key = 'details'; break;
+                case 'Sub-Category': key = 'subcategory'; break; // Subcategory ঠিক করা হলো
+                default: key = header.toLowerCase().replace(/\s/g, ''); // Brand, Category, Warranty
+            }
+            
+            // ডেটা টাইপ রূপান্তর: সংখ্যা, বুলিয়ান ইত্যাদি।
+            if (key === 'mainPrice' || key === 'offerPrice' || key === 'stock' || key === 'rating' || key === 'discount') {
+                obj[key] = parseFloat(value) || 0;
+            } else if (key === 'isonoffer' || key === 'isrefundable') {
+                obj[key] = value.toLowerCase() === 'yes' || value.toLowerCase() === 'true' || false;
+            } else {
+                obj[key] = value;
+            }
+        });
+        
+        // *NOTE:* যেহেতু আপনার CSV তে specification এবং thumbnails আলাদা JSON কলামে নেই, 
+        // তাই JSON parsing logic টি এখানে বাদ দেওয়া হলো।
+        obj.specification = {}; 
+        obj.thumbnails = []; 
+
+        // ক্যাটাগরি কি চেক করা (ঐচ্ছিক, আপনার ক্যাটাগরি কি যদি ছোট হাতের অক্ষর হয়)
+        if (obj.category) {
+            obj.category = obj.category.toLowerCase().replace(/\s/g, '-').replace('&', 'and'); // যেমন: 'Electronics' -> 'electronics'
+        }
+
+
+        // ক্যাটাগরি কি CHECK_MAP-এ আছে কিনা, সেটি চেক করে স্কিপ করার লজিকটি রাখা হলো
+        if (obj.category && !CATEGORY_MAP[obj.category]) {
+            console.warn(`Skipping product ${obj.name}: Invalid category key '${obj.category}'.`);
+            continue;
+        }
+
+        result.push(obj);
+    }
+    return result;
+};
+
+
+/**
+ * পার্স করা ডেটা Firestore-এ বাল্ক সেভ করে। (এই ফাংশনে কোনো পরিবর্তন দরকার নেই)
+ * @param {Array<Object>} products - প্রোডাক্ট ডেটার অ্যারে।
+ */
+const saveBulkProducts = async (products) => {
+    if (products.length === 0) {
+        showToast("No valid product data found in CSV.", "warning");
+        return;
+    }
+
+    let batch = writeBatch(db);
+    const productsCollectionRef = collection(db, 'products');
+    let successfulCount = 0;
+
+    for (const product of products) {
+        // নতুন প্রোডাক্টের জন্য একটি অটো-জেনারেটেড ID ডকুমেন্ট রেফারেন্স তৈরি করা
+        const newDocRef = doc(productsCollectionRef);
+        
+        // প্রোডাক্ট মডেল/কোড না থাকলে Firestore ID ব্যবহার করা
+        const productModel = product.model || newDocRef.id.substring(0, 8); 
+
+        const productData = { 
+            ...product,
+            createdAt: serverTimestamp(),
+            // নিশ্চিত করা যে stock, price, rating ইত্যাদি সংখ্যা হিসেবে সেভ হচ্ছে
+            mainPrice: Number(product.mainPrice || 0),
+            offerPrice: Number(product.offerPrice || 0),
+            discount: Number(product.discount || 0),
+            stock: Number(product.stock || 0),
+            rating: Number(product.rating || 0),
+            isOnOffer: product.isOnOffer || false,
+            isRefundable: product.isRefundable || false,
+            model: productModel,
+            // specification এবং thumbnails কে খালি Object/Array হিসেবে পাঠানো
+            specification: product.specification || {},
+            thumbnails: product.thumbnails || [],
+        };
+
+        batch.set(newDocRef, productData);
+        successfulCount++;
+
+        // ফায়ারবেস ব্যাচের সীমা (500) অতিক্রম করার ঝুঁকি কমানো 
+        if (successfulCount % 499 === 0) { 
+            console.log("Committing batch...");
+            await batch.commit();
+            batch = writeBatch(db); // নতুন ব্যাচ শুরু করা
+        }
+    }
+
+    if (successfulCount % 499 !== 0) {
+        await batch.commit(); // শেষ ব্যাচ কমিট করা
+    }
+
+    showToast(`${successfulCount} products uploaded successfully!`, 'success');
+};
+
+
 
         const renderFilteredOrders = () => {
             const searchTerm = document.getElementById('order-search-input').value.toLowerCase().trim();
@@ -3079,7 +3220,54 @@
                 updateClock(); // Update immediately on change
             });
         };
-        
+        // --- BULK UPLOAD EVENT LISTENERS ---
+const bulkUploadBtn = document.getElementById('bulk-upload-btn');
+const csvFileInput = document.getElementById('csv-file-input');
+
+if (bulkUploadBtn && csvFileInput) {
+    // 1. আপলোড বাটন ক্লিক করলে ফাইল সিলেক্ট করার অপশন চালু করা
+    bulkUploadBtn.addEventListener('click', () => {
+        csvFileInput.click();
+    });
+
+    // 2. ফাইল সিলেক্ট হলে প্রক্রিয়া শুরু করা
+    csvFileInput.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        // শুধু CSV ফাইল কিনা, চেক করা
+        if (file.type !== 'text/csv' && !file.name.endsWith('.csv')) {
+            showToast("Please select a valid CSV file.", "error");
+            event.target.value = null; // ফাইল রিসেট করা
+            return;
+        }
+
+        const button = bulkUploadBtn;
+        setButtonLoading(button, true, 'Processing...');
+
+        const reader = new FileReader();
+        reader.onload = async (e) => {
+            try {
+                const csvText = e.target.result;
+                const productsArray = parseCSV(csvText);
+                
+                if (productsArray.length > 0) {
+                    await saveBulkProducts(productsArray);
+                } else {
+                    showToast("No valid data found or CSV is empty.", "warning");
+                }
+            } catch (error) {
+                console.error("CSV Processing Error:", error);
+                showToast("An error occurred during bulk upload.", "error");
+            } finally {
+                setButtonLoading(button, false);
+                event.target.value = null; // ফাইল ইনপুট রিসেট করা
+            }
+        };
+        reader.readAsText(file);
+    });
+}
+
         // --- Main Initialization ---
         const initializeAdminPanel = (user) => {
             const pageId = window.location.hash.substring(1) || 'dashboard';
@@ -3127,4 +3315,3 @@
     </script>
 </body>
 </html>
-
