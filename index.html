@@ -3232,11 +3232,17 @@ async function handleEditCouponSubmit(e) {
                 snapshot.docChanges().forEach(change => {
                     if (change.type === "added") {
                         const orderData = change.doc.data();
-                        addNotification(`New order from: ${orderData.userName || 'N/A'}`, 'orders');
-                        showNewOrderAlert(orderData, change.doc.id);
+                        const orderId = change.doc.id;
+                        // Show new order alert popup
+                        showNewOrderAlert(orderData, orderId);
+                        // Add notification to bell icon
+                        addNotification(`New order from ${orderData.userName || 'Customer'} (৳${orderData.totalAmount || 0})`, 'orders');
+                        // Show notification bubble (orders)
+                        let bellBubble = document.getElementById('chat-notification-bubble');
+                        if (bellBubble) bellBubble.classList.remove('hidden');
                     }
                 });
-            });
+            }, handleSnapshotError('Order Notifications'));
             unsubscribeListeners.push(unsub);
         };
         
