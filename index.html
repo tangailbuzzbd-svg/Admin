@@ -200,12 +200,13 @@
                     <a href="#reviews" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="reviews"><i data-lucide="star" class="w-5 h-5 mr-3"></i><span>Reviews & Ratings</span></a>
                     <a href="#banners" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="banners"><i data-lucide="image" class="w-5 h-5 mr-3"></i><span>Banners</span></a>
                     <a href="#coupons" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="coupons"><i data-lucide="ticket-percent" class="w-5 h-5 mr-3"></i><span>Coupons</span></a>
-                    <a href="#orders" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="orders"><i data-lucide="shopping-cart" class="w-5 h-5 mr-3"></i><span>Orders</span></a>
+                    <a href="#orders" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="orders"><i data-lucide="shopping-cart" class="w-5 h-5 mr-3"></i><span>Orders</span><span id="pending-orders-badge" class="ml-auto text-xs font-bold text-white bg-red-500 rounded-full px-2 py-0.5 hidden">0</span></a>
                     <a href="#users" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="users"><i data-lucide="users" class="w-5 h-5 mr-3"></i><span>Users</span></a>
                     <a href="#delivery" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="delivery"><i data-lucide="truck" class="w-5 h-5 mr-3"></i><span>Delivery</span></a>
                     <a href="#chat" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary relative" data-page="chat">
                         <i data-lucide="message-square" class="w-5 h-5 mr-3"></i>
                         <span>Live Chat</span>
+                        <span id="unseen-sms-badge" class="ml-auto text-xs font-bold text-white bg-red-500 rounded-full px-2 py-0.5 hidden">0</span>
                         <span id="chat-notification-bubble" class="absolute left-4 top-2 w-2 h-2 bg-red-500 rounded-full hidden animate-pulse"></span>
                     </a>
                     <a href="#settings" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="settings"><i data-lucide="settings" class="w-5 h-5 mr-3"></i><span>Settings</span></a>
@@ -321,6 +322,10 @@
                                 <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="user-check" class="w-8 h-8"></i></div>
                                 <div><p class="text-sm font-medium text-violet-100">Total Delivery Men</p><p class="text-3xl font-bold" id="total-delivery-men">0</p></div>
                             </div>
+                            <div class="stat-card bg-gradient-to-br from-red-600 to-rose-600 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="low-stock" title="Products with stock below threshold">
+                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="alert-triangle" class="w-8 h-8"></i></div>
+                                <div><p class="text-sm font-medium text-rose-100">Low Stock</p><p class="text-3xl font-bold" id="total-low-stock">0</p></div>
+                            </div>
                             <div class="stat-card bg-gradient-to-br from-cyan-500 to-sky-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="coupons">
                                 <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="ticket-percent" class="w-8 h-8"></i></div>
                                 <div><p class="text-sm font-medium text-sky-100">Active Coupons</p><p class="text-3xl font-bold" id="total-active-coupons">0</p></div>
@@ -343,6 +348,16 @@
                             <div class="w-1/3 border-r border-color flex flex-col">
                                 <div class="p-4 border-b border-color">
                                     <h3 class="text-lg font-semibold text-text-primary">Conversations</h3>
+                                    <div class="mt-3 flex items-center gap-2">
+                                        <div class="relative flex-1">
+                                            <input id="chat-search-input" type="text" placeholder="Search name or message..." class="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-theme-primary" />
+                                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"></i>
+                                        </div>
+                                        <label class="flex items-center gap-2 text-xs text-text-secondary select-none">
+                                            <input id="chat-unread-toggle" type="checkbox" class="accent-theme-primary" />
+                                            Unread only
+                                        </label>
+                                    </div>
                                 </div>
                                 <div id="chat-list-container" class="flex-1 overflow-y-auto">
                                     <p class="p-4 text-center text-text-secondary">Loading chats...</p>
@@ -357,11 +372,27 @@
                                 </div>
                                 <div id="chat-window-main" class="hidden flex-col h-full">
                                     <!-- Chat Header -->
-                                <div id="chat-header" class="p-4 border-b border-color flex items-center space-x-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
-                                    <img id="chat-header-avatar" src="https://placehold.co/40x40" class="w-10 h-10 rounded-full object-cover">
-                                    <div>
-                                        <h3 id="chat-header-name" class="font-semibold text-text-primary">User Name</h3>
-                                        <p id="chat-header-status" class="text-xs text-green-500">Online</p>
+                                <div id="chat-header" class="p-4 border-b border-color flex items-center justify-between cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700/50 transition-colors">
+                                    <div class="flex items-center gap-3">
+                                        <img id="chat-header-avatar" src="https://placehold.co/40x40" class="w-10 h-10 rounded-full object-cover">
+                                        <div>
+                                            <div class="flex items-center gap-2">
+                                                <h3 id="chat-header-name" class="font-semibold text-text-primary">User Name</h3>
+                                                <span id="chat-header-blocked-badge" class="hidden text-[10px] font-semibold px-1.5 py-0.5 rounded bg-red-100 text-red-700 dark:bg-red-800/40 dark:text-red-300">Blocked</span>
+                                            </div>
+                                            <p id="chat-header-status" class="text-xs text-text-secondary">Last update: —</p>
+                                        </div>
+                                    </div>
+                                    <div id="chat-header-actions" class="flex items-center gap-1 px-1">
+                                        <button class="view-profile-btn p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700" title="View Profile">
+                                            <i data-lucide="id-card" class="w-4 h-4"></i>
+                                        </button>
+                                        <button id="chat-header-block-btn" class="block-user-btn p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700" data-id="" data-blocked="false" title="Block/Unblock">
+                                            <i data-lucide="ban" class="w-4 h-4"></i>
+                                        </button>
+                                        <button id="chat-header-delete-btn" class="delete-chat-btn p-2 rounded-md hover:bg-gray-100 dark:hover:bg-gray-700 text-red-600" data-id="" title="Delete Conversation">
+                                            <i data-lucide="trash-2" class="w-4 h-4"></i>
+                                        </button>
                                     </div>
                                 </div>
                                 <!-- Messages -->
@@ -370,9 +401,10 @@
                                     </div>
                                     <!-- Message Input -->
                                     <div class="p-4 border-t border-color">
-                                        <form id="chat-message-form" class="flex items-center space-x-2">
-                                            <input type="text" id="chat-message-input" placeholder="Type your message..." autocomplete="off" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-full focus:outline-none focus:ring-2 focus:ring-theme-primary">
-                                            <button type="submit" class="p-3 bg-theme-primary text-white rounded-full disabled:bg-opacity-70 flex-shrink-0 btn-glow">
+                                        <div id="chat-blocked-banner" class="hidden mb-2 text-xs text-red-600 bg-red-50 dark:bg-red-900/30 dark:text-red-300 px-3 py-2 rounded-md">User is blocked. Messaging is disabled.</div>
+                                        <form id="chat-message-form" class="flex items-end gap-2">
+                                            <textarea id="chat-message-input" rows="1" placeholder="Type a message (Enter to send, Shift+Enter for new line)" autocomplete="off" class="resize-none w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-theme-primary"></textarea>
+                                            <button type="submit" class="p-3 bg-theme-primary text-white rounded-md disabled:bg-opacity-70 flex-shrink-0 btn-glow" title="Send">
                                                 <i data-lucide="send" class="w-5 h-5"></i>
                                             </button>
                                         </form>
@@ -443,10 +475,31 @@
                     <!-- Add Product Page -->
                     <!-- Reviews & Ratings Page -->
                     <div id="reviews-page" class="page-content hidden">
-                        <div class="bg-secondary p-8 rounded-lg shadow-md max-w-4xl mx-auto">
-                            <h2 class="text-2xl font-bold mb-6 text-text-primary">Product Reviews & Ratings</h2>
-                            <div id="reviews-list" class="space-y-6">
-                                <div class="text-text-secondary">Loading reviews...</div>
+                        <div class="bg-secondary p-6 rounded-lg shadow-md">
+                            <div class="flex flex-wrap items-center justify-between mb-4 gap-3">
+                                <h3 class="text-xl font-semibold text-text-primary">Product Reviews & Ratings</h3>
+                                <div class="flex items-center gap-2 text-sm">
+                                    <span class="px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-text-secondary">Total: <span id="reviews-summary-total">0</span></span>
+                                    <span class="px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300">Avg: <span id="reviews-summary-avg">0.0</span> ★</span>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead>
+                                        <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700">
+                                            <th class="px-4 py-3">#</th>
+                                            <th class="px-4 py-3">Product</th>
+                                            <th class="px-4 py-3">Rating</th>
+                                            <th class="px-4 py-3">Comment</th>
+                                            <th class="px-4 py-3">Author</th>
+                                            <th class="px-4 py-3">Date</th>
+                                            <th class="px-4 py-3">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y border-color" id="reviews-body">
+                                        <tr class="text-text-primary"><td colspan="7" class="px-4 py-3 text-center">Loading...</td></tr>
+                                    </tbody>
+                                </table>
                             </div>
                         </div>
                     </div>
@@ -905,6 +958,15 @@
 
         const formatTimestamp = (timestamp) => {
             if (!timestamp || !timestamp.toDate) {
+                try {
+                    // Fallbacks for non-Firestore timestamp values
+                    if (timestamp instanceof Date) return timestamp.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+                    if (typeof timestamp === 'number') return new Date(timestamp).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+                    if (typeof timestamp === 'string') {
+                        const d = new Date(timestamp);
+                        if (!isNaN(d)) return d.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
+                    }
+                } catch {}
                 return '';
             }
             const date = timestamp.toDate();
@@ -1500,9 +1562,11 @@ const saveBulkProducts = async (products) => {
         // --- Data Loading & Rendering ---
         // --- Reviews & Ratings Rendering ---
         const renderReviewsList = async () => {
-            const list = document.getElementById('reviews-list');
-            if (!list) return;
-            list.innerHTML = '<div class="text-text-secondary">Loading reviews...</div>';
+            const tbody = document.getElementById('reviews-body');
+            const totalEl = document.getElementById('reviews-summary-total');
+            const avgEl = document.getElementById('reviews-summary-avg');
+            if (!tbody) return;
+            tbody.innerHTML = `<tr class="text-text-primary"><td colspan="7" class="px-4 py-3 text-center">Loading...</td></tr>`;
             try {
                 const productsSnap = await getDocs(collection(db, 'products'));
                 let allReviews = [];
@@ -1510,7 +1574,6 @@ const saveBulkProducts = async (products) => {
                     const data = doc.data();
                     if (Array.isArray(data.reviews)) {
                         data.reviews.forEach((review, idx) => {
-                            // Ensure product image is included in review object
                             allReviews.push({
                                 productName: data.name || 'Unknown Product',
                                 productId: doc.id,
@@ -1521,19 +1584,25 @@ const saveBulkProducts = async (products) => {
                         });
                     }
                 });
+
+                if (totalEl) totalEl.textContent = String(allReviews.length);
+                const numericRatings = allReviews.map(r => Number(r.rating)).filter(v => !Number.isNaN(v));
+                const avg = numericRatings.length ? (numericRatings.reduce((a, b) => a + b, 0) / numericRatings.length) : 0;
+                if (avgEl) avgEl.textContent = avg.toFixed(1);
+
                 if (allReviews.length === 0) {
-                    list.innerHTML = '<div class="text-center text-text-secondary">No reviews found.</div>';
+                    tbody.innerHTML = `<tr><td colspan="7" class="p-4 text-center text-text-secondary">No reviews found.</td></tr>`;
                     return;
                 }
-                // Sort by timestamp if available
+
                 allReviews.sort((a, b) => {
-                    const ta = new Date(a.timestamp).getTime() || 0;
-                    const tb = new Date(b.timestamp).getTime() || 0;
+                    const ta = (a.timestamp && a.timestamp.toDate) ? a.timestamp.toDate().getTime() : new Date(a.timestamp || 0).getTime();
+                    const tb = (b.timestamp && b.timestamp.toDate) ? b.timestamp.toDate().getTime() : new Date(b.timestamp || 0).getTime();
                     return tb - ta;
                 });
-                list.innerHTML = '';
+
+                tbody.innerHTML = '';
                 allReviews.forEach((r, idx) => {
-                    // Format date/time
                     let dateString = '';
                     if (r.timestamp && r.timestamp.toDate) {
                         dateString = r.timestamp.toDate().toLocaleString();
@@ -1544,53 +1613,57 @@ const saveBulkProducts = async (products) => {
                     } else {
                         dateString = 'N/A';
                     }
-                    // Product image (optional, fallback if not available)
-                    let productImage = r.productImage || r.imageUrl || '';
-                    if (!productImage) productImage = 'https://placehold.co/48x48/e2e8f0/64748b?text=Img';
-                    list.insertAdjacentHTML('beforeend', `
-                        <div class="p-4 border rounded-lg bg-gray-50 dark:bg-gray-800 border-color">
-                            <div class="flex items-center justify-between mb-2">
+
+                    const productImage = r.productImage || r.imageUrl || 'https://placehold.co/48x48/e2e8f0/64748b?text=Img';
+                    const ratingText = (r.rating !== undefined && r.rating !== null && r.rating !== '') ? `${r.rating} ★` : 'No rating';
+
+                    tbody.insertAdjacentHTML('beforeend', `
+                        <tr class="text-text-primary">
+                            <td class="px-4 py-3 text-sm">${idx + 1}</td>
+                            <td class="px-4 py-3 text-sm">
                                 <div class="flex items-center gap-3">
                                     <img src="${productImage}" onerror="this.src='https://placehold.co/48x48/e2e8f0/64748b?text=Img'" class="h-10 w-10 object-cover rounded">
-                                    <span class="font-semibold text-text-primary">${r.productName}</span>
+                                    <span class="font-semibold">${r.productName}</span>
                                 </div>
-                                <span class="text-yellow-500 font-bold">${r.rating ? `${r.rating} ★` : 'No rating'}</span>
-                                <button class="delete-review-btn text-red-500 hover:text-red-700 ml-4" data-product-id="${r.productId}" data-review-idx="${r.reviewIdx}" title="Delete Review"><i data-lucide="trash-2" class="w-5 h-5"></i></button>
-                            </div>
-                            <div class="text-sm text-text-secondary mb-2">${r.comment || 'No review text.'}</div>
-                            <div class="text-xs text-gray-400">By: ${r.author || 'Anonymous'} | ${dateString}</div>
-                        </div>
+                            </td>
+                            <td class="px-4 py-3 text-sm text-yellow-600 font-semibold">${ratingText}</td>
+                            <td class="px-4 py-3 text-sm truncate max-w-[28rem]" title="${(r.comment || '').replace(/"/g, '&quot;')}">${r.comment || '—'}</td>
+                            <td class="px-4 py-3 text-sm">${r.author || 'Anonymous'}</td>
+                            <td class="px-4 py-3 text-sm whitespace-nowrap">${dateString}</td>
+                            <td class="px-4 py-3">
+                                <button class="delete-review-btn text-red-500 hover:text-red-700" data-product-id="${r.productId}" data-review-idx="${r.reviewIdx}" title="Delete Review">
+                                    <i data-lucide="trash-2" class="w-5 h-5"></i>
+                                </button>
+                            </td>
+                        </tr>
                     `);
                 });
-                // Attach delete event listeners and render icons
-                setTimeout(() => {
-                    document.querySelectorAll('.delete-review-btn').forEach(btn => {
-                        btn.addEventListener('click', async (e) => {
-                            const productId = btn.getAttribute('data-product-id');
-                            const reviewIdx = parseInt(btn.getAttribute('data-review-idx'), 10);
-                            if (!productId || isNaN(reviewIdx)) return;
-                            if (!confirm('Are you sure you want to delete this review?')) return;
-                            try {
-                                const productRef = doc(db, 'products', productId);
-                                const productSnap = await getDoc(productRef);
-                                if (!productSnap.exists()) throw new Error('Product not found');
-                                const data = productSnap.data();
-                                if (!Array.isArray(data.reviews)) throw new Error('No reviews found');
-                                data.reviews.splice(reviewIdx, 1);
-                                await updateDoc(productRef, { reviews: data.reviews });
-                                showToast('Review deleted!', 'success');
-                                renderReviewsList();
-                            } catch (err) {
-                                showToast('Failed to delete review', 'error');
-                            }
-                        });
+
+                // Attach delete listeners & refresh icons
+                document.querySelectorAll('.delete-review-btn').forEach(btn => {
+                    btn.addEventListener('click', async () => {
+                        const productId = btn.getAttribute('data-product-id');
+                        const reviewIdx = parseInt(btn.getAttribute('data-review-idx'), 10);
+                        if (!productId || Number.isNaN(reviewIdx)) return;
+                        if (!confirm('Are you sure you want to delete this review?')) return;
+                        try {
+                            const productRef = doc(db, 'products', productId);
+                            const productSnap = await getDoc(productRef);
+                            if (!productSnap.exists()) throw new Error('Product not found');
+                            const data = productSnap.data();
+                            if (!Array.isArray(data.reviews)) throw new Error('No reviews found');
+                            data.reviews.splice(reviewIdx, 1);
+                            await updateDoc(productRef, { reviews: data.reviews });
+                            showToast('Review deleted!', 'success');
+                            renderReviewsList();
+                        } catch (err) {
+                            showToast('Failed to delete review', 'error');
+                        }
                     });
-                    if (window.lucide && typeof window.lucide.createIcons === 'function') {
-                        window.lucide.createIcons();
-                    }
-                }, 100);
+                });
+                if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
             } catch (err) {
-                list.innerHTML = '<div class="text-center text-red-500">Failed to load reviews.</div>';
+                if (tbody) tbody.innerHTML = '<tr><td colspan="7" class="p-4 text-center text-red-500">Failed to load reviews.</td></tr>';
             }
         };
         const loadAdminProfile = async (user) => {
@@ -2457,6 +2530,7 @@ const saveBulkProducts = async (products) => {
                         await updateDoc(chatRef, {
                             lastMessage: messageText,
                             lastMessageTimestamp: serverTimestamp(),
+                            lastSender: 'admin',
                             isReadByAdmin: true,
                             isReadByUser: false
                         });
@@ -2569,6 +2643,19 @@ async function handleEditCouponSubmit(e) {
                 const pageId = navLink.dataset.page;
                 history.pushState({pageId}, '', `#${pageId}`);
                 showPage(pageId);
+                return;
+            }
+
+            // Chat search and unread toggle (click)
+            const searchInput = e.target.closest('#chat-search-input');
+            if (searchInput && lastChatsSnapshot) {
+                renderChatList(lastChatsSnapshot);
+                return;
+            }
+
+            const unreadToggle = e.target.closest('#chat-unread-toggle');
+            if (unreadToggle && lastChatsSnapshot) {
+                renderChatList(lastChatsSnapshot);
                 return;
             }
 
@@ -2753,6 +2840,20 @@ async function handleEditCouponSubmit(e) {
             const removeBtn = e.target.closest('.remove-spec-btn, .remove-thumbnail-btn');
             if (removeBtn) {
                 removeBtn.parentElement.remove();
+            }
+        });
+
+        // Live Chat search filter (type to filter)
+        document.addEventListener('input', (e) => {
+            if (e.target && e.target.id === 'chat-search-input') {
+                if (lastChatsSnapshot) renderChatList(lastChatsSnapshot);
+            }
+        });
+
+        // Live Chat unread-only toggle
+        document.addEventListener('change', (e) => {
+            if (e.target && e.target.id === 'chat-unread-toggle') {
+                if (lastChatsSnapshot) renderChatList(lastChatsSnapshot);
             }
         });
 
@@ -3095,17 +3196,44 @@ async function handleEditCouponSubmit(e) {
                 return;
             }
 
-            const unreadChatsExist = chats.some(chat => !chat.isReadByAdmin);
+            const unreadChatsExist = chats.some(chat => {
+                const lastMs = chat.lastMessageTimestamp?.toMillis?.() || chat.lastMessageTimestamp?.toDate?.().getTime?.() || 0;
+                const openedMs = chat.lastOpenedByAdminAt?.toMillis?.() || chat.lastOpenedByAdminAt?.toDate?.().getTime?.() || 0;
+                return chat.lastSender === 'user' && lastMs > openedMs;
+            });
             document.getElementById('chat-notification-bubble').classList.toggle('hidden', !unreadChatsExist);
 
-            chats.forEach(chat => {
+            // Apply search and unread-only filters
+            const searchEl = document.getElementById('chat-search-input');
+            const unreadOnlyEl = document.getElementById('chat-unread-toggle');
+            const q = (searchEl?.value || '').toLowerCase().trim();
+            const unreadOnly = !!unreadOnlyEl?.checked;
+
+            const filtered = chats.filter(chat => {
+                if (unreadOnly && chat.isReadByAdmin) return false;
+                const userData = allUsersMap.get(chat.userId);
+                const name = (userData?.name || chat.userName || 'unknown').toLowerCase();
+                const text = (chat.lastMessage || '').toLowerCase();
+                return !q || name.includes(q) || text.includes(q);
+            });
+
+            if (filtered.length === 0) {
+                container.innerHTML = '<p class="p-4 text-center text-text-secondary">No conversations match your filters.</p>';
+                return;
+            }
+
+            filtered.forEach(chat => {
                 const isActive = chat.userId === currentChatUserId;
-                const isUnread = !chat.isReadByAdmin;
+                const lastMs = chat.lastMessageTimestamp?.toMillis?.() || chat.lastMessageTimestamp?.toDate?.().getTime?.() || 0;
+                const openedMs = chat.lastOpenedByAdminAt?.toMillis?.() || chat.lastOpenedByAdminAt?.toDate?.().getTime?.() || 0;
+                const isUnread = chat.lastSender === 'user' && lastMs > openedMs;
                 const userData = allUsersMap.get(chat.userId);
                 const userName = userData?.name || chat.userName || 'Unknown User';
                 const userAvatar = userData?.photoURL || 'https://placehold.co/40x40/e2e8f0/64748b?text=U';
 
 
+                const isLastFromAdmin = chat.lastSender === 'admin';
+                const readTick = isLastFromAdmin ? (chat.isReadByUser ? '<span class="ml-1 text-cyan-500">✔✔</span>' : '<span class="ml-1 text-gray-400">✔</span>') : '';
                 const itemHtml = `
                     <div class="chat-list-item group cursor-pointer flex items-center p-4 border-b border-color ${isActive ? 'bg-theme-bg-light' : (isUnread ? 'unread-chat' : 'hover:bg-gray-100 dark:hover:bg-gray-700')}" data-user-id="${chat.userId}">
                         <div class="relative">
@@ -3114,7 +3242,7 @@ async function handleEditCouponSubmit(e) {
                         </div>
                         <div class="ml-3 flex-1 overflow-hidden">
                             <p class="font-semibold text-text-primary truncate ${isUnread ? 'font-bold' : ''}">${userName}</p>
-                            <p class="text-xs truncate ${isUnread ? 'font-semibold text-text-primary dark:text-gray-200' : 'text-text-secondary'}">${chat.lastMessage || 'No messages yet.'}</p>
+                            <p class="text-xs truncate ${isUnread ? 'font-semibold text-text-primary dark:text-gray-200' : 'text-text-secondary'}">${chat.lastMessage || 'No messages yet.'} ${readTick}</p>
                         </div>
                         <div class="flex flex-col items-end space-y-1 text-right">
                              <div class="text-xs text-text-secondary whitespace-nowrap">
@@ -3128,6 +3256,8 @@ async function handleEditCouponSubmit(e) {
                 `;
                 container.insertAdjacentHTML('beforeend', itemHtml);
             });
+            // Refresh icons for newly inserted items
+            if (window.lucide?.createIcons) lucide.createIcons();
         };
 
         const renderMessages = (messages) => {
@@ -3137,15 +3267,27 @@ async function handleEditCouponSubmit(e) {
 
             // Ensure messages are sorted by timestamp on the client-side as a safeguard.
             // This prevents messages from appearing out of order due to latency.
+            const getMs = (t) => {
+                try {
+                    if (!t) return 0;
+                    if (typeof t.toMillis === 'function') return t.toMillis();
+                    if (typeof t.toDate === 'function') return t.toDate().getTime();
+                    if (t instanceof Date) return t.getTime();
+                    if (typeof t === 'number') return t < 1e12 ? t * 1000 : t; // tolerate seconds
+                    if (typeof t === 'string') { const d = new Date(t); if (!isNaN(d)) return d.getTime(); }
+                } catch {}
+                return 0;
+            };
+
             const sortedMessages = messages
-                .filter(msg => msg.timestamp && msg.timestamp.toDate) // Filter out any messages without a valid timestamp
-                .sort((a, b) => a.timestamp.toMillis() - b.timestamp.toMillis());
+                .filter(msg => msg && msg.text)
+                .sort((a, b) => getMs(a.timestamp) - getMs(b.timestamp));
 
             sortedMessages.forEach(msg => {
                 // The filter above makes this check redundant, but it's kept for safety
-                if (!msg.timestamp || !msg.timestamp.toDate) return;
-
-                const messageDate = msg.timestamp.toDate();
+                const ms = getMs(msg.timestamp);
+                if (!ms) return;
+                const messageDate = new Date(ms);
                 const messageDateString = messageDate.toDateString();
 
                 if (messageDateString !== lastMessageDateString) {
@@ -3166,12 +3308,14 @@ async function handleEditCouponSubmit(e) {
                 // Display the user's name above their messages, similar to the provided screenshot.
                 const senderNameHtml = !isFromAdmin ? `<p class="text-xs text-text-secondary mb-1">${document.getElementById('chat-header-name').textContent || 'User'}</p>` : '';
 
+                const isLast = sortedMessages[sortedMessages.length - 1] === msg;
+                const ticks = isFromAdmin ? (msg.isReadByUser ? '✔✔' : '✔') : '';
                 const messageHtml = `
                        <div class="flex flex-col ${isFromAdmin ? 'items-end' : 'items-start'}">
                            ${senderNameHtml}
                            <div class="max-w-xs md:max-w-md p-3 rounded-xl ${isFromAdmin ? 'bg-theme-primary text-white rounded-br-none' : 'bg-white dark:bg-gray-700 text-text-primary rounded-bl-none shadow-md'}">
                                <p class="text-sm whitespace-pre-wrap break-words">${msg.text}</p>
-                               <p class="text-xs ${isFromAdmin ? 'text-white/70' : 'text-black/50 dark:text-white/50'} mt-1 text-right">${messageTime}</p>
+                               <p class="text-[10px] ${isFromAdmin ? 'text-white/70' : 'text-black/50 dark:text-white/50'} mt-1 text-right">${messageTime} ${isFromAdmin ? `<span>${ticks}</span>` : ''}</p>
                            </div>
                        </div>
                 `;
@@ -3199,6 +3343,7 @@ async function handleEditCouponSubmit(e) {
                 item.classList.remove('bg-theme-bg-light');
                 item.classList.add('hover:bg-gray-100', 'dark:hover:bg-gray-700');
             });
+            setupChatInputEnhancements();
         };
 
         const openChat = async (userId) => {
@@ -3211,7 +3356,7 @@ async function handleEditCouponSubmit(e) {
 
             // --- Mark chat as read on open ---
             try {
-                await updateDoc(doc(db, 'live_chats', userId), { isReadByAdmin: true });
+                await updateDoc(doc(db, 'live_chats', userId), { isReadByAdmin: true, lastOpenedByAdminAt: serverTimestamp() });
             } catch (error) {
                 // This is a non-critical error, so we just log it. The chat will still open.
                 console.error("Could not mark chat as read on open:", error);
@@ -3222,26 +3367,79 @@ async function handleEditCouponSubmit(e) {
             const chatWindowMain = document.getElementById('chat-window-main');
             chatWindowMain.classList.remove('hidden');
             chatWindowMain.classList.add('flex');
+            setupChatInputEnhancements();
             
             // --- Populate Header & Add Click Listener ---
             const chatHeader = document.getElementById('chat-header');
             const headerAvatar = document.getElementById('chat-header-avatar');
             const headerName = document.getElementById('chat-header-name');
+            const headerStatus = document.getElementById('chat-header-status');
+            const headerBlockedBadge = document.getElementById('chat-header-blocked-badge');
+            const headerBlockBtn = document.getElementById('chat-header-block-btn');
+            const headerDeleteBtn = document.getElementById('chat-header-delete-btn');
+            const blockedBanner = document.getElementById('chat-blocked-banner');
+            const messageInput = document.getElementById('chat-message-input');
 
             const userDoc = await getDoc(doc(db, 'users', userId));
             if (userDoc.exists()) {
                 const userData = userDoc.data();
                 headerName.textContent = userData.name || 'Unknown User';
                 headerAvatar.src = userData.photoURL || `https://placehold.co/40x40/e2e8f0/64748b?text=${(userData.name || 'U').charAt(0)}`;
+                const isBlocked = !!userData.isBlocked;
+                headerBlockedBadge.classList.toggle('hidden', !isBlocked);
+                headerBlockBtn.dataset.id = userId;
+                headerBlockBtn.dataset.blocked = String(isBlocked);
+                headerBlockBtn.title = isBlocked ? 'Unblock user' : 'Block user';
+                blockedBanner.classList.toggle('hidden', !isBlocked);
+                messageInput.disabled = isBlocked;
+                headerStatus.textContent = userData.lastSeen ? `Last seen ${formatJoinDate(userData.lastSeen, true)}` : 'Online status unavailable';
             } else {
                  headerName.textContent = 'User (Not Found)';
                  headerAvatar.src = 'https://placehold.co/40x40';
+                 headerBlockedBadge.classList.add('hidden');
+                 blockedBanner.classList.add('hidden');
+                 messageInput.disabled = false;
+                 headerStatus.textContent = 'User record missing';
             }
             
             // To safely replace event listeners, clone and replace the node.
             const newHeader = chatHeader.cloneNode(true); // true to clone children
             chatHeader.parentNode.replaceChild(newHeader, chatHeader);
-            newHeader.addEventListener('click', () => showUserProfileModal(userId));
+            newHeader.querySelector('.view-profile-btn')?.addEventListener('click', (ev) => { ev.stopPropagation(); showUserProfileModal(userId); });
+            newHeader.querySelector('#chat-header-delete-btn')?.addEventListener('click', (ev) => {
+                ev.stopPropagation();
+                showConfirmationModal(async () => {
+                    try {
+                        await deleteDoc(doc(db, 'live_chats', userId));
+                        showToast('Chat deleted successfully!');
+                        if (currentChatUserId === userId) resetChatView();
+                    } catch (e) {
+                        showToast('Failed to delete chat!', 'error');
+                        console.error(e);
+                    }
+                }, 'Delete Chat?', 'Are you sure you want to permanently delete this entire conversation? This action cannot be undone.');
+            });
+            newHeader.querySelector('#chat-header-block-btn')?.addEventListener('click', async (ev) => {
+                ev.stopPropagation();
+                const btn = ev.currentTarget;
+                const isBlocked = btn.getAttribute('data-blocked') === 'true';
+                const actionText = isBlocked ? 'unblock' : 'block';
+                showConfirmationModal(async () => {
+                    try {
+                        await updateDoc(doc(db, 'users', userId), { isBlocked: !isBlocked });
+                        showToast(`User ${actionText}ed successfully!`);
+                        // Reflect immediately in UI
+                        headerBlockedBadge.classList.toggle('hidden', isBlocked);
+                        btn.setAttribute('data-blocked', String(!isBlocked));
+                        btn.title = !isBlocked ? 'Unblock user' : 'Block user';
+                        blockedBanner.classList.toggle('hidden', isBlocked);
+                        messageInput.disabled = !isBlocked;
+                    } catch (e) {
+                        showToast(`Failed to ${actionText} user!`, 'error');
+                        console.error(e);
+                    }
+                }, `Confirm ${actionText}`, `Are you sure you want to ${actionText} this user?`);
+            });
             
             // --- Listen for new messages ---
             // The chat is now marked as read on open.
@@ -3261,6 +3459,11 @@ async function handleEditCouponSubmit(e) {
                     const chatBubble = document.getElementById('chat-notification-bubble');
                     if (chatBubble) chatBubble.classList.add('hidden');
                 }
+                // Update header last activity time based on last message
+                const last = messages[messages.length - 1];
+                if (last?.timestamp?.toDate) {
+                    headerStatus.textContent = `Last message ${formatJoinDate(last.timestamp, true)}`;
+                }
             }, handleSnapshotError('Chat Messages'));
             
             // --- Update Active State in Chat List ---
@@ -3274,6 +3477,7 @@ async function handleEditCouponSubmit(e) {
                     item.classList.remove('hover:bg-gray-100', 'dark:hover:bg-gray-700');
                 }
             });
+            setupChatInputEnhancements();
         };
 
         const showUserProfileModal = (userId) => {
@@ -3455,7 +3659,25 @@ async function handleEditCouponSubmit(e) {
                 renderProductFilters();
                 renderSubCategoryFilter();
                 renderFilteredProducts();
-                renderLowStockProducts();
+                if (typeof renderLowStockProducts === 'function') renderLowStockProducts();
+                // Sidebar badge: count of out-of-stock items (stock === 0)
+                const outOfStock = allProducts.filter(d => Number(d.data().stock ?? 0) === 0).length;
+                const oosBadge = document.getElementById('out-of-stock-badge');
+                if (oosBadge) {
+                    if (outOfStock > 0) {
+                        oosBadge.textContent = String(outOfStock);
+                        oosBadge.classList.remove('hidden');
+                    } else {
+                        oosBadge.classList.add('hidden');
+                    }
+                }
+                // Dashboard card: Low Stock count (< threshold)
+                const lowStockCount = allProducts.filter(d => {
+                    const s = Number(d.data().stock ?? 0);
+                    return !Number.isNaN(s) && s < (typeof LOW_STOCK_THRESHOLD !== 'undefined' ? LOW_STOCK_THRESHOLD : 5);
+                }).length;
+                const lowStockEl = document.getElementById('total-low-stock');
+                if (lowStockEl) lowStockEl.textContent = String(lowStockCount);
             }, handleSnapshotError('All Products'));
             
             const unsubAllOrders = onSnapshot(collection(db, "orders"), snap => {
@@ -3463,6 +3685,17 @@ async function handleEditCouponSubmit(e) {
                 allOrders = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
                 renderOrderFilters();
                 renderFilteredOrders();
+                // Sidebar badge: count of pending orders
+                const pendingCount = allOrders.filter(doc => (doc.data().status || 'pending').toLowerCase() === 'pending').length;
+                const pendingBadge = document.getElementById('pending-orders-badge');
+                if (pendingBadge) {
+                    if (pendingCount > 0) {
+                        pendingBadge.textContent = String(pendingCount);
+                        pendingBadge.classList.remove('hidden');
+                    } else {
+                        pendingBadge.classList.add('hidden');
+                    }
+                }
             }, handleSnapshotError('All Orders'));
 
             const unsubAllUsers = onSnapshot(collection(db, "users"), snap => {
@@ -3502,8 +3735,21 @@ async function handleEditCouponSubmit(e) {
                 
                 // FIX: Make unseen count consistent with UI highlighting (!isReadByAdmin).
                 // This correctly counts chats where the flag is `false` OR missing entirely.
-                const unseenSmsCount = chats.filter(chat => !chat.isReadByAdmin).length;
+                const unseenSmsCount = chats.filter(chat => {
+                    const lastMs = chat.lastMessageTimestamp?.toMillis?.() || chat.lastMessageTimestamp?.toDate?.().getTime?.() || 0;
+                    const openedMs = chat.lastOpenedByAdminAt?.toMillis?.() || chat.lastOpenedByAdminAt?.toDate?.().getTime?.() || 0;
+                    return chat.lastSender === 'user' && lastMs > openedMs;
+                }).length;
                 document.getElementById('total-unseen-sms').textContent = unseenSmsCount;
+                const unseenBadge = document.getElementById('unseen-sms-badge');
+                if (unseenBadge) {
+                    if (unseenSmsCount > 0) {
+                        unseenBadge.textContent = String(unseenSmsCount);
+                        unseenBadge.classList.remove('hidden');
+                    } else {
+                        unseenBadge.classList.add('hidden');
+                    }
+                }
 
                 // FIX: Client-side sorting to handle chats without lastMessageTimestamp
                 chats.sort((a, b) => {
@@ -3523,7 +3769,10 @@ async function handleEditCouponSubmit(e) {
                     snapshot.docChanges().forEach(change => {
                         if (change.type === "modified" || change.type === "added") { // Listen for added chats too
                             const chatData = change.doc.data();
-                            if (!chatData.isReadByAdmin && currentChatUserId !== change.doc.id) {
+                            const lastMs = chatData.lastMessageTimestamp?.toMillis?.() || chatData.lastMessageTimestamp?.toDate?.().getTime?.() || 0;
+                            const openedMs = chatData.lastOpenedByAdminAt?.toMillis?.() || chatData.lastOpenedByAdminAt?.toDate?.().getTime?.() || 0;
+                            const hasUnread = chatData.lastSender === 'user' && lastMs > openedMs;
+                            if (hasUnread && currentChatUserId !== change.doc.id) {
                                 const userData = allUsersMap.get(change.doc.id);
                                 const userName = userData?.name || chatData.userName || 'A user';
                                 addNotification(`New message from: ${userName}`, 'chat');
@@ -3542,6 +3791,27 @@ async function handleEditCouponSubmit(e) {
             listenForNotifications();
             
             unsubscribeListeners.push(unsubOrders, unsubUsers, unsubAllProducts, unsubAllOrders, unsubAllUsers, unsubBanners, unsubCoupons, unsubDeliveryMen, unsubChats);
+        };
+
+        // Enhance message textarea UX: autosize and Enter-to-send
+        const setupChatInputEnhancements = () => {
+            const ta = document.getElementById('chat-message-input');
+            if (!ta) return;
+            if (ta.dataset.enhanced === 'true') return; // prevent duplicate listeners
+            const autosize = () => {
+                ta.style.height = 'auto';
+                ta.style.height = Math.min(200, ta.scrollHeight) + 'px';
+            };
+            ta.addEventListener('input', autosize);
+            autosize();
+            ta.addEventListener('keydown', (ev) => {
+                if (ev.key === 'Enter' && !ev.shiftKey) {
+                    ev.preventDefault();
+                    const form = document.getElementById('chat-message-form');
+                    if (form) form.requestSubmit();
+                }
+            });
+            ta.dataset.enhanced = 'true';
         };
 
         // --- Settings Page Logic ---
