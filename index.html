@@ -720,7 +720,7 @@
     </div>
 
     <!-- New Message Alert Modal -->
-    <div id="new-message-alert" class="fixed top-24 right-5 z-50 bg-secondary rounded-lg shadow-xl p-5 w-full max-w-sm transform transition-transform translate-x-full hidden">
+    <div id="new-message-alert" class="fixed bottom-5 right-5 z-50 bg-secondary rounded-lg shadow-xl p-5 w-full max-w-sm transform transition-transform translate-x-full hidden">
         <div class="flex justify-between items-center border-b border-color pb-2 mb-3">
             <div class="flex items-center space-x-2">
                 <i data-lucide="message-square-text" class="text-blue-500"></i>
@@ -830,9 +830,7 @@
             confirmationModal: document.getElementById('confirmation-modal'),
             newOrderAlert: document.getElementById('new-order-alert'),
             newMessageAlert: document.getElementById('new-message-alert'),
-            pinVerificationScreen: document.getElementById('pin-verification-screen'),
-            pinVerificationForm: document.getElementById('pin-verification-form'),
-            pinError: document.getElementById('pin-error'),
+            // PIN verification removed
         };
         
         const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
@@ -904,6 +902,28 @@
 
             // Return date like "30/09/2025" for older messages
             return date.toLocaleDateString([], { day: '2-digit', month: '2-digit', year: 'numeric' });
+        };
+
+        // Safe join date formatter that tolerates different types
+        const formatJoinDate = (value, withTime = false) => {
+            try {
+                if (!value) return 'N/A';
+                let date = null;
+                if (typeof value?.toDate === 'function') {
+                    date = value.toDate();
+                } else if (value instanceof Date) {
+                    date = value;
+                } else if (typeof value === 'number') {
+                    date = new Date(value < 1e12 ? value * 1000 : value);
+                } else if (typeof value === 'string') {
+                    const parsed = new Date(value);
+                    if (!isNaN(parsed)) date = parsed;
+                }
+                if (!date) return 'N/A';
+                return withTime ? date.toLocaleString() : date.toLocaleDateString();
+            } catch (e) {
+                return 'N/A';
+            }
         };
         
         const showToast = (message, type = 'success') => {
@@ -1300,7 +1320,7 @@ const saveBulkProducts = async (products) => {
         // Role checking is now done securely via ID token claims in the onAuthStateChanged listener below.
 
         const showScreen = (screenName) => {
-            const screens = ['loading-spinner', 'login-screen', 'pin-verification-screen', 'admin-panel'];
+            const screens = ['loading-spinner', 'login-screen', 'admin-panel'];
             screens.forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.classList.toggle('hidden', id !== screenName);
@@ -1323,7 +1343,9 @@ const saveBulkProducts = async (products) => {
                         if(adminDoc.exists()) {
                             currentUserProfile = { id: adminDoc.id, ...adminDoc.data() };
                         }
-                        showScreen('pin-verification-screen');
+                        // Bypass PIN verification and go directly to admin panel
+                        showScreen('admin-panel');
+                        initializeAdminPanel(user);
                     } else {
                         // If a user is logged in but is not an admin, show an error and sign them out.
                         console.warn("Non-admin user attempted to access the panel. Signing out.");
@@ -1373,23 +1395,7 @@ const saveBulkProducts = async (products) => {
             }
         });
 
-        UI.pinVerificationForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const button = e.target.querySelector('button[type="submit"]');
-            setButtonLoading(button, true, 'VERIFYING...');
-            UI.pinError.textContent = '';
-            const enteredPin = e.target.pin.value;
-            const user = auth.currentUser;
-
-            if (enteredPin === '6929') {
-                playWelcomeMessage(); // Play welcome voice message
-                showScreen('admin-panel');
-                initializeAdminPanel(user);
-            } else {
-                 UI.pinError.textContent = "Incorrect PIN.";
-            }
-             setButtonLoading(button, false);
-        });
+        // PIN verification disabled; no separate handler needed.
 
         document.getElementById('logout-button').addEventListener('click', () => {
             playSound('logout');
@@ -1442,7 +1448,7 @@ const saveBulkProducts = async (products) => {
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             applyDarkMode(localStorage.theme === 'dark' || (!('theme' in localStorage) && prefersDark));
             
-            const loginScreenDivs = document.querySelectorAll('#login-screen, #pin-verification-screen');
+            const loginScreenDivs = document.querySelectorAll('#login-screen');
             const loginProfilePic = document.getElementById('login-profile-pic');
             const defaultBg = 'https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/vecteezy_ai-generated-empty-wooden-table-on-the-natural-background_40890255.jpg?raw=true';
             const defaultAvatar = 'https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/WhatsApp%20Image%202025-07-30%20at%2019.29.33_9f8c7d06.jpg?raw=true';
@@ -1666,7 +1672,7 @@ const saveBulkProducts = async (products) => {
             const rowClass = isPending ? 'pending-order' : 'text-text-primary';
             return `<tr class="${rowClass}"><td class="px-4 py-3 text-sm">${slNo}</td><td class="px-4 py-3 text-sm font-mono" title="Full ID: ${doc.id}">#${orderIdDisplay}</td><td class="px-4 py-3 text-sm">${d.userName || 'N/A'}</td><td class="px-4 py-3 text-sm">৳${d.totalAmount || 0}</td><td class="px-4 py-3 text-xs">${getStatusBadge(d.status)}</td></tr>`; 
         };
-        const renderUserRow_Recent = doc => { const d = doc.data(); return `<tr class="text-text-primary"><td class="px-4 py-3 text-sm">${d.name || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.email || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td></tr>`; };
+    const renderUserRow_Recent = doc => { const d = doc.data(); return `<tr class="text-text-primary"><td class="px-4 py-3 text-sm">${d.name || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.email || 'N/A'}</td><td class="px-4 py-3 text-sm">${formatJoinDate(d.createdAt)}</td></tr>`; };
         
         const renderFilteredProducts = () => {
             const body = document.getElementById('all-products-body');
@@ -1837,7 +1843,7 @@ const saveBulkProducts = async (products) => {
                 <td class="px-4 py-3 text-sm">${d.email || 'N/A'}</td>
                 <td class="px-4 py-3 text-sm">${d.mobile || 'N/A'}</td>
                 <td class="px-4 py-3 text-sm">${d.location || 'N/A'}</td>
-                <td class="px-4 py-3 text-sm">${d.createdAt?.toDate().toLocaleDateString() || 'N/A'}</td>
+                <td class="px-4 py-3 text-sm">${formatJoinDate(d.createdAt)}</td>
                 <td class="px-4 py-3 text-xs font-mono">${doc.id}</td>
                 <td class="px-4 py-3 text-xs">${statusBadge}</td>
                 <td class="px-4 py-3 flex items-center space-x-2">
@@ -3153,6 +3159,18 @@ async function handleEditCouponSubmit(e) {
             unsubscribeMessages = onSnapshot(messagesQuery, (snapshot) => {
                 const messages = snapshot.docs.map(doc => doc.data());
                 renderMessages(messages);
+                // After messages load, if the chat is open, mark read flag in UI elements
+                try {
+                    updateDoc(doc(db, 'live_chats', userId), { isReadByAdmin: true });
+                } catch (e) {
+                    console.warn('Failed to update read flag after opening chat', e);
+                }
+                // Hide side chat red dot if there are no unread chats left
+                const remainingUnread = (lastChatsSnapshot || []).some(c => !c.isReadByAdmin && c.userId !== userId);
+                if (!remainingUnread) {
+                    const chatBubble = document.getElementById('chat-notification-bubble');
+                    if (chatBubble) chatBubble.classList.add('hidden');
+                }
             }, handleSnapshotError('Chat Messages'));
             
             // --- Update Active State in Chat List ---
@@ -3224,6 +3242,26 @@ async function handleEditCouponSubmit(e) {
         const addNotification = (text, page) => {
             notifications.unshift({ text, page });
             updateNotificationUI();
+        };
+
+        // Update bell icon badge and dropdown list
+        const updateNotificationUI = () => {
+            const count = notifications.length;
+            const badge = UI.notificationCountBadge;
+            const list = UI.notificationList;
+            if (!badge || !list) return;
+            if (count > 0) {
+                badge.textContent = count > 9 ? '9+' : String(count);
+                badge.classList.remove('hidden');
+                list.innerHTML = notifications.map(n => `
+                    <div class="p-2 border-b border-color hover:bg-gray-50 dark:hover:bg-gray-700 cursor-pointer" data-page="${n.page}">
+                        <p class="text-sm text-text-primary">${n.text}</p>
+                    </div>
+                `).join('');
+            } else {
+                badge.classList.add('hidden');
+                list.innerHTML = '<p class="p-2 text-text-secondary text-sm">No new notifications</p>';
+            }
         };
 
         const listenForNotifications = () => {
@@ -3399,6 +3437,9 @@ async function handleEditCouponSubmit(e) {
                                 const userName = userData?.name || chatData.userName || 'A user';
                                 addNotification(`New message from: ${userName}`, 'chat');
                                 showNewMessageAlert({ ...chatData, userName }, change.doc.id);
+                                // Show side menu chat red dot
+                                const chatBubble = document.getElementById('chat-notification-bubble');
+                                if (chatBubble) chatBubble.classList.remove('hidden');
                             }
                         }
                     });
