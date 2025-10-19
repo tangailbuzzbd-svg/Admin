@@ -219,6 +219,11 @@
                     <button @click="sidebarOpen = !sidebarOpen" class="text-text-secondary focus:outline-none"><i data-lucide="menu" class="w-6 h-6"></i></button>
                     <div class="text-2xl font-semibold text-text-primary" id="page-title">Dashboard</div>
                     <div class="flex items-center">
+                        <!-- Global Search -->
+                        <div class="hidden md:flex items-center relative mr-4 w-72">
+                            <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary"></i>
+                            <input id="global-search-input" type="text" placeholder="Search by Order/User/Product/Delivery ID..." class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" />
+                        </div>
                         <!-- UPDATED: Digital Clock container -->
                         <div id="digital-clock" class="text-right text-text-secondary mr-4 hidden sm:block tabular-nums leading-tight">
                             <!-- Clock content will be injected by JS -->
@@ -437,8 +442,24 @@
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left">
-                                    <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">#</th><th class="px-4 py-3">Image</th><th class="px-4 py-3">Name</th><th class="px-4 py-3">Category</th><th class="px-4 py-3">Sub-Category</th><th class="px-4 py-3">Main Price</th><th class="px-4 py-3">Offer Price</th><th class="px-4 py-3">Stock</th><th class="px-4 py-3">Offer %</th><th class="px-4 py-3">On Offer</th><th class="px-4 py-3">Refundable</th><th class="px-4 py-3">Actions</th></tr></thead>
-                                    <tbody class="divide-y border-color" id="all-products-body"><tr class="text-text-primary"><td colspan="12" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
+                                    <thead>
+                                        <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700">
+                                            <th class="px-4 py-3">#</th>
+                                            <th class="px-4 py-3">Image</th>
+                                            <th class="px-4 py-3">Name</th>
+                                            <th class="px-4 py-3">Product ID</th>
+                                            <th class="px-4 py-3">Category</th>
+                                            <th class="px-4 py-3">Sub-Category</th>
+                                            <th class="px-4 py-3">Main Price</th>
+                                            <th class="px-4 py-3">Offer Price</th>
+                                            <th class="px-4 py-3">Stock</th>
+                                            <th class="px-4 py-3">Offer %</th>
+                                            <th class="px-4 py-3">On Offer</th>
+                                            <th class="px-4 py-3">Refundable</th>
+                                            <th class="px-4 py-3">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y border-color" id="all-products-body"><tr class="text-text-primary"><td colspan="13" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
                                 </table>
                             </div>
                         </div>
@@ -518,6 +539,10 @@
                             <h2 class="text-2xl font-bold mb-6 text-text-primary">Edit Product</h2>
                             <form id="edit-product-form" class="space-y-6">
                                  <!-- Reusable form content will be injected here by JS -->
+                                 <div class="p-4 border rounded-lg bg-gray-50/50 dark:bg-gray-800/50 border-color">
+                                     <label class="block text-text-primary font-medium mb-1">Document ID</label>
+                                     <input id="edit-product-doc-id" type="text" class="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-mono" readonly value="" />
+                                 </div>
                             </form>
                         </div>
                     </div>
@@ -1871,11 +1896,13 @@ const saveBulkProducts = async (products) => {
             const lowStockIcon = isLowStock ? '<i data-lucide="alert-triangle" class="w-4 h-4 text-yellow-500 inline-block ml-2"></i>' : '';
             const isOfferHtml = (d.isOnOffer) ? `<span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">Yes</span>` : `<span class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-100">No</span>`;
             const isRefundableHtml = d.isRefundable ? `<span class="px-2 py-1 font-semibold leading-tight text-blue-700 bg-blue-100 rounded-full dark:bg-blue-700 dark:text-blue-100">Yes</span>` : `<span class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-100">No</span>`;
+            const productIdDisplay = d.model || d.productId || doc.id; // prefer model/code from form, then explicit productId, else doc id
 
             return `<tr class="text-text-primary ${lowStockClass}">
                 <td class="px-4 py-3 text-sm">${slNo}</td>
                 <td class="px-4 py-3"><img src="${d.imageUrl}" onerror="this.src='https://placehold.co/48x48/e2e8f0/64748b?text=Img'" class="h-12 w-12 object-cover rounded"></td>
                 <td class="px-4 py-3 text-sm font-semibold">${d.name || 'N/A'}</td>
+                <td class="px-4 py-3 text-sm font-mono" title="Full ID: ${doc.id}">${productIdDisplay}</td>
                 <td class="px-4 py-3 text-sm">${categoryName}</td>
                 <td class="px-4 py-3 text-sm">${subCategoryName}</td>
                 <td class="px-4 py-3 text-sm">৳${d.mainPrice || 0}</td>
@@ -1990,7 +2017,7 @@ const saveBulkProducts = async (products) => {
 
             const rowClass = isBlocked ? 'bg-red-50 dark:bg-red-900/10' : 'text-text-primary';
 
-            return `<tr class="${rowClass}">
+            return `<tr class="${rowClass}" data-uid="${doc.id}">
                 <td class="px-4 py-3 text-sm flex items-center">
                     <img src="${d.photoURL || `https://placehold.co/32x32/e2e8f0/64748b?text=${(d.name || 'U').charAt(0)}`}" class="w-8 h-8 rounded-full object-cover mr-3">
                     <span>${d.name || 'N/A'}</span>
@@ -2002,6 +2029,9 @@ const saveBulkProducts = async (products) => {
                 <td class="px-4 py-3 text-xs font-mono">${doc.id}</td>
                 <td class="px-4 py-3 text-xs">${statusBadge}</td>
                 <td class="px-4 py-3 flex items-center space-x-2">
+                      <button class="view-user-btn text-blue-500 hover:text-blue-700 p-1 rounded-full hover:bg-blue-100 dark:hover:bg-gray-700" data-id="${doc.id}" title="View Profile">
+                          <i data-lucide="eye" class="w-5 h-5"></i>
+                      </button>
                        <button class="block-user-btn ${blockButtonColor} p-1 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700" data-id="${doc.id}" data-blocked="${isBlocked}" title="${blockButtonTitle}">
                            <i data-lucide="${blockButtonIcon}" class="w-5 h-5"></i>
                        </button>
@@ -2390,8 +2420,8 @@ const saveBulkProducts = async (products) => {
                 setButtonLoading(button, true, 'Adding...');
                 try {
                     const productData = getProductDataFromForm(e.target, 'add-');
-                    await addDoc(collection(db, 'products'), { ...productData, createdAt: serverTimestamp() });
-                    showToast('Product added successfully!');
+                    const newRef = await addDoc(collection(db, 'products'), { ...productData, createdAt: serverTimestamp() });
+                    showToast(`Product added successfully! ID: ${newRef.id}`);
                     e.target.reset();
                     document.getElementById('add-thumbnail-container').innerHTML = '';
                     document.getElementById('add-specification-container').innerHTML = '';
@@ -2774,6 +2804,13 @@ async function handleEditCouponSubmit(e) {
                 showDeliveryManDetails(viewDeliveryManBtn.dataset.id);
             }
 
+            const viewUserBtn = e.target.closest('.view-user-btn');
+            if (viewUserBtn) {
+                const uid = viewUserBtn.dataset.id;
+                openUserProfile(uid);
+                return;
+            }
+
             const blockUserBtn = e.target.closest('.block-user-btn');
             if (blockUserBtn) {
                 const userId = blockUserBtn.dataset.id;
@@ -2941,6 +2978,8 @@ async function handleEditCouponSubmit(e) {
                 const form = document.getElementById('edit-product-form');
 
                 form.querySelector('#edit-product-id-hidden').value = productId;
+                const docIdField = document.getElementById('edit-product-doc-id');
+                if (docIdField) docIdField.value = productId;
                 form.querySelector('#edit-product-name').value = data.name || '';
                 form.querySelector('#edit-product-id').value = data.model || '';
                 form.querySelector('#edit-product-brand').value = data.brand || '';
@@ -3065,6 +3104,169 @@ async function handleEditCouponSubmit(e) {
                 showToast("Error fetching order details!", 'error');
             }
         };
+
+        // Open User Profile modal by UID and render details + recent summary
+        const openUserProfile = async (uid) => {
+            try {
+                UI.userProfileModalContent.innerHTML = '<p>Loading...</p>';
+                UI.userProfileModal.classList.remove('hidden');
+
+                const userRef = doc(db, 'users', uid);
+                const userSnap = await getDoc(userRef);
+                if (!userSnap.exists()) {
+                    UI.userProfileModalContent.innerHTML = '<p class="text-red-500">User not found.</p>';
+                    return;
+                }
+                const u = userSnap.data();
+                const avatar = u.photoURL || `https://placehold.co/64x64/e2e8f0/64748b?text=${(u.name || 'U').charAt(0)}`;
+                const created = formatJoinDate(u.createdAt);
+
+                const formatCurrency = (n) => `৳${Number(n || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+                const statusKey = (s) => {
+                    if (!s) return 'pending';
+                    const raw = String(s).trim().toLowerCase();
+                    return (raw === 'canceled') ? 'cancelled' : raw.replace(/\s+/g, '-');
+                };
+                const toMillis = (ts) => ts?.toMillis?.() || ts?.toDate?.()?.getTime?.() || (typeof ts === 'number' ? ts : 0);
+
+                // Gather orders from memory; if empty, fetch directly by UID
+                let userOrders = (allOrders || []).filter(o => (o.data()?.userId || o.data()?.uid || o.data()?.userUID) === uid);
+                if (userOrders.length === 0) {
+                    const ordersCol = collection(db, 'orders');
+                    const results = [];
+                    for (const f of ['userId', 'uid', 'userUID']) {
+                        try {
+                            const snap = await getDocs(query(ordersCol, where(f, '==', uid)));
+                            snap.forEach(d => results.push(d));
+                        } catch { /* ignore field/index issues */ }
+                    }
+                    const seen = new Set();
+                    userOrders = results.filter(d => !seen.has(d.id) && (seen.add(d.id) || true)).map(d => ({ id: d.id, data: () => d.data() }));
+                }
+
+                userOrders.sort((a, b) => toMillis(b.data().createdAt) - toMillis(a.data().createdAt));
+                const totalOrders = userOrders.length;
+                const totalSpent = userOrders.reduce((sum, o) => sum + Number(o.data()?.totalAmount || 0), 0);
+                const lastOrder = userOrders[0];
+                const lastOrderAt = lastOrder ? (lastOrder.data().createdAt ? new Date(toMillis(lastOrder.data().createdAt)).toLocaleString() : 'N/A') : 'N/A';
+
+                const statusCounts = userOrders.reduce((acc, o) => {
+                    const k = statusKey(o.data()?.status);
+                    acc[k] = (acc[k] || 0) + 1;
+                    return acc;
+                }, {});
+                const statusOrder = ['pending', 'confirmed', 'shipped', 'out-for-delivery', 'delivered', 'cancelled'];
+                const statusBadgesHtml = statusOrder.map(k => {
+                    const count = statusCounts[k] || 0;
+                    const label = k.replace(/-/g,' ');
+                    return `<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs bg-gray-100 dark:bg-gray-700 text-text-secondary mr-1 mb-1">${label}: <strong class="ml-1 text-text-primary">${count}</strong></span>`;
+                }).join('');
+
+                // Product insights by name
+                const productNameCounts = {};
+                userOrders.forEach(o => (o.data()?.items || []).forEach(it => {
+                    const name = (it.name || it.productName || it.title || it.productId || 'Item').toString();
+                    productNameCounts[name] = (productNameCounts[name] || 0) + (Number(it.quantity) || 1);
+                }));
+                const distinctProducts = Object.keys(productNameCounts).length;
+                const topProductsList = Object.entries(productNameCounts)
+                    .sort((a, b) => b[1] - a[1])
+                    .slice(0, 5)
+                    .map(([name, qty]) => `<li class="flex justify-between"><span class="truncate max-w-[70%]">${name}</span> <span class="text-text-secondary">x${qty}</span></li>`) 
+                    .join('') || '<li class="text-text-secondary">No products</li>';
+
+                const recentOrdersList = (userOrders.slice(0, 3).map(o => {
+                    const d = o.data();
+                    const oid = d.orderId || o.id || '';
+                    const amt = formatCurrency(d.totalAmount || 0);
+                    const when = d.createdAt ? new Date(toMillis(d.createdAt)).toLocaleString() : 'N/A';
+                    const st = statusKey(d.status).replace(/-/g, ' ');
+                    return `<li class=\"flex justify-between text-sm\"><span class=\"font-mono\">#${oid}</span><span class=\"text-text-secondary\">${when}</span><span>${amt}</span><span class=\"text-text-secondary\">${st}</span></li>`;
+                }).join('')) || '<li class="text-text-secondary">No recent orders</li>';
+
+                // Wishlist (best-effort)
+                let wishlistItems = [];
+                try {
+                    const wlSnap = await getDocs(collection(db, `users/${uid}/wishlist`));
+                    wishlistItems = wlSnap.docs.map(d => d.data());
+                } catch { /* ignore if missing */ }
+                const wishlistCount = wishlistItems.length;
+                const wishlistListHtml = wishlistItems.slice(0, 5)
+                    .map(w => `<li class=\"truncate\">${w.name || w.productName || w.productId || 'Item'}</li>`)
+                    .join('') || '<li class="text-text-secondary">No wishlist items</li>';
+
+                UI.userProfileModalContent.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <img src="${avatar}" class="w-16 h-16 rounded-full object-cover" />
+                        <div>
+                            <div class="text-lg font-semibold text-text-primary">${u.name || 'N/A'}</div>
+                            <div class="text-sm text-text-secondary">${u.email || ''}</div>
+                            <div class="text-sm text-text-secondary">${u.mobile || ''}</div>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 text-sm">
+                        <div><span class="text-text-secondary">UID:</span> <span class="font-mono">${uid}</span></div>
+                        <div><span class="text-text-secondary">Joined:</span> ${created}</div>
+                        <div><span class="text-text-secondary">Location:</span> ${u.location || 'N/A'}</div>
+                        <div class="flex items-center gap-2"><span class="text-text-secondary">Status:</span> ${(u.isBlocked ? '<span class="px-2 py-0.5 rounded bg-red-100 text-red-700 text-xs">Blocked</span>' : '<span class="px-2 py-0.5 rounded bg-green-100 text-green-700 text-xs">Active</span>')}
+                            <button id="profile-block-toggle" class="ml-auto px-2 py-1 text-xs rounded ${u.isBlocked ? 'bg-green-600 text-white' : 'bg-red-600 text-white'}" data-id="${uid}" data-blocked="${!!u.isBlocked}">
+                                ${u.isBlocked ? 'Unblock' : 'Block'}
+                            </button>
+                        </div>
+                    </div>
+                    <div class="mt-3 p-3 rounded border border-color bg-gray-50/50 dark:bg-gray-800/40">
+                        <div class="font-semibold text-text-primary mb-2">Order Summary</div>
+                        <div class="grid grid-cols-2 gap-3 text-sm">
+                            <div><span class="text-text-secondary">Total Orders:</span> ${totalOrders}</div>
+                            <div><span class="text-text-secondary">Total Spent:</span> ${formatCurrency(totalSpent)}</div>
+                            <div class="col-span-2"><span class="text-text-secondary">Last Order:</span> ${lastOrderAt}</div>
+                        </div>
+                        <div class="mt-2">${statusBadgesHtml}</div>
+                        <div class="mt-2">
+                            <div class="text-sm text-text-secondary">Distinct Products Ordered: ${distinctProducts}</div>
+                            <div class="text-sm text-text-secondary">Top products:</div>
+                            <ul class="list-disc list-inside text-sm">${topProductsList}</ul>
+                        </div>
+                        <div class="mt-2">
+                            <div class="text-sm font-medium text-text-primary">Recent Orders</div>
+                            <ul class="space-y-1">${recentOrdersList}</ul>
+                        </div>
+                    </div>
+                    <div class="mt-3 p-3 rounded border border-color bg-gray-50/50 dark:bg-gray-800/40">
+                        <div class="font-semibold text-text-primary mb-2">Wishlist</div>
+                        <div class="text-sm text-text-secondary mb-1">Items: ${wishlistCount}</div>
+                        <ul class="list-disc list-inside text-sm">${wishlistListHtml}</ul>
+                    </div>
+                `;
+
+                // Wire modal block/unblock toggle
+                const toggleBtn = document.getElementById('profile-block-toggle');
+                if (toggleBtn) {
+                    toggleBtn.addEventListener('click', async () => {
+                        const id = toggleBtn.dataset.id;
+                        const currentlyBlocked = toggleBtn.dataset.blocked === 'true';
+                        const actionText = currentlyBlocked ? 'unblock' : 'block';
+                        try {
+                            await updateDoc(doc(db, 'users', id), { isBlocked: !currentlyBlocked });
+                            showToast(`User ${actionText}ed successfully!`);
+                            toggleBtn.dataset.blocked = String(!currentlyBlocked);
+                            toggleBtn.textContent = !currentlyBlocked ? 'Unblock' : 'Block';
+                            toggleBtn.classList.toggle('bg-green-600', !currentlyBlocked);
+                            toggleBtn.classList.toggle('bg-red-600', currentlyBlocked);
+                        } catch (err) {
+                            console.error('Failed to toggle block:', err);
+                            showToast(`Failed to ${actionText} user!`, 'error');
+                        }
+                    });
+                }
+            } catch (err) {
+                console.error('Failed to open user profile', err);
+                UI.userProfileModalContent.innerHTML = '<p class="text-red-500">Failed to load user profile.</p>';
+            }
+        };
+
+        // Modal close wiring for user profile
+        UI.userProfileModalCloseBtn.addEventListener('click', () => UI.userProfileModal.classList.add('hidden'));
 
         UI.orderDetailsCloseBtn.addEventListener('click', () => UI.orderDetailsModal.classList.add('hidden'));
 
@@ -3210,7 +3412,10 @@ async function handleEditCouponSubmit(e) {
             const unreadOnly = !!unreadOnlyEl?.checked;
 
             const filtered = chats.filter(chat => {
-                if (unreadOnly && chat.isReadByAdmin) return false;
+                const lastMs = chat.lastMessageTimestamp?.toMillis?.() || chat.lastMessageTimestamp?.toDate?.().getTime?.() || 0;
+                const openedMs = chat.lastOpenedByAdminAt?.toMillis?.() || chat.lastOpenedByAdminAt?.toDate?.().getTime?.() || 0;
+                const isUnread = chat.lastSender === 'user' && lastMs > openedMs;
+                if (unreadOnly && !isUnread) return false;
                 const userData = allUsersMap.get(chat.userId);
                 const name = (userData?.name || chat.userName || 'unknown').toLowerCase();
                 const text = (chat.lastMessage || '').toLowerCase();
@@ -3569,9 +3774,7 @@ async function handleEditCouponSubmit(e) {
                         showNewOrderAlert(orderData, orderId);
                         // Add notification to bell icon
                         addNotification(`New order from ${orderData.userName || 'Customer'} (৳${orderData.totalAmount || 0})`, 'orders');
-                        // Show notification bubble (orders)
-                        let bellBubble = document.getElementById('chat-notification-bubble');
-                        if (bellBubble) bellBubble.classList.remove('hidden');
+                        // Note: Do not toggle the chat bubble for orders; it's reserved for chat unread
                     }
                 });
             }, handleSnapshotError('Order Notifications'));
@@ -3929,6 +4132,123 @@ if (bulkUploadBtn && csvFileInput) {
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
             initializeAppearance();
+            // Global search: try orders, users, products, deliveryMen by id or key
+            const globalSearchInput = document.getElementById('global-search-input');
+            if (globalSearchInput) {
+                const doGlobalSearch = async (raw) => {
+                    const term = (raw || '').trim();
+                    if (!term) return;
+                    try {
+                        // Orders by doc id or orderId
+                        const ordersCol = collection(db, 'orders');
+                        const orderDoc = await getDoc(doc(db, 'orders', term));
+                        if (orderDoc.exists()) {
+                            // Navigate to Orders page
+                            showPage('orders');
+                            // Pre-fill order search box for easier focus
+                            const orderInput = document.getElementById('order-search-input');
+                            if (orderInput) {
+                                orderInput.value = orderDoc.id;
+                                renderFilteredOrders();
+                            }
+                            return;
+                        }
+                        // Try matching by orderId field using a query (faster than scanning)
+                        try {
+                            const byOrderIdSnap = await getDocs(query(ordersCol, where('orderId', '==', term)));
+                            if (!byOrderIdSnap.empty) {
+                                showPage('orders');
+                                const orderInput = document.getElementById('order-search-input');
+                                if (orderInput) {
+                                    orderInput.value = byOrderIdSnap.docs[0].data().orderId;
+                                    renderFilteredOrders();
+                                }
+                                return;
+                            }
+                        } catch (innerErr) {
+                            // As a fallback (e.g., if query fails for some reason), do a minimal scan
+                            console.warn('orderId query failed, falling back to scan:', innerErr);
+                            const ordersSnap = await getDocs(ordersCol);
+                            const byOrderId = ordersSnap.docs.find(d => (d.data().orderId || '').toString() === term);
+                            if (byOrderId) {
+                                showPage('orders');
+                                const orderInput = document.getElementById('order-search-input');
+                                if (orderInput) {
+                                    orderInput.value = byOrderId.data().orderId;
+                                    renderFilteredOrders();
+                                }
+                                return;
+                            }
+                        }
+
+                        // Users by uid (doc id)
+                        const userDoc = await getDoc(doc(db, 'users', term));
+                        if (userDoc.exists()) {
+                            // Open user profile modal with full info
+                            await openUserProfile(term);
+                            return;
+                        }
+
+                        // Products by document id or business Product ID (model/productId)
+                        const productDoc = await getDoc(doc(db, 'products', term));
+                        if (productDoc.exists()) {
+                            // Open directly in edit view for convenience
+                            await loadProductForEdit(productDoc.id);
+                            return;
+                        }
+                        const productsCol = collection(db, 'products');
+                        // Try exact match on model
+                        try {
+                            const byModelSnap = await getDocs(query(productsCol, where('model', '==', term)));
+                            if (!byModelSnap.empty) {
+                                await loadProductForEdit(byModelSnap.docs[0].id);
+                                return;
+                            }
+                            // Try exact match on productId field if present
+                            const byPidSnap = await getDocs(query(productsCol, where('productId', '==', term)));
+                            if (!byPidSnap.empty) {
+                                await loadProductForEdit(byPidSnap.docs[0].id);
+                                return;
+                            }
+                        } catch (prodQueryErr) {
+                            console.warn('Product id query failed, falling back to scan:', prodQueryErr);
+                        }
+                        // Fallback: scan and match case-insensitively or substring
+                        const productsSnap = await getDocs(productsCol);
+                        const lowerTerm = term.toLowerCase();
+                        const foundProd = productsSnap.docs.find(d => {
+                            const data = d.data();
+                            const model = (data.model || '').toString();
+                            const pid = (data.productId || '').toString();
+                            return model.toLowerCase() === lowerTerm || pid.toLowerCase() === lowerTerm || model.toLowerCase().includes(lowerTerm) || pid.toLowerCase().includes(lowerTerm);
+                        });
+                        if (foundProd) {
+                            await loadProductForEdit(foundProd.id);
+                            return;
+                        }
+
+                        // Delivery man by id
+                        const dmDoc = await getDoc(doc(db, 'deliveryMen', term));
+                        if (dmDoc.exists()) {
+                            showPage('delivery');
+                            return;
+                        }
+
+                        showToast('No matching record found', 'warning');
+                    } catch (e) {
+                        console.error('Global search error', e);
+                        showToast('Search failed. Check permissions or try again.', 'error');
+                    }
+                };
+
+                // Fire on Enter (use keydown for better cross-browser reliability)
+                globalSearchInput.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') {
+                        e.preventDefault();
+                        doGlobalSearch(globalSearchInput.value);
+                    }
+                });
+            }
             // Initialize AudioContext and Speech Synthesis on first user interaction to comply with browser policies
             const primeAudioAndSpeech = () => {
                 initAudio();
