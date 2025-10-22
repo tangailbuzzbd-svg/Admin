@@ -224,6 +224,17 @@
                             <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary"></i>
                             <input id="global-search-input" type="text" placeholder="Search by Order/User/Product/Delivery ID..." class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" />
                         </div>
+                        <!-- Quick section select -->
+                        <div class="mr-4">
+                            <select id="quick-section-select" class="px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                <option value="dashboard">Dashboard</option>
+                                <option value="products">Products</option>
+                                <option value="low-stock">Low Stock</option>
+                                <option value="reviews">Reviews</option>
+                                <option value="orders">All Orders</option>
+                                <option value="users">All Users</option>
+                            </select>
+                        </div>
                         <!-- UPDATED: Digital Clock container -->
                         <div id="digital-clock" class="text-right text-text-secondary mr-4 hidden sm:block tabular-nums leading-tight">
                             <!-- Clock content will be injected by JS -->
@@ -438,6 +449,22 @@
                                     <div id="product-subcategory-filter-container" class="hidden">
                                         <!-- Dropdown will be inserted here by JS -->
                                     </div>
+                                    <!-- Bulk actions -->
+                                    <div class="flex items-center gap-3">
+                                        <label class="inline-flex items-center text-sm select-none">
+                                            <input id="products-select-all" type="checkbox" class="mr-2 accent-theme-primary">
+                                            Select All
+                                        </label>
+                                        <button id="products-delete-selected" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg btn-glow-red" title="Delete selected products">Delete Selected</button>
+                                    </div>
+                                    <!-- Duplicates Detector (top-right) -->
+                                    <div class="ml-auto flex items-center gap-2 order-last">
+                                        <button id="products-toggle-duplicates" class="bg-amber-500 hover:bg-amber-600 text-white font-semibold py-2 px-3 rounded-lg btn-glow" title="Show only duplicated products">
+                                            <i data-lucide="alert-triangle" class="w-4 h-4 mr-2"></i>
+                                            Show Duplicates
+                                        </button>
+                                        <span id="duplicates-summary" class="text-xs text-text-secondary"></span>
+                                    </div>
                                 </div>
                             </div>
                             <div class="overflow-x-auto">
@@ -445,6 +472,7 @@
                                     <thead>
                                         <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700">
                                             <th class="px-4 py-3">#</th>
+                                            <th class="px-4 py-3 text-center">Select</th>
                                             <th class="px-4 py-3">Image</th>
                                             <th class="px-4 py-3">Name</th>
                                             <th class="px-4 py-3">Product ID</th>
@@ -459,7 +487,7 @@
                                             <th class="px-4 py-3">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y border-color" id="all-products-body"><tr class="text-text-primary"><td colspan="13" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
+                                    <tbody class="divide-y border-color" id="all-products-body"><tr class="text-text-primary"><td colspan="14" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
                                 </table>
                             </div>
                         </div>
@@ -470,13 +498,21 @@
                         <div class="bg-secondary p-6 rounded-lg shadow-md">
                             <div class="flex items-center justify-between mb-4">
                                 <h3 class="text-xl font-semibold text-text-primary">Low Stock Products</h3>
-                                <span class="text-sm text-text-secondary">Threshold: <span id="low-stock-threshold-display">5</span></span>
+                                <div class="flex items-center gap-4">
+                                    <span class="text-sm text-text-secondary">Threshold: <span id="low-stock-threshold-display">5</span></span>
+                                    <label class="inline-flex items-center text-sm select-none">
+                                        <input id="low-stock-select-all" type="checkbox" class="mr-2 accent-theme-primary">
+                                        Select All
+                                    </label>
+                                    <button id="low-stock-delete-selected" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg btn-glow-red" title="Delete selected low-stock products">Delete Selected</button>
+                                </div>
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left">
                                     <thead>
                                         <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700">
                                             <th class="px-4 py-3">#</th>
+                                            <th class="px-4 py-3 text-center">Select</th>
                                             <th class="px-4 py-3">Image</th>
                                             <th class="px-4 py-3">Name</th>
                                             <th class="px-4 py-3">Category</th>
@@ -486,7 +522,7 @@
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y border-color" id="low-stock-body">
-                                        <tr class="text-text-primary"><td colspan="7" class="px-4 py-3 text-center">Loading...</td></tr>
+                                        <tr class="text-text-primary"><td colspan="8" class="px-4 py-3 text-center">Loading...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -502,6 +538,12 @@
                                 <div class="flex items-center gap-2 text-sm">
                                     <span class="px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-text-secondary">Total: <span id="reviews-summary-total">0</span></span>
                                     <span class="px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300">Avg: <span id="reviews-summary-avg">0.0</span> ★</span>
+                                    <span class="hidden sm:inline-block w-px h-5 bg-gray-300 dark:bg-gray-600 mx-1"></span>
+                                    <label class="inline-flex items-center text-sm select-none">
+                                        <input id="reviews-select-all" type="checkbox" class="mr-2 accent-theme-primary">
+                                        Select All
+                                    </label>
+                                    <button id="reviews-delete-selected" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg btn-glow-red" title="Delete selected reviews">Delete Selected</button>
                                 </div>
                             </div>
                             <div class="overflow-x-auto">
@@ -509,6 +551,7 @@
                                     <thead>
                                         <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700">
                                             <th class="px-4 py-3">#</th>
+                                            <th class="px-4 py-3 text-center">Select</th>
                                             <th class="px-4 py-3">Product</th>
                                             <th class="px-4 py-3">Rating</th>
                                             <th class="px-4 py-3">Comment</th>
@@ -518,7 +561,7 @@
                                         </tr>
                                     </thead>
                                     <tbody class="divide-y border-color" id="reviews-body">
-                                        <tr class="text-text-primary"><td colspan="7" class="px-4 py-3 text-center">Loading...</td></tr>
+                                        <tr class="text-text-primary"><td colspan="8" class="px-4 py-3 text-center">Loading...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -628,12 +671,19 @@
                                          <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary"></i>
                                          <input type="text" id="order-search-input" placeholder="Search by Order ID..." class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
                                      </div>
+                                     <div class="flex items-center gap-3 self-start sm:self-end">
+                                         <label class="inline-flex items-center text-sm select-none">
+                                             <input id="orders-select-all" type="checkbox" class="mr-2 accent-theme-primary">
+                                             Select All
+                                         </label>
+                                         <button id="orders-delete-selected" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg btn-glow-red" title="Delete selected orders">Delete Selected</button>
+                                     </div>
                                  </div>
                              </div>
                              <div class="overflow-x-auto">
                                  <table class="w-full text-left">
-                                     <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Sl. No.</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer Name</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Date & Time</th><th class="px-4 py-3">Items</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Payment Method</th><th class="px-4 py-3">Delivery Charge</th><th class="px-4 py-3">Assign Delivery Man</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr></thead>
-                                     <tbody class="divide-y border-color" id="all-orders-body"><tr class="text-text-primary"><td colspan="13" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
+                                     <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Sl. No.</th><th class="px-4 py-3 text-center">Select</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer Name</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Date & Time</th><th class="px-4 py-3">Items</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Payment Method</th><th class="px-4 py-3">Delivery Charge</th><th class="px-4 py-3">Assign Delivery Man</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr></thead>
+                                     <tbody class="divide-y border-color" id="all-orders-body"><tr class="text-text-primary"><td colspan="14" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
                                  </table>
                              </div>
                          </div>
@@ -642,11 +692,20 @@
                     <!-- Users Page -->
                     <div id="users-page" class="page-content hidden">
                         <div class="bg-secondary p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-semibold text-text-primary mb-4">All Users</h3>
+                            <div class="flex items-center justify-between mb-4 gap-3">
+                                <h3 class="text-xl font-semibold text-text-primary">All Users</h3>
+                                <div class="flex items-center gap-3">
+                                    <label class="inline-flex items-center text-sm select-none">
+                                        <input id="users-select-all" type="checkbox" class="mr-2 accent-theme-primary">
+                                        Select All
+                                    </label>
+                                    <button id="users-delete-selected" class="bg-red-600 hover:bg-red-700 text-white font-semibold py-2 px-3 rounded-lg btn-glow-red" title="Delete selected users">Delete Selected</button>
+                                </div>
+                            </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left">
-                                    <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">User</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Join Date</th><th class="px-4 py-3">UID</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr></thead>
-                                    <tbody class="divide-y border-color" id="all-users-body"><tr class="text-text-primary"><td colspan="8" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
+                                    <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">User</th><th class="px-4 py-3 text-center">Select</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Join Date</th><th class="px-4 py-3">UID</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr></thead>
+                                    <tbody class="divide-y border-color" id="all-users-body"><tr class="text-text-primary"><td colspan="9" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
                                 </table>
                             </div>
                         </div>
@@ -901,7 +960,9 @@
         let allOrders = [];
         let currentProductCategoryFilter = 'all';
         let currentProductSubCategoryFilter = 'all';
-        let currentOrderStatusFilter = 'all';
+    let showDuplicatesOnly = false; // When true, render only duplicated products
+    let currentOrderStatusFilter = 'all';
+    let duplicateIdSet = new Set(); // computed across all products (global detection)
         let allDeliveryMen = [];
         let notifications = [];
         let confirmCallback = null;
@@ -1544,6 +1605,9 @@ const saveBulkProducts = async (products) => {
             UI.pages.forEach(p => p.classList.toggle('hidden', p.id !== `${pageId}-page`));
             UI.navLinks.forEach(l => l.classList.toggle('active', l.dataset.page === pageId));
             UI.pageTitle.textContent = PAGE_TITLES[pageId] || 'Dashboard';
+            // Keep quick section dropdown in sync
+            const quickSel = document.getElementById('quick-section-select');
+            if (quickSel && quickSel.value !== pageId) quickSel.value = pageId;
         };
 
         // --- Appearance & Theming ---
@@ -1645,6 +1709,7 @@ const saveBulkProducts = async (products) => {
                     tbody.insertAdjacentHTML('beforeend', `
                         <tr class="text-text-primary">
                             <td class="px-4 py-3 text-sm">${idx + 1}</td>
+                            <td class="px-4 py-3 text-center"><input type=\"checkbox\" class=\"row-select accent-theme-primary\" data-coll=\"review\" data-product-id=\"${r.productId}\" data-review-idx=\"${r.reviewIdx}\"></td>
                             <td class="px-4 py-3 text-sm">
                                 <div class="flex items-center gap-3">
                                     <img src="${productImage}" onerror="this.src='https://placehold.co/48x48/e2e8f0/64748b?text=Img'" class="h-10 w-10 object-cover rounded">
@@ -1814,12 +1879,18 @@ const saveBulkProducts = async (products) => {
         const renderFilteredProducts = () => {
             const body = document.getElementById('all-products-body');
             body.innerHTML = '';
-            const filteredProducts = allProducts.filter(doc => {
+            // Base filter by category and subcategory
+            let filteredProducts = allProducts.filter(doc => {
                 const data = doc.data();
                 const categoryMatch = currentProductCategoryFilter === 'all' || data.category === currentProductCategoryFilter;
                 const subCategoryMatch = currentProductSubCategoryFilter === 'all' || data.subcategory === currentProductSubCategoryFilter;
                 return categoryMatch && subCategoryMatch;
             });
+
+            // If duplicate-only mode, further narrow using global duplicateIdSet
+            if (showDuplicatesOnly) {
+                filteredProducts = filteredProducts.filter(doc => duplicateIdSet.has(doc.id));
+            }
 
             if (filteredProducts.length === 0) {
                 const colSpan = body.parentElement.querySelector('thead th').parentElement.children.length;
@@ -1828,6 +1899,48 @@ const saveBulkProducts = async (products) => {
             }
             filteredProducts.forEach((doc, idx) => body.insertAdjacentHTML('beforeend', renderProductRow_All(doc, idx + 1)));
             lucide.createIcons();
+            // Update summary after rendering
+            updateDuplicatesSummary(filteredProducts);
+        };
+
+        // Update duplicates summary badge
+        const updateDuplicatesSummary = (filteredDocs) => {
+            const el = document.getElementById('duplicates-summary');
+            if (!el) return;
+            if (!showDuplicatesOnly) { el.textContent = ''; return; }
+            const count = Array.isArray(filteredDocs) ? filteredDocs.length : 0;
+            el.textContent = count > 0 ? `Duplicate items: ${count}` : 'No duplicates found';
+        };
+
+        // Compute duplicates globally across allProducts using multiple heuristics
+        const computeDuplicateSet = () => {
+            const norm = (s) => String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
+            const addGroupHits = (map, key, doc) => {
+                if (!key) return;
+                if (!map[key]) map[key] = [];
+                map[key].push(doc);
+            };
+            const maps = { byModel: {}, bySku: {}, byNameCat: {}, byImage: {} };
+            allProducts.forEach(doc => {
+                const d = doc.data() || {};
+                const model = norm(d.model);
+                const sku = norm(d.sku || d.productId);
+                const name = norm(d.name);
+                const cat = norm(d.category);
+                const sub = norm(d.subcategory);
+                const img = norm(d.imageUrl);
+                addGroupHits(maps.byModel, model ? `model:${model}` : '', doc);
+                addGroupHits(maps.bySku, sku ? `sku:${sku}` : '', doc);
+                addGroupHits(maps.byNameCat, (name && cat) ? `namecat:${name}|${cat}|${sub}` : '', doc);
+                addGroupHits(maps.byImage, img ? `img:${img}` : '', doc);
+            });
+            const dup = new Set();
+            Object.values(maps).forEach(groupMap => {
+                Object.values(groupMap).forEach(arr => {
+                    if (arr.length >= 2) arr.forEach(doc => dup.add(doc.id));
+                });
+            });
+            duplicateIdSet = dup;
         };
 
         const renderProductFilters = () => {
@@ -1900,6 +2013,7 @@ const saveBulkProducts = async (products) => {
 
             return `<tr class="text-text-primary ${lowStockClass}">
                 <td class="px-4 py-3 text-sm">${slNo}</td>
+                <td class="px-4 py-3 text-center"><input type="checkbox" class="row-select accent-theme-primary" data-id="${doc.id}" data-coll="products"></td>
                 <td class="px-4 py-3"><img src="${d.imageUrl}" onerror="this.src='https://placehold.co/48x48/e2e8f0/64748b?text=Img'" class="h-12 w-12 object-cover rounded"></td>
                 <td class="px-4 py-3 text-sm font-semibold">${d.name || 'N/A'}</td>
                 <td class="px-4 py-3 text-sm font-mono" title="Full ID: ${doc.id}">${productIdDisplay}</td>
@@ -1942,6 +2056,7 @@ const saveBulkProducts = async (products) => {
                 body.insertAdjacentHTML('beforeend', `
                     <tr class="text-text-primary">
                         <td class="px-4 py-3 text-sm">${idx + 1}</td>
+                        <td class="px-4 py-3 text-center"><input type="checkbox" class="row-select accent-theme-primary" data-id="${doc.id}" data-coll="products"></td>
                         <td class="px-4 py-3"><img src="${d.imageUrl}" onerror="this.src='https://placehold.co/48x48/e2e8f0/64748b?text=Img'" class="h-12 w-12 object-cover rounded"></td>
                         <td class="px-4 py-3 text-sm font-semibold">${d.name || 'N/A'}</td>
                         <td class="px-4 py-3 text-sm">${categoryName}</td>
@@ -1986,6 +2101,7 @@ const saveBulkProducts = async (products) => {
 
             return `<tr class="${rowClass}">
                 <td class="px-4 py-3 text-sm">${slNo}</td>
+                <td class="px-4 py-3 text-center"><input type="checkbox" class="row-select accent-theme-primary" data-id="${doc.id}" data-coll="orders"></td>
                 <td class="px-4 py-3 text-sm font-mono" title="Full ID: ${doc.id}">#${orderIdDisplay}</td>
                 <td class="px-4 py-3 text-sm">${d.userName || 'N/A'}</td>
                 <td class="px-4 py-3 text-sm">${d.userMobile || 'N/A'}</td>
@@ -2022,6 +2138,7 @@ const saveBulkProducts = async (products) => {
                     <img src="${d.photoURL || `https://placehold.co/32x32/e2e8f0/64748b?text=${(d.name || 'U').charAt(0)}`}" class="w-8 h-8 rounded-full object-cover mr-3">
                     <span>${d.name || 'N/A'}</span>
                 </td>
+                <td class="px-4 py-3 text-center"><input type="checkbox" class="row-select accent-theme-primary" data-id="${doc.id}" data-coll="users"></td>
                 <td class="px-4 py-3 text-sm">${d.email || 'N/A'}</td>
                 <td class="px-4 py-3 text-sm">${d.mobile || 'N/A'}</td>
                 <td class="px-4 py-3 text-sm">${d.location || 'N/A'}</td>
@@ -2746,6 +2863,18 @@ async function handleEditCouponSubmit(e) {
                 }, title, text);
                 return;
             }
+
+            // Toggle Duplicates view
+            const dupToggleBtn = e.target.closest('#products-toggle-duplicates');
+            if (dupToggleBtn) {
+                showDuplicatesOnly = !showDuplicatesOnly;
+                dupToggleBtn.innerHTML = showDuplicatesOnly 
+                    ? '<i data-lucide="list" class="w-4 h-4 mr-2"></i> Show All'
+                    : '<i data-lucide="alert-triangle" class="w-4 h-4 mr-2"></i> Show Duplicates';
+                renderFilteredProducts();
+                if (window.lucide?.createIcons) lucide.createIcons();
+                return;
+            }
             
             // FIX: Product edit korar jonno button handler add kora hoyeche
             const editBtn = e.target.closest('.edit-btn');
@@ -2965,6 +3094,107 @@ async function handleEditCouponSubmit(e) {
                     showToast('Failed to assign delivery man!', 'error');
                 }
             }
+        });
+
+        // Select All toggles per section
+        document.addEventListener('change', (e) => {
+            const id = e.target?.id;
+            if (!id) return;
+            const map = {
+                'products-select-all': 'products-page',
+                'low-stock-select-all': 'low-stock-page',
+                'reviews-select-all': 'reviews-page',
+                'orders-select-all': 'orders-page',
+                'users-select-all': 'users-page',
+            };
+            const pageId = map[id];
+            if (!pageId) return;
+            const container = document.getElementById(pageId);
+            if (!container) return;
+            const checked = e.target.checked;
+            container.querySelectorAll('input.row-select').forEach(cb => cb.checked = checked);
+        });
+
+        // Bulk delete selected per section
+        document.addEventListener('click', (e) => {
+            const btn = e.target.closest('#products-delete-selected, #low-stock-delete-selected, #reviews-delete-selected, #orders-delete-selected, #users-delete-selected');
+            if (!btn) return;
+
+            const pageMap = {
+                'products-delete-selected': 'products-page',
+                'low-stock-delete-selected': 'low-stock-page',
+                'reviews-delete-selected': 'reviews-page',
+                'orders-delete-selected': 'orders-page',
+                'users-delete-selected': 'users-page'
+            };
+            const pageId = pageMap[btn.id];
+            const container = document.getElementById(pageId);
+            if (!container) return;
+
+            const selected = Array.from(container.querySelectorAll('input.row-select:checked'));
+            if (selected.length === 0) { showToast('No items selected', 'warning'); return; }
+
+            const doBulkDelete = async () => {
+                const groups = { products: [], orders: [], users: [], review: [] };
+                selected.forEach(cb => {
+                    const coll = cb.dataset.coll;
+                    if (coll === 'review') {
+                        groups.review.push({ productId: cb.dataset.productId, reviewIdx: Number(cb.dataset.reviewIdx) });
+                    } else if (groups[coll]) {
+                        groups[coll].push(cb.dataset.id);
+                    }
+                });
+
+                try {
+                    // Delete products using writeBatch for speed (up to 500 per commit)
+                    if (groups.products.length) {
+                        const chunkSize = 450; // keep headroom for safety
+                        for (let i = 0; i < groups.products.length; i += chunkSize) {
+                            const chunk = groups.products.slice(i, i + chunkSize);
+                            const batch = writeBatch(db);
+                            chunk.forEach(pid => batch.delete(doc(db, 'products', pid)));
+                            await batch.commit();
+                        }
+                    }
+
+                    // Delete orders and users (usually smaller counts). If needed, we can batch similarly later.
+                    for (const coll of ['orders', 'users']) {
+                        const ids = groups[coll];
+                        for (let i = 0; i < ids.length; i += 50) { // small concurrency-friendly chunks
+                            const slice = ids.slice(i, i + 50);
+                            await Promise.all(slice.map(id => deleteDoc(doc(db, coll, id))));
+                        }
+                    }
+                    // Delete embedded reviews grouped by product
+                    if (groups.review.length) {
+                        const byProduct = groups.review.reduce((acc, r) => {
+                            (acc[r.productId] ||= []).push(r.reviewIdx);
+                            return acc;
+                        }, {});
+                        for (const [productId, idxs] of Object.entries(byProduct)) {
+                            const pref = doc(db, 'products', productId);
+                            const psnap = await getDoc(pref);
+                            if (!psnap.exists()) continue;
+                            const data = psnap.data();
+                            if (!Array.isArray(data.reviews)) continue;
+                            idxs.sort((a,b) => b - a).forEach(i => { if (i >= 0 && i < data.reviews.length) data.reviews.splice(i, 1); });
+                            await updateDoc(pref, { reviews: data.reviews });
+                        }
+                    }
+
+                    showToast('Selected items deleted successfully!');
+                    // Clear selections
+                    const selectAll = container.querySelector('input[id$="-select-all"]');
+                    if (selectAll) selectAll.checked = false;
+                    container.querySelectorAll('input.row-select').forEach(cb => cb.checked = false);
+                    if (pageId === 'reviews-page') renderReviewsList();
+                } catch (err) {
+                    console.error('Bulk delete failed', err);
+                    showToast('Failed to delete some items', 'error');
+                }
+            };
+
+            showConfirmationModal(doBulkDelete, 'Delete selected?', `Are you sure you want to delete ${selected.length} selected item(s)? This action cannot be undone.`);
         });
 
         const loadProductForEdit = async (productId) => {
@@ -3859,6 +4089,7 @@ async function handleEditCouponSubmit(e) {
             // Full Data for Pages (All sorted client-side)
             const unsubAllProducts = onSnapshot(collection(db, "products"), snap => {
                 allProducts = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+                computeDuplicateSet(); // refresh duplicates globally whenever products change
                 renderProductFilters();
                 renderSubCategoryFilter();
                 renderFilteredProducts();
@@ -4101,6 +4332,16 @@ if (bulkUploadBtn && csvFileInput) {
     const initializeAdminPanel = (user) => {
             const pageId = window.location.hash.substring(1) || 'dashboard';
             showPage(pageId);
+            // Keep quick-section-select in sync and wire navigation
+            const quickSel = document.getElementById('quick-section-select');
+            if (quickSel) {
+                quickSel.value = pageId;
+                quickSel.addEventListener('change', (e) => {
+                    const val = e.target.value;
+                    history.pushState({pageId: val}, '', `#${val}`);
+                    showPage(val);
+                });
+            }
             const addForm = document.getElementById('add-product-form');
             const editForm = document.getElementById('edit-product-form');
             setupProductForm(addForm, 'add-');
