@@ -1403,9 +1403,11 @@ const parseCSV = (csvText) => {
             continue;
         }
 
-        const obj = {};
-        let specificationDescription = ''; // Specifications Description এর জন্য অতিরিক্ত ভেরিয়েবল
-        let thumbnailURL = ''; // Thumbnail URL এর জন্য ভেরিয়েবল
+    const obj = {};
+    // Collect raw Specification Description chunks (may come from one or more columns)
+    const specDescriptionChunks = [];
+    // Collect unlimited thumbnails
+    const thumbnails = [];
 
         headers.forEach((header, index) => {
             let value = values[index].trim().replace(/^"|"$/g, ''); // ডাবল কোটেশন সরিয়ে দেওয়া
@@ -1422,13 +1424,31 @@ const parseCSV = (csvText) => {
                 case 'On Offer': key = 'isOnOffer'; break;
                 case 'Refundable': key = 'isRefundable'; break;
                 case 'main Image URL': key = 'imageUrl'; break; // নতুন মেইন ইমেজ ফিল্ড
-                case 'thumbnil image URL': thumbnailURL = value; return; // Thumbnail URL ভেরিয়েবলে সেভ করা
+                // Backward compatibility: single thumbnail column
+                case 'thumbnil image URL': {
+                    // Support multiple URLs in a single cell separated by | ; or whitespace
+                    const parts = String(value).split(/\s*[|;\n]\s*/).map(s => s.trim()).filter(Boolean);
+                    thumbnails.push(...parts);
+                    return;
+                }
+                // New: combined thumbnails column (comma-safe in CSV if quoted)
+                case 'Thumbnails':
+                case 'thumbnails':
+                case 'Thumbnail URLs':
+                case 'thumbnail urls': {
+                    const parts = String(value).split(/\s*[|;\n]\s*/).map(s => s.trim()).filter(Boolean);
+                    thumbnails.push(...parts);
+                    return;
+                }
                 case 'Description': key = 'details'; break;
                 case 'Sub-Category': key = 'subcategory'; break;
                 case 'Category': key = 'category'; break;
                 case 'Brand': key = 'brand'; break;
                 case 'Warranty': key = 'warranty'; break;
-                case 'Specifications Description': specificationDescription = value; return; // Specification Description ভেরিয়েবলে সেভ করা
+                case 'Specifications Description': {
+                    if (value) specDescriptionChunks.push(value);
+                    return; // handled
+                }
                 default: key = header.toLowerCase().replace(/\s/g, ''); 
             }
             
@@ -1447,11 +1467,61 @@ const parseCSV = (csvText) => {
             obj.category = obj.category.toLowerCase().replace(/\s/g, '-').replace('&', 'and');
         }
 
-        // Thumbnail URL কে Array আকারে যুক্ত করা
-        obj.thumbnails = thumbnailURL ? [thumbnailURL] : []; 
+        // Heuristic: also pick up columns that look like thumbnail or gallery slots (e.g., Thumbnail 1, Image2, Gallery3)
+        headers.forEach((header, idx) => {
+            const h = header.trim();
+            if (!h) return;
+            // Skip the main image header explicitly
+            if (h.toLowerCase() === 'main image url') return;
+            const val = values[idx] ? String(values[idx]).trim().replace(/^"|"$/g, '') : '';
+            if (!val) return;
+            const isThumbHeader = /^(thumb(nail)?(\s*\d+)?|image\s*([2-9]|\d{2,})|gallery\s*\d+)$/i.test(h) || /thumbnail/.test(h.toLowerCase());
+            if (isThumbHeader) {
+                const parts = val.split(/\s*[|;\n]\s*/).map(s => s.trim()).filter(Boolean);
+                thumbnails.push(...parts);
+            }
+        });
+
+        // Normalize thumbnails: trim, remove empty, dedupe, and keep only plausible URLs
+        const seen = new Set();
+        const normalizedThumbs = [];
+        thumbnails.forEach(u => {
+            const t = u.trim();
+            if (!t) return;
+            // Basic plausibility check (allow http, https, data URIs)
+            if (!/^https?:\/\//i.test(t) && !/^data:image\//i.test(t)) return;
+            if (seen.has(t)) return;
+            seen.add(t);
+            normalizedThumbs.push(t);
+        });
+
+        obj.thumbnails = normalizedThumbs;
+        // If no explicit main image provided, use first thumbnail as imageUrl
+        if ((!obj.imageUrl || obj.imageUrl === '') && obj.thumbnails.length > 0) {
+            obj.imageUrl = obj.thumbnails[0];
+        }
         
-        // Specifications Description কে একটি specification object এ যুক্ত করা (আপনার আপলোড ফর্ম অনুযায়ী)
-        obj.specification = specificationDescription ? { "Details": specificationDescription } : {};
+    // Specifications Description কে একটি specification object এ যুক্ত করা (Key:Value | Key2:Value2)
+    const specificationDescription = specDescriptionChunks.join('\n').trim();
+    let specsObj = {};
+    if (specificationDescription) {
+        // Split into pairs by pipe or newline; tolerate multiple separators
+        const pairs = specificationDescription.split(/[|\n]+/).map(s => s.trim()).filter(Boolean);
+        for (const pair of pairs) {
+            // Split only on the first colon to allow colons in the value
+            const idx = pair.indexOf(':');
+            if (idx === -1) continue; // skip invalid pair
+            const rawKey = pair.slice(0, idx).trim();
+            const rawVal = pair.slice(idx + 1).trim();
+            if (!rawKey || !rawVal) continue;
+            specsObj[rawKey] = rawVal;
+        }
+    }
+
+    // Fallback: if no valid pairs were parsed, store full text under Details
+    obj.specification = Object.keys(specsObj).length > 0
+        ? specsObj
+        : (specificationDescription ? { "Details": specificationDescription } : {});
 
         // যদি Rating না থাকে, তবে ০ সেট করা
         obj.rating = obj.rating !== undefined ? Number(obj.rating) : 0; 
