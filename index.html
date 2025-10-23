@@ -6,6 +6,8 @@
     <title>Admin Panel</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -359,8 +361,37 @@
                             <div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">Recent Orders</h3><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Sl. No.</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Status</th></tr></thead><tbody class="divide-y border-color" id="recent-orders-body"><tr class="text-text-primary"><td colspan="5" class="px-4 py-3 text-center">Loading...</td></tr></tbody></table></div></div>
                             <div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">New Users</h3><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">User</th><th class="px-4 py-3">Email</th><th class="px-4 py-3">Join Date</th></tr></thead><tbody class="divide-y border-color" id="recent-users-body"><tr class="text-text-primary"><td colspan="3" class="px-4 py-3 text-center">Loading...</td></tr></tbody></table></div></div>
                         </div>
-                    </div>
 
+                        <div class="bg-secondary p-6 rounded-lg shadow-md mt-6">
+                            <div class="flex flex-col gap-3">
+                                <div class="flex items-center justify-between">
+                                    <h3 class="text-xl font-semibold text-text-primary">Dashboard Metrics</h3>
+                                    <div class="flex items-center gap-2">
+                                        <select id="ordersChartDays" class="px-3 py-1.5 text-sm rounded-md bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                            <option value="1">Last 1 day</option>
+                                            <option value="7" selected>Last 7 days</option>
+                                            <option value="30">Last 1 month</option>
+                                            <option value="180">Last 6 months</option>
+                                            <option value="365">Last 1 year</option>
+                                        </select>
+                                        <button id="downloadMetricsExcel" class="px-3 py-1.5 text-sm rounded-md bg-theme-primary text-white btn-glow" title="Download Excel">Download Excel</button>
+                                    </div>
+                                </div>
+                                <div class="flex flex-wrap gap-3 text-sm">
+                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-orders" type="checkbox" class="accent-theme-primary" checked> <span>Orders</span></label>
+                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-delivered" type="checkbox" class="accent-theme-primary" checked> <span>Delivered</span></label>
+                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-ofd" type="checkbox" class="accent-theme-primary"> <span>Out for Delivery</span></label>
+                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-users" type="checkbox" class="accent-theme-primary"> <span>New Users</span></label>
+                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-products" type="checkbox" class="accent-theme-primary"> <span>New Products</span></label>
+                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-sales" type="checkbox" class="accent-theme-primary" checked> <span>Sales Amount</span></label>
+                                </div>
+                                <div class="h-72">
+                                    <canvas id="ordersChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
                     <!-- Live Chat Page -->
                     <div id="chat-page" class="page-content hidden">
                         <div class="h-[calc(100vh-10rem)] bg-secondary rounded-lg shadow-md flex">
@@ -1976,6 +2007,220 @@ const saveBulkProducts = async (products) => {
             }
         };
 
+        // --- Dashboard Metrics Aggregation + Chart ---
+        const drawOrdersChart = async (days = 7) => {
+            try {
+                const canvas = document.getElementById('ordersChart');
+                if (!canvas) return;
+
+                // Destroy previous instance
+                if (canvas.chart) {
+                    canvas.chart.destroy();
+                    canvas.chart = undefined;
+                }
+
+                const tz = localStorage.getItem('adminTimeZone') || 'Asia/Riyadh';
+                const now = new Date();
+                const dayMs = 24 * 60 * 60 * 1000;
+                const fmtKey = (d) => new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+                const labels = Array.from({ length: days }, (_, i) => fmtKey(new Date(now.getTime() - (days - 1 - i) * dayMs)));
+
+                // Initialize metrics maps
+                const baseMap = () => new Map(labels.map(k => [k, 0]));
+                const mOrders = baseMap();
+                const mDelivered = baseMap();
+                const mOFD = baseMap();
+                const mUsers = baseMap();
+                const mProducts = baseMap();
+                const mSales = baseMap(); // amount
+
+                const startDate = new Date(now.getTime() - (days - 1) * dayMs);
+
+                // Helper: safe JS Date from various timestamp shapes
+                const toJSDate = (v) => {
+                    if (!v) return null;
+                    if (typeof v?.toDate === 'function') return v.toDate();
+                    if (v instanceof Date) return v;
+                    if (typeof v === 'number') return new Date(v < 1e12 ? v * 1000 : v);
+                    if (typeof v === 'string') { const d = new Date(v); return isNaN(d) ? null : d; }
+                    return null;
+                };
+
+                // Fetch and aggregate Orders
+                const qOrders = query(collection(db, 'orders'), where('createdAt', '>=', startDate), orderBy('createdAt', 'asc'));
+                const snapOrders = await getDocs(qOrders);
+                snapOrders.forEach(docSnap => {
+                    const o = docSnap.data() || {};
+                    const d = toJSDate(o.createdAt);
+                    if (!d) return;
+                    const key = fmtKey(d);
+                    if (!mOrders.has(key)) return;
+                    mOrders.set(key, (mOrders.get(key) || 0) + 1);
+                    const status = String(o.status || '').toLowerCase().replace(/\s+/g, '-');
+                    if (status === 'delivered') {
+                        mDelivered.set(key, (mDelivered.get(key) || 0) + 1);
+                        const amt = Number(o.totalAmount || 0);
+                        mSales.set(key, (mSales.get(key) || 0) + (isNaN(amt) ? 0 : amt));
+                    }
+                    if (status === 'out-for-delivery') {
+                        mOFD.set(key, (mOFD.get(key) || 0) + 1);
+                    }
+                });
+
+                // New Users
+                const qUsers = query(collection(db, 'users'), where('createdAt', '>=', startDate), orderBy('createdAt', 'asc'));
+                const snapUsers = await getDocs(qUsers);
+                snapUsers.forEach(docSnap => {
+                    const u = docSnap.data() || {};
+                    const d = toJSDate(u.createdAt);
+                    if (!d) return;
+                    const key = fmtKey(d);
+                    if (mUsers.has(key)) mUsers.set(key, (mUsers.get(key) || 0) + 1);
+                });
+
+                // New Products
+                const qProducts = query(collection(db, 'products'), where('createdAt', '>=', startDate), orderBy('createdAt', 'asc'));
+                const snapProducts = await getDocs(qProducts);
+                snapProducts.forEach(docSnap => {
+                    const p = docSnap.data() || {};
+                    const d = toJSDate(p.createdAt);
+                    if (!d) return;
+                    const key = fmtKey(d);
+                    if (mProducts.has(key)) mProducts.set(key, (mProducts.get(key) || 0) + 1);
+                });
+
+                // Build datasets per selected metrics
+                const isChecked = (id) => !!document.getElementById(id)?.checked;
+                const wantOrders = isChecked('metric-orders');
+                const wantDelivered = isChecked('metric-delivered');
+                const wantOFD = isChecked('metric-ofd');
+                const wantUsers = isChecked('metric-users');
+                const wantProducts = isChecked('metric-products');
+                const wantSales = isChecked('metric-sales');
+
+                const css = getComputedStyle(document.documentElement);
+                const cPrimary = (css.getPropertyValue('--c-primary') || '#4f46e5').trim();
+                const palette = {
+                    orders: cPrimary,
+                    delivered: '#10b981', // emerald-500
+                    ofd: '#f59e0b',       // amber-500
+                    users: '#3b82f6',     // blue-500
+                    products: '#8b5cf6',  // violet-500
+                    sales: '#ef4444'      // red-500
+                };
+
+                const datasets = [];
+                const makeDataset = (label, map, color, yAxisID = 'y') => ({
+                    type: yAxisID === 'y1' ? 'line' : 'bar',
+                    label,
+                    data: labels.map(k => map.get(k) || 0),
+                    backgroundColor: yAxisID === 'y1' ? 'transparent' : color,
+                    borderColor: color,
+                    borderWidth: 2,
+                    fill: yAxisID === 'y1' ? false : true,
+                    borderRadius: yAxisID === 'y1' ? 0 : 6,
+                    maxBarThickness: 26,
+                    yAxisID
+                });
+
+                if (wantOrders) datasets.push(makeDataset('Orders', mOrders, palette.orders));
+                if (wantDelivered) datasets.push(makeDataset('Delivered', mDelivered, palette.delivered));
+                if (wantOFD) datasets.push(makeDataset('Out for Delivery', mOFD, palette.ofd));
+                if (wantUsers) datasets.push(makeDataset('New Users', mUsers, palette.users));
+                if (wantProducts) datasets.push(makeDataset('New Products', mProducts, palette.products));
+                if (wantSales) datasets.push(makeDataset('Sales Amount', mSales, palette.sales, 'y1'));
+
+                const ctx = canvas.getContext('2d');
+                const isDark = document.documentElement.classList.contains('dark');
+                const gridColor = isDark ? '#374151' : '#e5e7eb';
+                const tickColor = isDark ? '#d1d5db' : '#6b7280';
+
+                const chart = new Chart(ctx, {
+                    data: { labels, datasets },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: { display: true },
+                            tooltip: {
+                                mode: 'index',
+                                intersect: false,
+                                callbacks: {
+                                    label: (ctx) => {
+                                        const label = ctx.dataset.label || '';
+                                        const v = ctx.parsed.y;
+                                        if (label.toLowerCase().includes('sales')) return ` ${label}: ৳${Number(v).toFixed(2)}`;
+                                        return ` ${label}: ${v}`;
+                                    }
+                                }
+                            }
+                        },
+                        scales: {
+                            x: { grid: { display: false }, ticks: { color: tickColor } },
+                            y: { beginAtZero: true, grid: { color: gridColor }, ticks: { color: tickColor, precision: 0 } },
+                            y1: { position: 'right', grid: { drawOnChartArea: false }, ticks: { color: tickColor, callback: (v) => `৳${v}` } }
+                        }
+                    }
+                });
+                canvas.chart = chart;
+            } catch (err) {
+                console.error('drawOrdersChart failed:', err);
+            }
+        };
+
+        // Download aggregated metrics as Excel for the current range
+        const downloadMetricsExcel = async () => {
+            const days = Number(document.getElementById('ordersChartDays')?.value) || 7;
+            const tz = localStorage.getItem('adminTimeZone') || 'Asia/Riyadh';
+            const now = new Date();
+            const dayMs = 24 * 60 * 60 * 1000;
+            const fmtKey = (d) => new Intl.DateTimeFormat('en-CA', { timeZone: tz, year: 'numeric', month: '2-digit', day: '2-digit' }).format(d);
+            const labels = Array.from({ length: days }, (_, i) => fmtKey(new Date(now.getTime() - (days - 1 - i) * dayMs)));
+
+            // Reuse chart aggregation quickly by calling drawOrdersChart and reading its computed values is complex.
+            // Instead, recompute minimal aggregation for export.
+            const baseMap = () => new Map(labels.map(k => [k, 0]));
+            const mOrders = baseMap();
+            const mDelivered = baseMap();
+            const mOFD = baseMap();
+            const mUsers = baseMap();
+            const mProducts = baseMap();
+            const mSales = baseMap();
+            const startDate = new Date(now.getTime() - (days - 1) * dayMs);
+            const toJSDate = (v) => (typeof v?.toDate === 'function') ? v.toDate() : (v instanceof Date ? v : (typeof v === 'number' ? new Date(v < 1e12 ? v * 1000 : v) : (typeof v === 'string' ? new Date(v) : null)));
+
+            // Orders
+            const snapOrders = await getDocs(query(collection(db, 'orders'), where('createdAt', '>=', startDate), orderBy('createdAt', 'asc')));
+            snapOrders.forEach(s => {
+                const o = s.data() || {}; const d = toJSDate(o.createdAt); if (!d) return; const k = fmtKey(d); if (!mOrders.has(k)) return;
+                mOrders.set(k, (mOrders.get(k) || 0) + 1);
+                const st = String(o.status || '').toLowerCase().replace(/\s+/g, '-');
+                if (st === 'delivered') { mDelivered.set(k, (mDelivered.get(k) || 0) + 1); mSales.set(k, (mSales.get(k) || 0) + Number(o.totalAmount || 0)); }
+                if (st === 'out-for-delivery') { mOFD.set(k, (mOFD.get(k) || 0) + 1); }
+            });
+            // Users
+            const snapUsers = await getDocs(query(collection(db, 'users'), where('createdAt', '>=', startDate), orderBy('createdAt', 'asc')));
+            snapUsers.forEach(s => { const u = s.data() || {}; const d = toJSDate(u.createdAt); if (!d) return; const k = fmtKey(d); if (mUsers.has(k)) mUsers.set(k, (mUsers.get(k) || 0) + 1); });
+            // Products
+            const snapProducts = await getDocs(query(collection(db, 'products'), where('createdAt', '>=', startDate), orderBy('createdAt', 'asc')));
+            snapProducts.forEach(s => { const p = s.data() || {}; const d = toJSDate(p.createdAt); if (!d) return; const k = fmtKey(d); if (mProducts.has(k)) mProducts.set(k, (mProducts.get(k) || 0) + 1); });
+
+            const rows = labels.map(k => ({
+                Date: k,
+                Orders: mOrders.get(k) || 0,
+                Delivered: mDelivered.get(k) || 0,
+                OutForDelivery: mOFD.get(k) || 0,
+                NewUsers: mUsers.get(k) || 0,
+                NewProducts: mProducts.get(k) || 0,
+                SalesAmount: Number(mSales.get(k) || 0)
+            }));
+
+            const wb = XLSX.utils.book_new();
+            const ws = XLSX.utils.json_to_sheet(rows);
+            XLSX.utils.book_append_sheet(wb, ws, 'Metrics');
+            XLSX.writeFile(wb, `dashboard_metrics_${days}d.xlsx`);
+        };
+
         const renderTable = (snapshot, bodyId, rowRenderer) => {
             const body = document.getElementById(bodyId);
             if (!body) return;
@@ -3243,6 +3488,8 @@ async function handleEditCouponSubmit(e) {
             if (e.target.id === 'dark-mode-toggle') {
                 localStorage.theme = e.target.checked ? 'dark' : 'light';
                 applyDarkMode(e.target.checked);
+                // Re-render chart to apply theme colors
+                await drawOrdersChart(Number(document.getElementById('ordersChartDays')?.value) || 7);
             }
 
             if (e.target.classList.contains('status-change')) {
@@ -4272,6 +4519,8 @@ async function handleEditCouponSubmit(e) {
 
             showToast("Refreshing data...");
             await loadDashboardStats();
+            // Refresh dashboard chart as well
+            await drawOrdersChart(Number(document.getElementById('ordersChartDays')?.value) || 7);
             showToast("Data refreshed successfully!");
             
             // Using a timeout to ensure the user sees the spin animation
@@ -4579,6 +4828,23 @@ if (bulkUploadBtn && csvFileInput) {
             loadAdminProfile(user);
             setupDataListeners();
             loadDashboardStats();
+            // Initialize dashboard chart and its selector
+            const daysSelect = document.getElementById('ordersChartDays');
+            if (daysSelect) {
+                daysSelect.addEventListener('change', (e) => {
+                    const v = Number(e.target.value) || 7;
+                    drawOrdersChart(v);
+                });
+                drawOrdersChart(Number(daysSelect.value) || 7);
+            }
+            // Metric toggle listeners
+            ['metric-orders','metric-delivered','metric-ofd','metric-users','metric-products','metric-sales'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.addEventListener('change', () => drawOrdersChart(Number(daysSelect?.value) || 7));
+            });
+            // Download button
+            const dlBtn = document.getElementById('downloadMetricsExcel');
+            if (dlBtn) dlBtn.addEventListener('click', () => { downloadMetricsExcel(); });
             startClock();
             setupSettingsPage();
             lucide.createIcons();
