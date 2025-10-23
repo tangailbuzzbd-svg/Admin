@@ -199,6 +199,10 @@
                     <a href="#add-product" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="add-product"><i data-lucide="plus-circle" class="w-5 h-5 mr-3"></i><span>Add Product</span></a>
                     <a href="#reviews" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="reviews"><i data-lucide="star" class="w-5 h-5 mr-3"></i><span>Reviews & Ratings</span></a>
                     <a href="#banners" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="banners"><i data-lucide="image" class="w-5 h-5 mr-3"></i><span>Banners</span></a>
+                    <a href="#side-promo" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="side-promo">
+                        <i data-lucide="image-plus" class="w-5 h-5 mr-3"></i>
+                        <span>Side Promo</span>
+                    </a>
                     <a href="#coupons" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="coupons"><i data-lucide="ticket-percent" class="w-5 h-5 mr-3"></i><span>Coupons</span></a>
                     <a href="#orders" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="orders"><i data-lucide="shopping-cart" class="w-5 h-5 mr-3"></i><span>Orders</span><span id="pending-orders-badge" class="ml-auto text-xs font-bold text-white bg-red-500 rounded-full px-2 py-0.5 hidden">0</span></a>
                     <a href="#users" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="users"><i data-lucide="users" class="w-5 h-5 mr-3"></i><span>Users</span></a>
@@ -595,6 +599,71 @@
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                             <div class="lg-col-span-1"><div class="bg-secondary p-8 rounded-lg shadow-md"><h2 class="text-2xl font-bold mb-6 text-text-primary">Add New Banner</h2><form id="add-banner-form"><div class="mb-4"><label for="banner-image" class="block text-text-primary font-medium mb-2">Banner Image URL</label><input type="url" id="banner-image" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="https://example.com/banner.jpg"></div><div class="mb-4"><label for="banner-link" class="block text-text-primary font-medium mb-2">Link (Optional)</label><input type="url" id="banner-link" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="/products/promo"></div><button type="submit" class="w-full bg-theme-primary text-white font-bold py-3 px-4 rounded-lg disabled:bg-opacity-70 btn-glow">Add Banner</button></form></div></div>
                             <div class="lg-col-span-2"><div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">Current Banners</h3><div id="banners-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="text-text-primary">Loading...</div></div></div></div>
+                        </div>
+                    </div>
+
+                    <!-- Side Promo Page -->
+                    <div id="side-promo-page" class="page-content hidden">
+                        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                            <div class="lg:col-span-1">
+                                <div class="bg-secondary p-8 rounded-lg shadow-md">
+                                    <h2 class="text-2xl font-bold mb-6 text-text-primary">Add Side Promo</h2>
+                                    <form id="add-side-promo-form" class="space-y-4">
+                                        <div>
+                                            <label for="side-promo-image" class="block text-text-primary font-medium mb-2">Image URL</label>
+                                            <input type="url" id="side-promo-image" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="https://example.com/side-promo.jpg">
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label for="side-promo-title" class="block text-text-primary font-medium mb-2">Title (EN)</label>
+                                                <input type="text" id="side-promo-title" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="e.g., Smart Prices on Accessories">
+                                            </div>
+                                            <div>
+                                                <label for="side-promo-title-bn" class="block text-text-primary font-medium mb-2">Title (BN)</label>
+                                                <input type="text" id="side-promo-title-bn" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="উদাহরণ: স্মার্ট প্রাইসেস অন অ্যাকসেসরিজ">
+                                            </div>
+                                            <div>
+                                                <label for="side-promo-subtitle" class="block text-text-primary font-medium mb-2">Subtitle (EN)</label>
+                                                <input type="text" id="side-promo-subtitle" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="e.g., Up to 70% off">
+                                            </div>
+                                            <div>
+                                                <label for="side-promo-subtitle-bn" class="block text-text-primary font-medium mb-2">Subtitle (BN)</label>
+                                                <input type="text" id="side-promo-subtitle-bn" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="উদাহরণ: সর্বোচ্চ ৭০% ছাড়">
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label for="side-promo-link" class="block text-text-primary font-medium mb-2">Link (Optional)</label>
+                                            <input type="url" id="side-promo-link" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="/products/special">
+                                        </div>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                            <div>
+                                                <label for="side-promo-alt" class="block text-text-primary font-medium mb-2">Alt Text (Optional)</label>
+                                                <input type="text" id="side-promo-alt" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="Accessible image description">
+                                            </div>
+                                            <div>
+                                                <label for="side-promo-order" class="block text-text-primary font-medium mb-2">Order (Optional)</label>
+                                                <input type="number" id="side-promo-order" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="0">
+                                            </div>
+                                        </div>
+                                        <div class="flex items-center justify-between">
+                                            <span class="text-text-primary font-medium">Active</span>
+                                            <label for="side-promo-active" class="relative inline-flex items-center cursor-pointer">
+                                                <input type="checkbox" id="side-promo-active" class="sr-only peer" checked>
+                                                <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-600 peer-checked:bg-theme-primary peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                                            </label>
+                                        </div>
+                                        <button type="submit" class="w-full bg-theme-primary text-white font-bold py-3 px-4 rounded-lg disabled:bg-opacity-70 btn-glow">Add Side Promo</button>
+                                    </form>
+                                </div>
+                            </div>
+                            <div class="lg:col-span-2">
+                                <div class="bg-secondary p-6 rounded-lg shadow-md">
+                                    <h3 class="text-xl font-semibold text-text-primary mb-4">Current Side Promos</h3>
+                                    <div id="side-promos-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div class="text-text-primary">Loading...</div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -1001,7 +1070,7 @@
             // PIN verification removed
         };
         
-    const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'low-stock': 'Low Stock Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
+    const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'low-stock': 'Low Stock Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', 'side-promo': 'Side Promo', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
 
         const CATEGORY_MAP = {
             'electronics': 'Electronics',
@@ -2269,6 +2338,48 @@ const saveBulkProducts = async (products) => {
             lucide.createIcons();
         };
 
+        // --- Side Promos Rendering ---
+        const renderSidePromos = (snapshot) => {
+            const list = document.getElementById('side-promos-list');
+            if (!list) return;
+            list.innerHTML = '';
+            if (snapshot.empty) {
+                list.innerHTML = `<p class="text-center text-text-secondary col-span-full">No side promos have been added.</p>`;
+                return;
+            }
+
+            const sortedDocs = snapshot.docs.sort((a, b) => (b.data().createdAt?.toMillis?.() || 0) - (a.data().createdAt?.toMillis?.() || 0));
+            sortedDocs.forEach(docSnap => {
+                const d = docSnap.data();
+                const linkOpen = d.link ? `<a href="${d.link}" target="_blank" class="absolute inset-0" aria-label="Open promo link"></a>` : '';
+                const activeBadge = (d.active !== false)
+                    ? '<span class="absolute top-2 left-2 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-green-100 text-green-700 dark:bg-green-800/40 dark:text-green-300">Active</span>'
+                    : '<span class="absolute top-2 left-2 text-[10px] font-semibold px-1.5 py-0.5 rounded bg-gray-100 text-gray-700 dark:bg-gray-700 dark:text-gray-300">Inactive</span>';
+                list.insertAdjacentHTML('beforeend', `
+                    <div>
+                        <div class="relative group">
+                            ${activeBadge}
+                            <img src="${d.imageUrl}" onerror="this.src='https://placehold.co/400x160/e2e8f0/64748b?text=Side+Promo'" class="w-full h-40 object-cover rounded-lg shadow-md">
+                            ${linkOpen}
+                            <div class="absolute inset-0 bg-black/50 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                <button class="delete-btn text-white" data-id="${docSnap.id}" data-coll="sidePromos" title="Delete">
+                                    <i data-lucide="trash-2" class="w-8 h-8"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="mt-2 text-sm text-text-primary">
+                            ${d.title ? `<p class="font-semibold truncate" title="${d.title}">${d.title}</p>` : ''}
+                            ${d.subtitle ? `<p class="text-xs text-text-secondary truncate" title="${d.subtitle}">${d.subtitle}</p>` : ''}
+                            ${d.title_bn ? `<p class="font-semibold truncate" title="${d.title_bn}">${d.title_bn}</p>` : ''}
+                            ${d.subtitle_bn ? `<p class="text-xs text-text-secondary truncate" title="${d.subtitle_bn}">${d.subtitle_bn}</p>` : ''}
+                            ${(typeof d.order === 'number') ? `<p class="text-[11px] text-text-secondary mt-1">Order: ${d.order}</p>` : ''}
+                        </div>
+                    </div>
+                `);
+            });
+            if (window.lucide?.createIcons) lucide.createIcons();
+        };
+
         const renderCoupons = (snapshot) => {
             const rowRenderer = (doc) => {
                 const d = doc.data();
@@ -2601,6 +2712,41 @@ const saveBulkProducts = async (products) => {
                 } catch (err) {
                     console.error("Error adding coupon:", err);
                     showToast(err.message || 'Failed to add coupon!', 'error');
+                } finally {
+                    setButtonLoading(button, false);
+                }
+            } else if (formId === 'add-side-promo-form') {
+                setButtonLoading(button, true, 'Adding...');
+                try {
+                    const imageUrl = e.target['side-promo-image'].value;
+                    const title = (e.target['side-promo-title']?.value || '').trim();
+                    const title_bn = (e.target['side-promo-title-bn']?.value || '').trim();
+                    const subtitle = (e.target['side-promo-subtitle']?.value || '').trim();
+                    const subtitle_bn = (e.target['side-promo-subtitle-bn']?.value || '').trim();
+                    const link = e.target['side-promo-link'].value;
+                    const alt = (e.target['side-promo-alt']?.value || '').trim();
+                    const order = parseInt(e.target['side-promo-order']?.value) || 0;
+                    const active = e.target['side-promo-active'].checked;
+                    await addDoc(collection(db, 'sidePromos'), {
+                        imageUrl,
+                        title,
+                        title_bn,
+                        subtitle,
+                        subtitle_bn,
+                        link,
+                        alt,
+                        order,
+                        active,
+                        createdAt: serverTimestamp()
+                    });
+                    showToast('Side promo added successfully!');
+                    e.target.reset();
+                    // default to active after reset
+                    const activeInput = document.getElementById('side-promo-active');
+                    if (activeInput) activeInput.checked = true;
+                } catch (err) {
+                    console.error('Error adding side promo:', err);
+                    showToast('Failed to add side promo!', 'error');
                 } finally {
                     setButtonLoading(button, false);
                 }
@@ -4151,6 +4297,10 @@ async function handleEditCouponSubmit(e) {
                 renderBanners(snap);
             }, handleSnapshotError('Banners'));
 
+            const unsubSidePromos = onSnapshot(collection(db, "sidePromos"), snap => {
+                renderSidePromos(snap);
+            }, handleSnapshotError('Side Promos'));
+
             const unsubCoupons = onSnapshot(collection(db, "coupons"), snap => {
                 renderCoupons(snap);
             }, handleSnapshotError('Coupons'));
@@ -4224,7 +4374,7 @@ async function handleEditCouponSubmit(e) {
 
             listenForNotifications();
             
-            unsubscribeListeners.push(unsubOrders, unsubUsers, unsubAllProducts, unsubAllOrders, unsubAllUsers, unsubBanners, unsubCoupons, unsubDeliveryMen, unsubChats);
+            unsubscribeListeners.push(unsubOrders, unsubUsers, unsubAllProducts, unsubAllOrders, unsubAllUsers, unsubBanners, unsubSidePromos, unsubCoupons, unsubDeliveryMen, unsubChats);
         };
 
         // Enhance message textarea UX: autosize and Enter-to-send
