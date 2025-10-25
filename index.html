@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
+    <!-- FAVICON FIX: Added a placeholder favicon link to prevent 404 error -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚡</text></svg>">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -353,7 +355,8 @@
                                 <div><p class="text-sm font-medium text-sky-100">Active Coupons</p><p class="text-3xl font-bold" id="total-active-coupons">0</p></div>
                             </div>
                             <div class="stat-card bg-gradient-to-br from-amber-500 to-yellow-400 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="chat">
-                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="mail-unread" class="w-8 h-8"></i></div>
+                                <!-- LUCIDE ICON FIX: Changed "mail-unread" to "inbox" -->
+                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="inbox" class="w-8 h-8"></i></div>
                                 <div><p class="text-sm font-medium text-yellow-100">Total Unseen SMS</p><p class="text-3xl font-bold" id="total-unseen-sms">0</p></div>
                             </div>
                         </div>
@@ -2013,10 +2016,10 @@ const saveBulkProducts = async (products) => {
                 const canvas = document.getElementById('ordersChart');
                 if (!canvas) return;
 
-                // Destroy previous instance
-                if (canvas.chart) {
-                    canvas.chart.destroy();
-                    canvas.chart = undefined;
+                // CHART.JS FIX: Destroy previous instance using official Chart.js method
+                const existingChart = Chart.getChart(canvas);
+                if (existingChart) {
+                    existingChart.destroy();
                 }
 
                 const tz = localStorage.getItem('adminTimeZone') || 'Asia/Riyadh';
@@ -2162,7 +2165,8 @@ const saveBulkProducts = async (products) => {
                         }
                     }
                 });
-                canvas.chart = chart;
+                // CHART.JS FIX: Removed the custom 'canvas.chart = chart;' assignment
+                // Chart.getChart(canvas) will now work correctly.
             } catch (err) {
                 console.error('drawOrdersChart failed:', err);
             }
