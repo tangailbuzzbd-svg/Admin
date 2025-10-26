@@ -137,6 +137,14 @@
             box-shadow: 0 0 4px rgba(255,255,255,0.4), 0 0 12px var(--glow-color), 0 0 20px var(--glow-ring-color);
             transform: translateY(-1px);
         }
+
+        /* Welcome overlay animations */
+        @keyframes welcome-pop {
+            0% { transform: scale(0.92); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .welcome-animate { animation: welcome-pop 0.9s ease-out forwards; }
+        .welcome-glow { text-shadow: 0 0 30px rgba(79, 70, 229, 0.6), 0 0 60px rgba(79, 70, 229, 0.35); }
     </style>
 </head>
 <body class="bg-primary">
@@ -149,22 +157,19 @@
     <!-- Login Screen -->
     <div id="login-screen" class="flex items-center justify-center min-h-screen hidden bg-cover bg-center" style="background-image: url('https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/vecteezy_ai-generated-empty-wooden-table-on-the-natural-background_40890255.jpg?raw=true');">
         <div class="w-full max-w-sm relative">
-            <img id="login-profile-pic" src="https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/WhatsApp%20Image%202025-07-30%20at%2019.29.33_9f8c7d06.jpg?raw=true" alt="Profile" class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border-4 border-white dark:border-gray-700 shadow-lg z-10">
-            <div class="p-8 pt-16 space-y-6 bg-white/20 dark:bg-gray-900/60 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl">
+            <img id="login-profile-pic" src="https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/WhatsApp%20Image%202025-07-30%20at%2019.29.33_9f8c7d06.jpg?raw=true" alt="Profile" class="absolute top-0 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 rounded-full border-4 border-white/40 dark:border-gray-500 shadow-lg z-10">
+            <div class="p-8 pt-16 space-y-6 bg-white/5 dark:bg-gray-900/20 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl">
                 <h2 class="text-2xl font-bold text-center text-white">Tangail Buzz Admin</h2>
                 <form id="login-form" class="space-y-4">
                     <div>
                         <label for="email" class="text-sm font-medium text-white block mb-1">Enter Your Email</label>
-                        <input type="email" id="email" name="email" required class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white placeholder-gray-300 focus:ring-0 focus:border-white transition">
+                        <input type="email" id="email" name="email" required class="w-full px-4 py-2 bg-white/25 dark:bg-gray-700/30 border-0 border-b-2 border-white/30 text-white placeholder-gray-300 focus:ring-0 focus:border-white transition">
                     </div>
                     <div>
                         <label for="password" class="text-sm font-medium text-white block mb-1">Enter Your Password</label>
-                        <input type="password" id="password" name="password" required class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white placeholder-gray-300 focus:ring-0 focus:border-white transition">
+                        <input type="password" id="password" name="password" required class="w-full px-4 py-2 bg-white/25 dark:bg-gray-700/30 border-0 border-b-2 border-white/30 text-white placeholder-gray-300 focus:ring-0 focus:border-white transition">
                     </div>
-                    <div class="flex items-center">
-                        <input id="keep-signed-in" type="checkbox" class="h-4 w-4 text-theme-primary bg-gray-50/50 border-white/50 focus:ring-theme-primary rounded">
-                        <label for="keep-signed-in" class="ml-2 block text-sm text-white">Keep me signed in on this device</label>
-                    </div>
+                    
                     <p id="login-error" class="text-sm text-red-300"></p>
                     <button type="submit" class="w-full py-3 font-semibold text-white bg-green-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 disabled:bg-green-400 btn-glow-green">LOGIN</button>
                 </form>
@@ -174,16 +179,26 @@
 
     <!-- PIN Verification Screen -->
     <div id="pin-verification-screen" class="flex items-center justify-center min-h-screen hidden bg-cover bg-center" style="background-image: url('https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/vecteezy_ai-generated-empty-wooden-table-on-the-natural-background_40890255.jpg?raw=true');">
-        <div class="w-full max-w-sm p-8 space-y-6 bg-white/20 dark:bg-gray-900/60 backdrop-blur-lg border border-white/30 rounded-2xl shadow-2xl">
+    <div class="w-full max-w-sm p-8 space-y-6 bg-white/5 dark:bg-gray-900/20 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl">
             <h2 class="text-2xl font-bold text-center text-white">Enter Security PIN</h2>
             <form id="pin-verification-form" class="space-y-4">
                 <div>
                     <label for="pin-input" class="text-sm font-medium text-white block mb-1">Your 4-Digit PIN</label>
-                    <input type="password" id="pin-input" name="pin" required maxlength="4" pattern="\d{4}" class="w-full px-4 py-2 bg-white/50 dark:bg-gray-700/50 border-0 border-b-2 border-white/50 text-white text-center text-2xl tracking-[1em] focus:ring-0 focus:border-white transition">
+                    <input type="password" id="pin-input" name="pin" required maxlength="4" pattern="\d{4}" class="w-full px-4 py-2 bg-white/25 dark:bg-gray-700/30 border-0 border-b-2 border-white/30 text-white text-center text-2xl tracking-[1em] focus:ring-0 focus:border-white transition">
                 </div>
                 <p id="pin-error" class="text-sm text-red-300"></p>
                 <button type="submit" class="w-full py-3 font-semibold text-white bg-green-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 disabled:bg-green-400 btn-glow-green">VERIFY</button>
             </form>
+        </div>
+    </div>
+
+    <!-- Welcome Overlay (shown only after successful login) -->
+    <div id="welcome-overlay" class="fixed inset-0 z-[1000] hidden bg-black/70 backdrop-blur-xl flex items-center justify-center transition-opacity duration-700 opacity-0">
+        <div class="text-center px-6">
+            <img src="https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/gdrg_upscaled%20(1).png?raw=true" alt="Logo" class="mx-auto mb-8 w-40 h-40 sm:w-48 sm:h-48 object-contain drop-shadow-lg welcome-animate" style="animation-delay: 50ms;">
+            <h1 class="text-white text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-extrabold tracking-tight welcome-animate welcome-glow" style="animation-delay: 150ms;">Welcome to New World</h1>
+            <p class="mt-4 text-white/80 text-xl sm:text-2xl welcome-animate" style="animation-delay: 250ms;">Tangail Buzz Admin</p>
+            <p class="mt-8 text-sm sm:text-base text-white/70">Click anywhere or press Enter to continue</p>
         </div>
     </div>
 
@@ -200,6 +215,8 @@
                     <a href="#dashboard" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary active" data-page="dashboard"><i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i><span>Dashboard</span></a>
                     <a href="#products" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="products"><i data-lucide="package" class="w-5 h-5 mr-3"></i><span>Products</span></a>
                     <a href="#low-stock" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="low-stock"><i data-lucide="alert-triangle" class="w-5 h-5 mr-3"></i><span>Low Stock</span></a>
+                    <a href="#top-sales" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="top-sales"><i data-lucide="trending-up" class="w-5 h-5 mr-3"></i><span>Top Sales</span></a>
+                    <a href="#top-rated" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="top-rated"><i data-lucide="star" class="w-5 h-5 mr-3"></i><span>Top Rated</span></a>
                     <a href="#add-product" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="add-product"><i data-lucide="plus-circle" class="w-5 h-5 mr-3"></i><span>Add Product</span></a>
                     <a href="#reviews" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="reviews"><i data-lucide="star" class="w-5 h-5 mr-3"></i><span>Reviews & Ratings</span></a>
                     <a href="#banners" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="banners"><i data-lucide="image" class="w-5 h-5 mr-3"></i><span>Banners</span></a>
@@ -248,9 +265,12 @@
                             <!-- Clock content will be injected by JS -->
                         </div>
                         <!-- Manual Refresh Button -->
-                        <button id="manual-refresh-button" class="text-text-secondary focus:outline-none mr-4" title="Refresh Data">
-                            <i data-lucide="refresh-cw" class="w-5 h-5"></i>
-                        </button>
+                        <div class="flex items-center mr-4 space-x-2">
+                            <button id="manual-refresh-button" class="text-text-secondary focus:outline-none" title="Refresh Data">
+                                <i data-lucide="refresh-cw" class="w-5 h-5"></i>
+                            </button>
+                            <span id="dashboard-last-updated" class="text-xs text-text-secondary hidden sm:block"></span>
+                        </div>
                         <!-- Notification Bell -->
                         <div x-data="{ notificationsOpen: false }" class="relative">
                             <button @click="handleNotificationClick($data)" class="relative text-text-secondary focus:outline-none">
@@ -561,6 +581,92 @@
                                     </thead>
                                     <tbody class="divide-y border-color" id="low-stock-body">
                                         <tr class="text-text-primary"><td colspan="8" class="px-4 py-3 text-center">Loading...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Sales Page -->
+                    <div id="top-sales-page" class="page-content hidden">
+                        <div class="bg-secondary p-6 rounded-lg shadow-md">
+                            <div class="flex flex-wrap items-center justify-between mb-4 gap-3">
+                                <h3 class="text-xl font-semibold text-text-primary">Top Selling Products</h3>
+                                <div class="flex items-center gap-3 text-sm">
+                                    <label for="top-sales-range" class="text-text-secondary">Range</label>
+                                    <select id="top-sales-range" class="border border-color rounded px-2 py-1 bg-primary text-text-primary">
+                                        <option value="7">Last 7 days</option>
+                                        <option value="30" selected>Last 30 days</option>
+                                        <option value="90">Last 90 days</option>
+                                        <option value="180">Last 180 days</option>
+                                        <option value="365">Last 365 days</option>
+                                        <option value="all">All time</option>
+                                    </select>
+                                    <button id="top-sales-export" class="bg-theme-primary hover:bg-theme-primary-hover text-white font-semibold py-2 px-3 rounded-lg btn-glow" title="Export CSV"><i data-lucide="download" class="w-4 h-4 mr-1"></i>Export</button>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead>
+                                        <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700">
+                                            <th class="px-4 py-3">#</th>
+                                            <th class="px-4 py-3">Product</th>
+                                            <th class="px-4 py-3">Product ID</th>
+                                            <th class="px-4 py-3">Category</th>
+                                            <th class="px-4 py-3">Units Sold</th>
+                                            <th class="px-4 py-3">Revenue</th>
+                                            <th class="px-4 py-3">Stock</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y border-color" id="top-sales-body">
+                                        <tr class="text-text-primary"><td colspan="7" class="px-4 py-3 text-center">Loading...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Top Rated Page -->
+                    <div id="top-rated-page" class="page-content hidden">
+                        <div class="bg-secondary p-6 rounded-lg shadow-md">
+                            <div class="flex flex-wrap items-center justify-between mb-4 gap-3">
+                                <h3 class="text-xl font-semibold text-text-primary">Top Rated Products</h3>
+                                <div class="flex flex-wrap items-center gap-3 text-sm">
+                                    <label for="top-rated-min-rating" class="text-text-secondary">Min Rating</label>
+                                    <select id="top-rated-min-rating" class="border border-color rounded px-2 py-1 bg-primary text-text-primary">
+                                        <option value="0">All</option>
+                                        <option value="3">3 ★ &amp; up</option>
+                                        <option value="3.5">3.5 ★ &amp; up</option>
+                                        <option value="4">4 ★ &amp; up</option>
+                                        <option value="4.5">4.5 ★ &amp; up</option>
+                                        <option value="4.8">4.8 ★ &amp; up</option>
+                                    </select>
+                                    <label for="top-rated-min-reviews" class="text-text-secondary">Min Reviews</label>
+                                    <select id="top-rated-min-reviews" class="border border-color rounded px-2 py-1 bg-primary text-text-primary">
+                                        <option value="0">All</option>
+                                        <option value="5">5+</option>
+                                        <option value="10">10+</option>
+                                        <option value="25">25+</option>
+                                        <option value="50">50+</option>
+                                    </select>
+                                    <button id="top-rated-export" class="bg-theme-primary hover:bg-theme-primary-hover text-white font-semibold py-2 px-3 rounded-lg btn-glow" title="Export CSV"><i data-lucide="download" class="w-4 h-4 mr-1"></i>Export</button>
+                                </div>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead>
+                                        <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700">
+                                            <th class="px-4 py-3">#</th>
+                                            <th class="px-4 py-3">Product</th>
+                                            <th class="px-4 py-3">Product ID</th>
+                                            <th class="px-4 py-3">Category</th>
+                                            <th class="px-4 py-3">Rating</th>
+                                            <th class="px-4 py-3">Reviews</th>
+                                            <th class="px-4 py-3">Stock</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y border-color" id="top-rated-body">
+                                        <tr class="text-text-primary"><td colspan="7" class="px-4 py-3 text-center">Loading...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -923,6 +1029,36 @@
                                         <option>Loading timezones...</option>
                                     </select>
                                 </div>
+
+                                <!-- NEW: Login Screen Wallpaper URL -->
+                                <div class="mt-6 pt-4 border-t border-color">
+                                    <label for="login-bg-url-input" class="block text-text-primary font-medium mb-2">Login Screen Wallpaper URL</label>
+                                    <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-start">
+                                        <input type="url" id="login-bg-url-input" placeholder="https://example.com/wallpaper.jpg" class="flex-1 px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-theme-primary" />
+                                        <div class="flex gap-2">
+                                            <button id="login-bg-save-btn" class="bg-theme-primary text-white font-semibold px-4 py-2 rounded-lg btn-glow">Save</button>
+                                            <button id="login-bg-reset-btn" class="bg-gray-200 dark:bg-gray-700 text-text-primary font-semibold px-4 py-2 rounded-lg border border-color">Reset</button>
+                                        </div>
+                                    </div>
+                                    <div id="login-bg-preview" class="mt-4 w-full h-40 rounded-lg bg-cover bg-center border border-color"></div>
+                                    <p class="text-xs text-text-secondary mt-2">Tip: Use any publicly accessible image URL. This will apply to both the Login and PIN verification screens.</p>
+                                </div>
+
+                                <!-- NEW: Login Screen Profile Picture URL -->
+                                <div class="mt-6 pt-4 border-t border-color">
+                                    <label for="login-profile-url-input" class="block text-text-primary font-medium mb-2">Login Screen Profile Picture URL</label>
+                                    <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-start">
+                                        <input type="url" id="login-profile-url-input" placeholder="https://example.com/avatar.jpg" class="flex-1 px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-theme-primary" />
+                                        <div class="flex gap-2">
+                                            <button id="login-profile-save-btn" class="bg-theme-primary text-white font-semibold px-4 py-2 rounded-lg btn-glow">Save</button>
+                                            <button id="login-profile-reset-btn" class="bg-gray-200 dark:bg-gray-700 text-text-primary font-semibold px-4 py-2 rounded-lg border border-color">Reset</button>
+                                        </div>
+                                    </div>
+                                    <div class="mt-4 flex items-center gap-3">
+                                        <img id="login-profile-preview" src="" alt="Profile Preview" class="w-16 h-16 rounded-full border border-color object-cover bg-gray-100 dark:bg-gray-800" />
+                                        <p class="text-xs text-text-secondary">Shown at the top of the login form.</p>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1077,6 +1213,12 @@
         let lastChatsSnapshot = null; 
         let initialUsersLoadComplete = false;
         let clockInterval = null;
+    let lastTopSalesData = [];
+    let lastTopRatedData = [];
+    let totalUsersCount = null;
+    let totalDeliveryMenCount = null;
+    let activeCouponsCount = null;
+    let lastDashboardUpdateAt = null;
 
         const UI = {
             loadingSpinner: document.getElementById('loading-spinner'),
@@ -1104,7 +1246,7 @@
             // PIN verification removed
         };
         
-    const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'low-stock': 'Low Stock Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', 'side-promo': 'Side Promo', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
+    const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'low-stock': 'Low Stock Products', 'top-sales': 'Top Sales', 'top-rated': 'Top Rated Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', 'side-promo': 'Side Promo', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
 
         const CATEGORY_MAP = {
             'electronics': 'Electronics',
@@ -1359,6 +1501,35 @@
             } else {
                 console.warn("Speech Synthesis not supported in this browser.");
             }
+        };
+
+        // Visual welcome overlay shown after successful login
+        const showWelcomeOverlay = () => {
+            const overlay = document.getElementById('welcome-overlay');
+            if (!overlay) return;
+            // Show with fade-in
+            overlay.classList.remove('hidden');
+            overlay.style.opacity = '0';
+            // Force reflow to ensure transition applies
+            void overlay.offsetHeight;
+            overlay.style.opacity = '1';
+
+            const hide = () => {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.classList.add('hidden'), 700);
+                // Clean up listeners
+                overlay.removeEventListener('click', hide);
+                document.removeEventListener('keydown', onKeyDown);
+            };
+            const onKeyDown = (e) => {
+                if (e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
+                    e.preventDefault();
+                    hide();
+                }
+            };
+            // Only dismiss on user interaction (click or key)
+            overlay.addEventListener('click', hide);
+            document.addEventListener('keydown', onKeyDown);
         };
 
         // --- Clock Logic ---
@@ -1706,6 +1877,14 @@ const saveBulkProducts = async (products) => {
                         // Bypass PIN verification and go directly to admin panel
                         showScreen('admin-panel');
                         initializeAdminPanel(user);
+                        // Show a welcome message only when this session came from a fresh login
+                        const cameFromLogin = sessionStorage.getItem('pendingLogin') === '1';
+                        if (cameFromLogin) {
+                            showToast('Welcome to New World!');
+                            try { playWelcomeMessage(); } catch (_) {}
+                            try { showWelcomeOverlay(); } catch (_) {}
+                            sessionStorage.removeItem('pendingLogin');
+                        }
                     } else {
                         // If a user is logged in but is not an admin, show an error and sign them out.
                         console.warn("Non-admin user attempted to access the panel. Signing out.");
@@ -1733,11 +1912,14 @@ const saveBulkProducts = async (products) => {
             
             const email = e.target.email.value;
             const password = e.target.password.value;
-            const keepSignedIn = document.getElementById('keep-signed-in').checked;
+            // Checkbox removed: default to local persistence (stay signed in)
+            const keepSignedIn = true;
 
             try {
-                // Set persistence based on the checkbox
-                await setPersistence(auth, keepSignedIn ? browserLocalPersistence : browserSessionPersistence);
+                // Mark that a login attempt is in progress so we can show welcome on success
+                sessionStorage.setItem('pendingLogin', '1');
+                // Set persistence (default: keep signed in)
+                await setPersistence(auth, browserLocalPersistence);
                 await signInWithEmailAndPassword(auth, email, password);
                 // onAuthStateChanged will handle the rest
             } catch (error) {
@@ -1750,6 +1932,8 @@ const saveBulkProducts = async (products) => {
                     errorMessage = 'Access to this account has been temporarily disabled due to many failed login attempts. You can immediately restore it by resetting your password or you can try again later.';
                 }
                 UI.loginError.textContent = errorMessage;
+                // Clear the pending flag if login failed
+                sessionStorage.removeItem('pendingLogin');
             } finally {
                 setButtonLoading(button, false);
             }
@@ -1781,6 +1965,17 @@ const saveBulkProducts = async (products) => {
             // Keep quick section dropdown in sync
             const quickSel = document.getElementById('quick-section-select');
             if (quickSel && quickSel.value !== pageId) quickSel.value = pageId;
+
+            // On-demand renders
+            if (pageId === 'low-stock' && typeof renderLowStockProducts === 'function') {
+                renderLowStockProducts();
+            }
+            if (pageId === 'top-sales' && typeof renderTopSales === 'function') {
+                renderTopSales();
+            }
+            if (pageId === 'top-rated' && typeof renderTopRated === 'function') {
+                renderTopRated();
+            }
         };
 
         // --- Appearance & Theming ---
@@ -1811,7 +2006,8 @@ const saveBulkProducts = async (products) => {
             const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             applyDarkMode(localStorage.theme === 'dark' || (!('theme' in localStorage) && prefersDark));
             
-            const loginScreenDivs = document.querySelectorAll('#login-screen');
+            // Apply saved wallpapers and avatars to auth screens
+            const loginScreenDivs = document.querySelectorAll('#login-screen, #pin-verification-screen');
             const loginProfilePic = document.getElementById('login-profile-pic');
             const defaultBg = 'https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/vecteezy_ai-generated-empty-wooden-table-on-the-natural-background_40890255.jpg?raw=true';
             const defaultAvatar = 'https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/WhatsApp%20Image%202025-07-30%20at%2019.29.33_9f8c7d06.jpg?raw=true';
@@ -1978,10 +2174,24 @@ const saveBulkProducts = async (products) => {
                 // FIX: Fetch all coupons and filter client-side to avoid complex query permission issues.
                 const allCouponsSnap = await getDocs(collection(db, "coupons"));
                 const todayStr = new Date().toISOString().split('T')[0];
-                let activeCouponsCount = 0;
+                let activeCoupons = 0;
                 allCouponsSnap.forEach(doc => {
-                    if (doc.data().expiryDate >= todayStr) {
-                        activeCouponsCount++;
+                    const data = doc.data();
+                    const rawExpiry = data.expiryDate;
+                    if (!rawExpiry) return;
+
+                    let expiryComparable = null;
+                    if (rawExpiry?.toDate) {
+                        const dt = rawExpiry.toDate();
+                        expiryComparable = dt.toISOString().split('T')[0];
+                    } else if (typeof rawExpiry === 'string') {
+                        expiryComparable = rawExpiry;
+                    } else if (typeof rawExpiry === 'number') {
+                        expiryComparable = new Date(rawExpiry).toISOString().split('T')[0];
+                    }
+
+                    if (expiryComparable && expiryComparable >= todayStr) {
+                        activeCoupons++;
                     }
                 });
 
@@ -1990,12 +2200,19 @@ const saveBulkProducts = async (products) => {
                 const totalStockValue = productsData.reduce((sum, product) => sum + ((product.mainPrice || 0) * (product.stock || 0)), 0);
                 const totalStockCount = productsData.reduce((sum, product) => sum + (product.stock || 0), 0);
 
+                const usersCount = usersSnap.data().count;
+                const productsCount = productsSnap.data().count;
+                const deliveryMenCount = deliveryMenSnap.data().count;
+                totalUsersCount = usersCount;
+                totalDeliveryMenCount = deliveryMenCount;
+                activeCouponsCount = activeCoupons;
+
                 document.getElementById('total-orders').textContent = ordersData.length;
                 document.getElementById('total-sale').textContent = `৳${totalSales.toFixed(2)}`;
-                document.getElementById('total-users').textContent = usersSnap.data().count;
-                document.getElementById('total-products-stat').textContent = productsSnap.data().count;
-                document.getElementById('total-delivery-men').textContent = deliveryMenSnap.data().count;
-                document.getElementById('total-active-coupons').textContent = activeCouponsCount;
+                document.getElementById('total-users').textContent = usersCount;
+                document.getElementById('total-products-stat').textContent = productsCount;
+                document.getElementById('total-delivery-men').textContent = deliveryMenCount;
+                document.getElementById('total-active-coupons').textContent = activeCoupons;
                 document.getElementById('total-pending').textContent = statusCounts.pending || 0;
                 document.getElementById('total-confirmed').textContent = statusCounts.confirmed || 0;
                 document.getElementById('total-shipped').textContent = statusCounts.shipped || 0;
@@ -2004,6 +2221,7 @@ const saveBulkProducts = async (products) => {
                 document.getElementById('total-cancelled').textContent = statusCounts.cancelled || 0;
                 document.getElementById('total-stock-value').textContent = `৳${Math.round(totalStockValue)}`;
                 document.getElementById('total-stock-count').textContent = totalStockCount;
+                updateDashboardLastUpdatedLabel();
             } catch (e) {
                 console.error("Error loading dashboard stats", e);
                 showToast("Failed to load dashboard stats!", 'error');
@@ -2242,6 +2460,275 @@ const saveBulkProducts = async (products) => {
             // Render rows with serial number (slNo)
             sortedDocs.forEach((doc, index) => body.insertAdjacentHTML('beforeend', rowRenderer(doc, index + 1)));
             lucide.createIcons();
+        };
+
+        // --- Top Sales (Products by Units Sold) ---
+        const affectsStock = (status) => ['pending','shipped','out-for-delivery','delivered'].includes(String(status||'').toLowerCase());
+
+        const getTopSalesData = (rangeValue) => {
+            const now = Date.now();
+            let cutoff = 0;
+            if (rangeValue && rangeValue !== 'all') {
+                const days = Number(rangeValue);
+                if (!Number.isNaN(days) && days > 0) cutoff = now - days*24*60*60*1000;
+            }
+
+            const productIndex = new Map(); // productId -> { units, revenue, productId }
+
+            allOrders.forEach(doc => {
+                const d = doc.data();
+                const createdAtMs = d.createdAt?.toMillis?.() || (d.createdAt?.seconds ? d.createdAt.seconds*1000 : 0);
+                if (cutoff && createdAtMs < cutoff) return;
+                if (!affectsStock(d.status)) return;
+                const items = Array.isArray(d.items) ? d.items : [];
+                items.forEach(item => {
+                    const pid = item.productId || item.id || item.sku || item.name;
+                    if (!pid) return;
+                    const qty = Number(item.quantity) || 0;
+                    const price = Number(item.price) || 0;
+                    if (!productIndex.has(pid)) productIndex.set(pid, { productId: pid, units: 0, revenue: 0 });
+                    const rec = productIndex.get(pid);
+                    rec.units += qty;
+                    rec.revenue += qty * price;
+                });
+            });
+
+            // Enrich with product data
+            const productsById = new Map(allProducts.map(p => [p.id, p]));
+            const rows = Array.from(productIndex.values()).map(rec => {
+                const prodDoc = productsById.get(rec.productId);
+                const pdata = prodDoc?.data?.() || {};
+                const name = pdata.name || pdata.title || rec.productId;
+                const image = (Array.isArray(pdata.thumbnails) && pdata.thumbnails[0]) || pdata.imageUrl || pdata.image || '';
+                const category = CATEGORY_MAP[pdata.category] || pdata.category || '—';
+                const stock = pdata.stock ?? '—';
+                return { ...rec, name, image, category, stock };
+            });
+
+            rows.sort((a,b) => (b.units - a.units) || (b.revenue - a.revenue));
+            return rows;
+        };
+
+        const renderTopSales = () => {
+            const body = document.getElementById('top-sales-body');
+            if (!body) return;
+            const range = document.getElementById('top-sales-range')?.value || '30';
+            const data = getTopSalesData(range);
+            lastTopSalesData = data;
+            if (data.length === 0) {
+                body.innerHTML = '<tr class="text-text-primary"><td colspan="7" class="px-4 py-6 text-center">No sales data found for the selected range.</td></tr>';
+                return;
+            }
+            const toMoney = (v) => `৳${(Number(v)||0).toFixed(2)}`;
+            body.innerHTML = data.slice(0, 100).map((row, idx) => `
+                <tr class="text-text-primary">
+                    <td class="px-4 py-3">${idx+1}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex items-center gap-3">
+                            <img src="${row.image || 'https://placehold.co/40x40/e2e8f0/64748b?text=Img'}" onerror="this.src='https://placehold.co/40x40/e2e8f0/64748b?text=Img'" class="w-10 h-10 rounded object-cover border border-color"/>
+                            <div>
+                                <div class="font-semibold line-clamp-1">${row.name}</div>
+                                <div class="text-xs text-text-secondary">${row.productId}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3 font-mono">${row.productId}</td>
+                    <td class="px-4 py-3">${row.category}</td>
+                    <td class="px-4 py-3 font-semibold">${row.units}</td>
+                    <td class="px-4 py-3">${toMoney(row.revenue)}</td>
+                    <td class="px-4 py-3">${row.stock}</td>
+                </tr>
+            `).join('');
+            if (window.lucide?.createIcons) lucide.createIcons();
+        };
+
+        const getTopRatedData = (minRatingValue, minReviewsValue) => {
+            const minRating = Number(minRatingValue);
+            const minReviews = Number(minReviewsValue);
+
+            return allProducts.map(doc => {
+                const data = doc.data?.() || doc.data || {};
+                const productId = doc.id || data.productId || data.id;
+                const name = data.name || data.title || productId || 'Unknown Product';
+                const image = (Array.isArray(data.thumbnails) && data.thumbnails[0]) || data.imageUrl || data.image || '';
+                const category = CATEGORY_MAP[data.category] || data.category || '—';
+                const stock = data.stock ?? '—';
+
+                const reviews = Array.isArray(data.reviews) ? data.reviews : [];
+                const numericRatings = reviews.map(r => Number(r?.rating ?? r?.stars ?? r)).filter(v => !Number.isNaN(v) && v > 0);
+                let reviewCount = numericRatings.length;
+                let avgRating = reviewCount ? (numericRatings.reduce((sum, val) => sum + val, 0) / reviewCount) : null;
+
+                const ratingCandidates = [data.avgRating, data.averageRating, data.rating, data.star, data.stars];
+                if ((avgRating === null || Number.isNaN(avgRating) || avgRating === 0) && ratingCandidates.length) {
+                    for (const candidate of ratingCandidates) {
+                        const num = Number(candidate);
+                        if (!Number.isNaN(num) && num > 0) {
+                            avgRating = num;
+                            break;
+                        }
+                    }
+                }
+
+                const reviewCountCandidates = [data.ratingCount, data.reviewsCount, data.totalRatings, data.totalReviews, data.reviewCount];
+                if ((Number.isNaN(reviewCount) || reviewCount === 0) && reviewCountCandidates.length) {
+                    for (const candidate of reviewCountCandidates) {
+                        const num = Number(candidate);
+                        if (!Number.isNaN(num) && num > 0) {
+                            reviewCount = num;
+                            break;
+                        }
+                    }
+                }
+
+                avgRating = Number(avgRating || 0);
+                reviewCount = Number(reviewCount || 0);
+
+                return { productId, name, image, category, stock, rating: avgRating, reviews: reviewCount };
+            }).filter(row => {
+                // Require meaningful rating data by default
+                if (row.rating <= 0 || row.reviews <= 0) return false;
+                if (!Number.isNaN(minRating) && row.rating < minRating) return false;
+                if (!Number.isNaN(minReviews) && row.reviews < minReviews) return false;
+                return true;
+            }).sort((a, b) => {
+                const ratingDiff = b.rating - a.rating;
+                if (Math.abs(ratingDiff) > 0.0001) return ratingDiff;
+                const reviewDiff = b.reviews - a.reviews;
+                if (reviewDiff !== 0) return reviewDiff;
+                return (a.name || '').localeCompare(b.name || '');
+            });
+        };
+
+        const renderTopRated = () => {
+            const body = document.getElementById('top-rated-body');
+            if (!body) return;
+            const minRating = document.getElementById('top-rated-min-rating')?.value || '0';
+            const minReviews = document.getElementById('top-rated-min-reviews')?.value || '0';
+            const data = getTopRatedData(minRating, minReviews);
+            lastTopRatedData = data;
+            if (data.length === 0) {
+                body.innerHTML = '<tr class="text-text-primary"><td colspan="7" class="px-4 py-6 text-center">No rated products match the selected filters.</td></tr>';
+                return;
+            }
+
+            body.innerHTML = data.slice(0, 100).map((row, idx) => `
+                <tr class="text-text-primary">
+                    <td class="px-4 py-3">${idx + 1}</td>
+                    <td class="px-4 py-3">
+                        <div class="flex items-center gap-3">
+                            <img src="${row.image || 'https://placehold.co/40x40/e2e8f0/64748b?text=Img'}" onerror="this.src='https://placehold.co/40x40/e2e8f0/64748b?text=Img'" class="w-10 h-10 rounded object-cover border border-color"/>
+                            <div>
+                                <div class="font-semibold line-clamp-1">${row.name}</div>
+                                <div class="text-xs text-text-secondary">${row.productId}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-4 py-3 font-mono">${row.productId}</td>
+                    <td class="px-4 py-3">${row.category}</td>
+                    <td class="px-4 py-3 font-semibold text-yellow-600">${row.rating.toFixed(1)} ★</td>
+                    <td class="px-4 py-3">${row.reviews}</td>
+                    <td class="px-4 py-3">${row.stock}</td>
+                </tr>
+            `).join('');
+            if (window.lucide?.createIcons) lucide.createIcons();
+        };
+
+        const updateDashboardLastUpdatedLabel = () => {
+            const label = document.getElementById('dashboard-last-updated');
+            if (!label) return;
+            const tz = localStorage.getItem('adminTimeZone') || 'Asia/Riyadh';
+            const now = new Date();
+            const dateFormatter = new Intl.DateTimeFormat('en-GB', { timeZone: tz, day: '2-digit', month: 'short', year: 'numeric' });
+            const timeFormatter = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
+            label.textContent = `Live · ${dateFormatter.format(now)} ${timeFormatter.format(now)}`;
+            label.classList.remove('hidden');
+            lastDashboardUpdateAt = now;
+        };
+
+        const updateDashboardSummary = () => {
+            const totalOrdersEl = document.getElementById('total-orders');
+            if (!totalOrdersEl) return;
+
+            const toMoney = (value, fractionDigits = 2) => {
+                const num = Number(value) || 0;
+                return `৳${num.toLocaleString('en-US', { minimumFractionDigits: fractionDigits, maximumFractionDigits: fractionDigits })}`;
+            };
+
+            const statusCounts = {};
+            let totalSales = 0;
+
+            const normalizeStatus = (value) => {
+                if (!value) return 'pending';
+                const raw = String(value).trim().toLowerCase();
+                if (raw === 'canceled') return 'cancelled';
+                const hyphenated = raw.replace(/\s+/g, '-');
+                if (hyphenated === 'out-for-delivery') return 'out-for-delivery';
+                return hyphenated;
+            };
+
+            allOrders.forEach(docSnap => {
+                const data = typeof docSnap.data === 'function' ? docSnap.data() : docSnap?.data || {};
+                const status = normalizeStatus(data.status);
+                statusCounts[status] = (statusCounts[status] || 0) + 1;
+                if (status === 'delivered') {
+                    totalSales += Number(data.totalAmount) || 0;
+                }
+            });
+
+            totalOrdersEl.textContent = String(allOrders.length);
+            const totalSaleEl = document.getElementById('total-sale');
+            if (totalSaleEl) totalSaleEl.textContent = toMoney(totalSales);
+
+            const statusMapping = {
+                pending: 'total-pending',
+                confirmed: 'total-confirmed',
+                shipped: 'total-shipped',
+                'out-for-delivery': 'total-out-for-delivery',
+                delivered: 'total-delivered',
+                cancelled: 'total-cancelled'
+            };
+            Object.entries(statusMapping).forEach(([statusKey, elementId]) => {
+                const el = document.getElementById(elementId);
+                if (el) el.textContent = String(statusCounts[statusKey] || 0);
+            });
+
+            let totalStockValue = 0;
+            let totalStockCount = 0;
+            allProducts.forEach(docSnap => {
+                const data = typeof docSnap.data === 'function' ? docSnap.data() : docSnap?.data || {};
+                const price = Number(data.mainPrice ?? data.price ?? 0) || 0;
+                const stock = Number(data.stock ?? 0) || 0;
+                if (!Number.isNaN(price) && !Number.isNaN(stock)) {
+                    totalStockValue += price * stock;
+                    totalStockCount += stock;
+                }
+            });
+
+            const stockValueEl = document.getElementById('total-stock-value');
+            if (stockValueEl) stockValueEl.textContent = toMoney(Math.round(totalStockValue), 0);
+            const stockCountEl = document.getElementById('total-stock-count');
+            if (stockCountEl) stockCountEl.textContent = totalStockCount.toLocaleString('en-US');
+
+            const productsEl = document.getElementById('total-products-stat');
+            if (productsEl) productsEl.textContent = String(allProducts.length);
+
+            if (typeof totalUsersCount === 'number') {
+                const usersEl = document.getElementById('total-users');
+                if (usersEl) usersEl.textContent = totalUsersCount.toLocaleString('en-US');
+            }
+
+            if (typeof totalDeliveryMenCount === 'number') {
+                const deliveryEl = document.getElementById('total-delivery-men');
+                if (deliveryEl) deliveryEl.textContent = totalDeliveryMenCount.toLocaleString('en-US');
+            }
+
+            if (typeof activeCouponsCount === 'number') {
+                const couponsEl = document.getElementById('total-active-coupons');
+                if (couponsEl) couponsEl.textContent = activeCouponsCount.toLocaleString('en-US');
+            }
+
+            updateDashboardLastUpdatedLabel();
         };
 
         const getStatusBadge = (status) => { 
@@ -3472,6 +3959,49 @@ async function handleEditCouponSubmit(e) {
             if (removeBtn) {
                 removeBtn.parentElement.remove();
             }
+
+            const exportTopSalesBtn = e.target.closest('#top-sales-export');
+            if (exportTopSalesBtn) {
+                // Build CSV from lastTopSalesData
+                const headers = ['Rank','Product ID','Name','Category','Units Sold','Revenue','Stock'];
+                const lines = [headers.join(',')];
+                lastTopSalesData.slice(0, 100).forEach((row, idx) => {
+                    const revenue = (Number(row.revenue)||0).toFixed(2);
+                    const safeName = String(row.name || '').replaceAll(',', ' ');
+                    const vals = [idx+1, row.productId, safeName, row.category, row.units, revenue, row.stock];
+                    lines.push(vals.join(','));
+                });
+                const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `top-sales-${new Date().toISOString().slice(0,10)}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
+
+            const exportTopRatedBtn = e.target.closest('#top-rated-export');
+            if (exportTopRatedBtn) {
+                const headers = ['Rank','Product ID','Name','Category','Rating','Reviews','Stock'];
+                const lines = [headers.join(',')];
+                lastTopRatedData.slice(0, 100).forEach((row, idx) => {
+                    const safeName = String(row.name || '').replaceAll(',', ' ');
+                    const rating = (Number(row.rating) || 0).toFixed(2);
+                    const vals = [idx + 1, row.productId, safeName, row.category, rating, row.reviews, row.stock];
+                    lines.push(vals.join(','));
+                });
+                const blob = new Blob([lines.join('\n')], { type: 'text/csv;charset=utf-8;' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `top-rated-${new Date().toISOString().slice(0,10)}.csv`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            }
         });
 
         // Live Chat search filter (type to filter)
@@ -3494,6 +4024,14 @@ async function handleEditCouponSubmit(e) {
                 applyDarkMode(e.target.checked);
                 // Re-render chart to apply theme colors
                 await drawOrdersChart(Number(document.getElementById('ordersChartDays')?.value) || 7);
+            }
+
+            if (e.target.id === 'top-sales-range') {
+                if (typeof renderTopSales === 'function') renderTopSales();
+            }
+
+            if (e.target.id === 'top-rated-min-rating' || e.target.id === 'top-rated-min-reviews') {
+                if (typeof renderTopRated === 'function') renderTopRated();
             }
 
             if (e.target.classList.contains('status-change')) {
@@ -4525,6 +5063,7 @@ async function handleEditCouponSubmit(e) {
             await loadDashboardStats();
             // Refresh dashboard chart as well
             await drawOrdersChart(Number(document.getElementById('ordersChartDays')?.value) || 7);
+            updateDashboardLastUpdatedLabel();
             showToast("Data refreshed successfully!");
             
             // Using a timeout to ensure the user sees the spin animation
@@ -4581,6 +5120,9 @@ async function handleEditCouponSubmit(e) {
                 }).length;
                 const lowStockEl = document.getElementById('total-low-stock');
                 if (lowStockEl) lowStockEl.textContent = String(lowStockCount);
+                if (typeof renderTopSales === 'function') renderTopSales();
+                if (typeof renderTopRated === 'function') renderTopRated();
+                updateDashboardSummary();
             }, handleSnapshotError('All Products'));
             
             const unsubAllOrders = onSnapshot(collection(db, "orders"), snap => {
@@ -4588,6 +5130,7 @@ async function handleEditCouponSubmit(e) {
                 allOrders = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
                 renderOrderFilters();
                 renderFilteredOrders();
+                if (typeof renderTopSales === 'function') renderTopSales();
                 // Sidebar badge: count of pending orders
                 const pendingCount = allOrders.filter(doc => (doc.data().status || 'pending').toLowerCase() === 'pending').length;
                 const pendingBadge = document.getElementById('pending-orders-badge');
@@ -4599,6 +5142,7 @@ async function handleEditCouponSubmit(e) {
                         pendingBadge.classList.add('hidden');
                     }
                 }
+                updateDashboardSummary();
             }, handleSnapshotError('All Orders'));
 
             const unsubAllUsers = onSnapshot(collection(db, "users"), snap => {
@@ -4606,6 +5150,8 @@ async function handleEditCouponSubmit(e) {
                  allUsersMap.clear();
                  snap.docs.forEach(doc => allUsersMap.set(doc.id, doc.data()));
                  initialUsersLoadComplete = true;
+                 totalUsersCount = snap.size;
+                 updateDashboardSummary();
 
                  // If chat data arrived first, render it now that we have user names.
                  if (lastChatsSnapshot) {
@@ -4626,12 +5172,33 @@ async function handleEditCouponSubmit(e) {
 
             const unsubCoupons = onSnapshot(collection(db, "coupons"), snap => {
                 renderCoupons(snap);
+                const today = new Date();
+                today.setHours(0, 0, 0, 0);
+                activeCouponsCount = snap.docs.reduce((count, docSnap) => {
+                    const data = docSnap.data() || {};
+                    const rawExpiry = data.expiryDate;
+                    let expiryDate = null;
+                    if (rawExpiry?.toDate) {
+                        expiryDate = rawExpiry.toDate();
+                    } else if (typeof rawExpiry === 'number') {
+                        expiryDate = new Date(rawExpiry);
+                    } else if (typeof rawExpiry === 'string') {
+                        const parsed = new Date(rawExpiry);
+                        if (!Number.isNaN(parsed.getTime())) expiryDate = parsed;
+                    }
+                    if (!expiryDate) return count;
+                    const normalized = new Date(expiryDate.getFullYear(), expiryDate.getMonth(), expiryDate.getDate(), 23, 59, 59, 999);
+                    return normalized >= today ? count + 1 : count;
+                }, 0);
+                updateDashboardSummary();
             }, handleSnapshotError('Coupons'));
             
             const unsubDeliveryMen = onSnapshot(collection(db, "deliveryMen"), 
                 snap => {
                     const sortedDocs = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
                     allDeliveryMen = sortedDocs; // keep this for the orders page dropdown
+                    totalDeliveryMenCount = sortedDocs.length;
+                    updateDashboardSummary();
                     renderDeliverySection({ ...snap, docs: sortedDocs, forEach: cb => sortedDocs.forEach(cb) });
                 }, 
                 handleSnapshotError('Delivery Men')
@@ -4752,6 +5319,96 @@ async function handleEditCouponSubmit(e) {
                 showToast(`Time zone set to ${displayName}`);
                 updateClock(); // Update immediately on change
             });
+
+            // Login Screen Wallpaper controls
+            const defaultBg = 'https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/vecteezy_ai-generated-empty-wooden-table-on-the-natural-background_40890255.jpg?raw=true';
+            const bgInput = document.getElementById('login-bg-url-input');
+            const bgPreview = document.getElementById('login-bg-preview');
+            const bgSaveBtn = document.getElementById('login-bg-save-btn');
+            const bgResetBtn = document.getElementById('login-bg-reset-btn');
+
+            const applyWallpaperToScreens = (url) => {
+                const safe = url || defaultBg;
+                document.querySelectorAll('#login-screen, #pin-verification-screen').forEach(div => {
+                    if (div) div.style.backgroundImage = `url('${safe}')`;
+                });
+            };
+
+            if (bgInput && bgPreview && bgSaveBtn && bgResetBtn) {
+                const current = localStorage.getItem('login-bg-url') || defaultBg;
+                bgInput.value = current;
+                bgPreview.style.backgroundImage = `url('${current}')`;
+
+                bgInput.addEventListener('input', (e) => {
+                    const url = (e.target.value || '').trim();
+                    bgPreview.style.backgroundImage = url ? `url('${url}')` : '';
+                });
+
+                bgSaveBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const url = (bgInput.value || '').trim();
+                    if (!/^https?:\/\//i.test(url)) {
+                        showToast('Please enter a valid http(s) image URL.', 'warning');
+                        return;
+                    }
+                    localStorage.setItem('login-bg-url', url);
+                    applyWallpaperToScreens(url);
+                    showToast('Login wallpaper updated.');
+                });
+
+                bgResetBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('login-bg-url');
+                    bgInput.value = defaultBg;
+                    bgPreview.style.backgroundImage = `url('${defaultBg}')`;
+                    applyWallpaperToScreens(defaultBg);
+                    showToast('Login wallpaper reset to default.');
+                });
+            }
+
+            // Login Screen Profile controls
+            const defaultAvatar = 'https://github.com/tangailbuzzbd-svg/TangailBuzz-Picture-/blob/main/WhatsApp%20Image%202025-07-30%20at%2019.29.33_9f8c7d06.jpg?raw=true';
+            const lpInput = document.getElementById('login-profile-url-input');
+            const lpPreview = document.getElementById('login-profile-preview');
+            const lpSaveBtn = document.getElementById('login-profile-save-btn');
+            const lpResetBtn = document.getElementById('login-profile-reset-btn');
+
+            const applyProfileToLogin = (url) => {
+                const img = document.getElementById('login-profile-pic');
+                if (img) img.src = url || defaultAvatar;
+            };
+
+            if (lpInput && lpPreview && lpSaveBtn && lpResetBtn) {
+                const currentProfile = localStorage.getItem('login-profile-url') || defaultAvatar;
+                lpInput.value = currentProfile;
+                lpPreview.src = currentProfile;
+
+                lpInput.addEventListener('input', (e) => {
+                    const url = (e.target.value || '').trim();
+                    lpPreview.src = url || defaultAvatar;
+                });
+
+                lpSaveBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const url = (lpInput.value || '').trim();
+                    if (!/^https?:\/\//i.test(url)) {
+                        showToast('Please enter a valid http(s) image URL.', 'warning');
+                        return;
+                    }
+                    localStorage.setItem('login-profile-url', url);
+                    applyProfileToLogin(url);
+                    showToast('Login profile picture updated.');
+                });
+
+                lpResetBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    localStorage.removeItem('login-profile-url');
+                    lpInput.value = defaultAvatar;
+                    lpPreview.src = defaultAvatar;
+                    applyProfileToLogin(defaultAvatar);
+                    showToast('Login profile picture reset to default.');
+                });
+            }
         };
         // --- BULK UPLOAD EVENT LISTENERS ---
 const bulkUploadBtn = document.getElementById('bulk-upload-btn');
