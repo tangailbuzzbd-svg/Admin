@@ -381,6 +381,14 @@
                                 <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="inbox" class="w-8 h-8"></i></div>
                                 <div><p class="text-sm font-medium text-yellow-100">Total Unseen SMS</p><p class="text-3xl font-bold" id="total-unseen-sms">0</p></div>
                             </div>
+                            <!-- Live Visitors (Realtime website visitors within last 2 minutes) -->
+                            <div class="stat-card bg-gradient-to-br from-blue-600 to-cyan-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4" title="People currently browsing (active in last 2 minutes)">
+                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="activity" class="w-8 h-8"></i></div>
+                                <div>
+                                    <p class="text-sm font-medium text-blue-100">Live Visitors</p>
+                                    <p class="text-3xl font-bold" id="live-visitors">0</p>
+                                </div>
+                            </div>
                         </div>
                         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-8">
                             <div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">Recent Orders</h3><div class="overflow-x-auto"><table class="w-full text-left"><thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Sl. No.</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Status</th></tr></thead><tbody class="divide-y border-color" id="recent-orders-body"><tr class="text-text-primary"><td colspan="5" class="px-4 py-3 text-center">Loading...</td></tr></tbody></table></div></div>
@@ -1221,6 +1229,11 @@
     let totalDeliveryMenCount = null;
     let activeCouponsCount = null;
     let lastDashboardUpdateAt = null;
+    // Live visitors (website presence) tracking
+    let liveVisitorsIntervalId = null;
+    let unsubscribePresence = null;
+    let lastPresenceDocs = [];
+    const PRESENCE_ACTIVE_WINDOW_MS = 2 * 60 * 1000; // consider visitors active if pinged in last 2 minutes
 
         const UI = {
             loadingSpinner: document.getElementById('loading-spinner'),
@@ -1845,6 +1858,9 @@ const saveBulkProducts = async (products) => {
         const cleanupListeners = () => {
             unsubscribeListeners.forEach(unsub => unsub());
             unsubscribeListeners = [];
+            if (liveVisitorsIntervalId) { clearInterval(liveVisitorsIntervalId); liveVisitorsIntervalId = null; }
+            if (typeof unsubscribePresence === 'function') { unsubscribePresence(); unsubscribePresence = null; }
+            lastPresenceDocs = [];
         };
 
         // --- Authentication & PIN Logic ---
@@ -1883,7 +1899,6 @@ const saveBulkProducts = async (products) => {
                         const cameFromLogin = sessionStorage.getItem('pendingLogin') === '1';
                         if (cameFromLogin) {
                             showToast('Welcome to New World!');
-                            try { playWelcomeMessage(); } catch (_) {}
                             try { showWelcomeOverlay(); } catch (_) {}
                             sessionStorage.removeItem('pendingLogin');
                         }
@@ -2731,6 +2746,86 @@ const saveBulkProducts = async (products) => {
             }
 
             updateDashboardLastUpdatedLabel();
+        };
+
+        // --- Dashboard: Live Visitors counter ---
+        const extractTimestampMs = (value) => {
+            if (!value) return 0;
+            try {
+                if (typeof value.toMillis === 'function') {
+                    return value.toMillis();
+                }
+                if (typeof value.seconds === 'number') {
+                    const nanos = typeof value.nanoseconds === 'number' ? value.nanoseconds : 0;
+                    return value.seconds * 1000 + Math.floor(nanos / 1e6);
+                }
+                if (value instanceof Date) {
+                    return value.getTime();
+                }
+                if (typeof value === 'number') {
+                    return value;
+                }
+                if (typeof value === 'string') {
+                    const parsed = Date.parse(value);
+                    return Number.isNaN(parsed) ? 0 : parsed;
+                }
+            } catch (err) {
+                console.warn('Failed to parse timestamp value', err);
+            }
+            return 0;
+        };
+
+        const recomputeLiveVisitorsFromDocs = () => {
+            const el = document.getElementById('live-visitors');
+            if (!el) return;
+            try {
+                const cutoffMs = Date.now() - PRESENCE_ACTIVE_WINDOW_MS;
+                let count = 0;
+                const seenSessions = new Set();
+                for (const item of lastPresenceDocs) {
+                    const data = item?.data || {};
+                    const sessionId = data.sessionId || item?.id;
+                    if (sessionId && seenSessions.has(sessionId)) {
+                        continue;
+                    }
+
+                    const primaryMs = extractTimestampMs(
+                        data.lastActive ?? data.lastActiveAt ?? data.lastSeen ?? data.lastSeenAt ?? data.updatedAt ?? data.timestamp
+                    );
+                    const fallbackMs = primaryMs || extractTimestampMs(data.startedAt);
+
+                    if ((primaryMs && primaryMs >= cutoffMs) || (!primaryMs && fallbackMs && fallbackMs >= cutoffMs)) {
+                        if (sessionId) seenSessions.add(sessionId);
+                        count++;
+                    }
+                }
+                el.textContent = String(count);
+            } catch (e) {
+                console.warn('Live visitors recompute failed', e);
+            }
+        };
+
+        const startLiveVisitorsWatcher = () => {
+            // clear prior
+            if (liveVisitorsIntervalId) clearInterval(liveVisitorsIntervalId);
+            if (typeof unsubscribePresence === 'function') { unsubscribePresence(); unsubscribePresence = null; }
+
+            // realtime listener for presence updates
+            unsubscribePresence = onSnapshot(collection(db, 'presence'), (snap) => {
+                lastPresenceDocs = Array.isArray(snap?.docs)
+                    ? snap.docs.map(docSnap => ({ id: docSnap.id, data: docSnap.data({ serverTimestamps: 'estimate' }) || {} }))
+                    : [];
+                recomputeLiveVisitorsFromDocs();
+            }, handleSnapshotError('Presence'));
+
+            // also recompute periodically to drop stale sessions as the cutoff moves forward
+            recomputeLiveVisitorsFromDocs();
+            liveVisitorsIntervalId = setInterval(recomputeLiveVisitorsFromDocs, 10000); // every 10s
+        };
+
+        const stopLiveVisitorsWatcher = () => {
+            if (liveVisitorsIntervalId) { clearInterval(liveVisitorsIntervalId); liveVisitorsIntervalId = null; }
+            if (typeof unsubscribePresence === 'function') { unsubscribePresence(); unsubscribePresence = null; }
         };
 
         const getStatusBadge = (status) => { 
@@ -5491,6 +5586,8 @@ if (bulkUploadBtn && csvFileInput) {
             loadAdminProfile(user);
             setupDataListeners();
             loadDashboardStats();
+            // Start Live Visitors watcher (refreshes every 15s)
+            startLiveVisitorsWatcher();
             // Initialize dashboard chart and its selector
             const daysSelect = document.getElementById('ordersChartDays');
             if (daysSelect) {
