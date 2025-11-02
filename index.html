@@ -2823,8 +2823,13 @@ const saveBulkProducts = async (products) => {
 
         const formatVisitorLocation = (location) => {
             if (!location) return '';
+            if (typeof location === 'string') return location;
+            if (location.display) return location.display;
             const parts = [location.city, location.region, location.country].filter(Boolean);
-            return parts.join(', ') || location.country || '';
+            if (parts.length > 0) return parts.join(', ');
+            if (location.country) return location.country;
+            if (location.timezone) return location.timezone;
+            return '';
         };
 
         const formatVisitorDevice = (device, userAgent) => {
@@ -2883,7 +2888,7 @@ const saveBulkProducts = async (products) => {
                 const path = data.path || '/';
                 const deviceText = formatVisitorDevice(data.device, data.userAgent);
                 const brand = data.device?.brand ? `<div class="text-xs text-text-secondary">${escapeHtml(data.device.brand)}</div>` : '';
-                const ipAddress = data.location?.ip || data.ip || data.ipAddress || 'Unknown';
+                const ipAddress = data.location?.ip || data.location?.ipAddress || data.ip || data.ipAddress || 'Unknown';
                 const locationText = formatVisitorLocation(data.location) || 'Unknown';
                 const orgText = data.location?.org ? `<div class="text-xs text-text-secondary">${escapeHtml(data.location.org)}</div>` : '';
                 const lastActiveText = formatRelativeTimeFromMs(record.lastActiveMs);
