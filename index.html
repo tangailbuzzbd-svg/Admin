@@ -382,7 +382,7 @@
                                 <div><p class="text-sm font-medium text-yellow-100">Total Unseen SMS</p><p class="text-3xl font-bold" id="total-unseen-sms">0</p></div>
                             </div>
                             <!-- Live Visitors (Realtime website visitors within last 2 minutes) -->
-                            <div class="stat-card bg-gradient-to-br from-blue-600 to-cyan-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4" title="People currently browsing (active in last 2 minutes)">
+                            <div id="live-visitors-card" class="stat-card bg-gradient-to-br from-blue-600 to-cyan-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" title="People currently browsing (active in last 2 minutes)">
                                 <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="activity" class="w-8 h-8"></i></div>
                                 <div>
                                     <p class="text-sm font-medium text-blue-100">Live Visitors</p>
@@ -1151,6 +1151,34 @@
         </div>
     </div>
 
+    <!-- Live Visitors Modal -->
+    <div id="live-visitors-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
+        <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b border-color pb-2 mb-4">
+                <h3 class="text-xl font-semibold text-text-primary">Live Visitor Sessions</h3>
+                <button id="live-visitors-modal-close" class="text-text-secondary hover:text-text-primary">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700">
+                            <th class="px-4 py-3">Visitor</th>
+                            <th class="px-4 py-3">Device</th>
+                            <th class="px-4 py-3">IP Address</th>
+                            <th class="px-4 py-3">Location</th>
+                            <th class="px-4 py-3">Last Active</th>
+                        </tr>
+                    </thead>
+                    <tbody id="live-visitors-table-body" class="divide-y border-color">
+                        <tr class="text-text-primary"><td colspan="5" class="px-4 py-3 text-center">Loading...</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
     <!-- Confirmation Modal -->
     <div id="confirmation-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 hidden">
         <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-md">
@@ -1258,6 +1286,9 @@
             confirmationModal: document.getElementById('confirmation-modal'),
             newOrderAlert: document.getElementById('new-order-alert'),
             newMessageAlert: document.getElementById('new-message-alert'),
+            liveVisitorsModal: document.getElementById('live-visitors-modal'),
+            liveVisitorsModalCloseBtn: document.getElementById('live-visitors-modal-close'),
+            liveVisitorsTableBody: document.getElementById('live-visitors-table-body'),
             // PIN verification removed
         };
         
@@ -1361,6 +1392,10 @@
             } catch (e) {
                 return 'N/A';
             }
+        };
+        const escapeHtml = (value) => {
+            if (value === undefined || value === null) return '';
+            return String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
         };
         
         const showToast = (message, type = 'success') => {
@@ -1861,6 +1896,7 @@ const saveBulkProducts = async (products) => {
             if (liveVisitorsIntervalId) { clearInterval(liveVisitorsIntervalId); liveVisitorsIntervalId = null; }
             if (typeof unsubscribePresence === 'function') { unsubscribePresence(); unsubscribePresence = null; }
             lastPresenceDocs = [];
+            if (UI.liveVisitorsModal) UI.liveVisitorsModal.classList.add('hidden');
         };
 
         // --- Authentication & PIN Logic ---
@@ -2775,42 +2811,140 @@ const saveBulkProducts = async (products) => {
             return 0;
         };
 
+        const formatRelativeTimeFromMs = (ms) => {
+            if (!ms) return 'Unknown';
+            const diffSeconds = Math.round((Date.now() - ms) / 1000);
+            if (diffSeconds < 10) return 'Just now';
+            if (diffSeconds < 60) return `${diffSeconds}s ago`;
+            if (diffSeconds < 3600) return `${Math.floor(diffSeconds / 60)}m ago`;
+            if (diffSeconds < 86400) return `${Math.floor(diffSeconds / 3600)}h ago`;
+            return new Date(ms).toLocaleString();
+        };
+
+        const formatVisitorLocation = (location) => {
+            if (!location) return '';
+            const parts = [location.city, location.region, location.country].filter(Boolean);
+            return parts.join(', ') || location.country || '';
+        };
+
+        const formatVisitorDevice = (device, userAgent) => {
+            if (!device) {
+                return userAgent ? userAgent.slice(0, 60) : 'Unknown device';
+            }
+            if (device.label) return device.label;
+            const segments = [device.deviceType, device.os, device.browser].filter(Boolean);
+            if (segments.length > 0) return segments.join(' | ');
+            return userAgent ? userAgent.slice(0, 60) : 'Unknown device';
+        };
+
+        const getActivePresenceRecords = () => {
+            const cutoffMs = Date.now() - PRESENCE_ACTIVE_WINDOW_MS;
+            const sessions = new Map();
+            for (const item of lastPresenceDocs) {
+                if (!item) continue;
+                const data = item.data || {};
+                const sessionId = data.sessionId || item.id;
+                if (!sessionId) continue;
+
+                const lastActiveMs = extractTimestampMs(
+                    data.lastActive ?? data.lastActiveAt ?? data.lastSeen ?? data.lastSeenAt ?? data.updatedAt ?? data.timestamp
+                );
+                const startedMs = extractTimestampMs(data.startedAt);
+                const effectiveMs = lastActiveMs || startedMs;
+                if (!effectiveMs || effectiveMs < cutoffMs) continue;
+
+                const existing = sessions.get(sessionId);
+                if (!existing || effectiveMs > existing.lastActiveMs) {
+                    sessions.set(sessionId, {
+                        sessionId,
+                        docId: item.id,
+                        data,
+                        lastActiveMs: effectiveMs,
+                        startedMs,
+                    });
+                }
+            }
+            return Array.from(sessions.values()).sort((a, b) => (b.lastActiveMs || 0) - (a.lastActiveMs || 0));
+        };
+
+        const renderLiveVisitorsModal = () => {
+            if (!UI.liveVisitorsModal || !UI.liveVisitorsTableBody) return;
+            const records = getActivePresenceRecords();
+            if (records.length === 0) {
+                UI.liveVisitorsTableBody.innerHTML = '<tr class="text-text-primary"><td colspan="5" class="px-4 py-3 text-center">No active visitors in the last 2 minutes.</td></tr>';
+                return;
+            }
+
+            const rows = records.map(record => {
+                const data = record.data || {};
+                const visitorType = data.isLoggedIn ? 'Signed-in user' : 'Guest visitor';
+                const uid = data.uid ? `${data.uid.slice(0, 8)}...` : '';
+                const visitorLabel = uid ? `${visitorType} (${uid})` : visitorType;
+                const path = data.path || '/';
+                const deviceText = formatVisitorDevice(data.device, data.userAgent);
+                const brand = data.device?.brand ? `<div class="text-xs text-text-secondary">${escapeHtml(data.device.brand)}</div>` : '';
+                const ipAddress = data.location?.ip || data.ip || data.ipAddress || 'Unknown';
+                const locationText = formatVisitorLocation(data.location) || 'Unknown';
+                const orgText = data.location?.org ? `<div class="text-xs text-text-secondary">${escapeHtml(data.location.org)}</div>` : '';
+                const lastActiveText = formatRelativeTimeFromMs(record.lastActiveMs);
+
+                return `
+                    <tr class="text-text-primary">
+                        <td class="px-4 py-3">
+                            <div class="font-semibold">${escapeHtml(visitorLabel)}</div>
+                            <div class="text-xs text-text-secondary truncate" title="${escapeHtml(path)}">${escapeHtml(path)}</div>
+                        </td>
+                        <td class="px-4 py-3">
+                            <div>${escapeHtml(deviceText)}</div>
+                            ${brand}
+                        </td>
+                        <td class="px-4 py-3">${escapeHtml(ipAddress)}</td>
+                        <td class="px-4 py-3">
+                            <div>${escapeHtml(locationText)}</div>
+                            ${orgText}
+                        </td>
+                        <td class="px-4 py-3">${escapeHtml(lastActiveText)}</td>
+                    </tr>
+                `;
+            }).join('');
+
+            UI.liveVisitorsTableBody.innerHTML = rows;
+        };
+
+        const updateLiveVisitorsModalIfOpen = () => {
+            if (!UI.liveVisitorsModal || UI.liveVisitorsModal.classList.contains('hidden')) return;
+            renderLiveVisitorsModal();
+            if (window.lucide?.createIcons) window.lucide.createIcons();
+        };
+
+        const openLiveVisitorsModal = () => {
+            if (!UI.liveVisitorsModal) return;
+            renderLiveVisitorsModal();
+            UI.liveVisitorsModal.classList.remove('hidden');
+            if (window.lucide?.createIcons) window.lucide.createIcons();
+        };
+
+        const closeLiveVisitorsModal = () => {
+            if (!UI.liveVisitorsModal) return;
+            UI.liveVisitorsModal.classList.add('hidden');
+        };
+
         const recomputeLiveVisitorsFromDocs = () => {
             const el = document.getElementById('live-visitors');
             if (!el) return;
             try {
-                const cutoffMs = Date.now() - PRESENCE_ACTIVE_WINDOW_MS;
-                let count = 0;
-                const seenSessions = new Set();
-                for (const item of lastPresenceDocs) {
-                    const data = item?.data || {};
-                    const sessionId = data.sessionId || item?.id;
-                    if (sessionId && seenSessions.has(sessionId)) {
-                        continue;
-                    }
-
-                    const primaryMs = extractTimestampMs(
-                        data.lastActive ?? data.lastActiveAt ?? data.lastSeen ?? data.lastSeenAt ?? data.updatedAt ?? data.timestamp
-                    );
-                    const fallbackMs = primaryMs || extractTimestampMs(data.startedAt);
-
-                    if ((primaryMs && primaryMs >= cutoffMs) || (!primaryMs && fallbackMs && fallbackMs >= cutoffMs)) {
-                        if (sessionId) seenSessions.add(sessionId);
-                        count++;
-                    }
-                }
-                el.textContent = String(count);
+                const activeRecords = getActivePresenceRecords();
+                el.textContent = String(activeRecords.length);
+                updateLiveVisitorsModalIfOpen();
             } catch (e) {
                 console.warn('Live visitors recompute failed', e);
             }
         };
 
         const startLiveVisitorsWatcher = () => {
-            // clear prior
             if (liveVisitorsIntervalId) clearInterval(liveVisitorsIntervalId);
             if (typeof unsubscribePresence === 'function') { unsubscribePresence(); unsubscribePresence = null; }
 
-            // realtime listener for presence updates
             unsubscribePresence = onSnapshot(collection(db, 'presence'), (snap) => {
                 lastPresenceDocs = Array.isArray(snap?.docs)
                     ? snap.docs.map(docSnap => ({ id: docSnap.id, data: docSnap.data({ serverTimestamps: 'estimate' }) || {} }))
@@ -2818,9 +2952,8 @@ const saveBulkProducts = async (products) => {
                 recomputeLiveVisitorsFromDocs();
             }, handleSnapshotError('Presence'));
 
-            // also recompute periodically to drop stale sessions as the cutoff moves forward
             recomputeLiveVisitorsFromDocs();
-            liveVisitorsIntervalId = setInterval(recomputeLiveVisitorsFromDocs, 10000); // every 10s
+            liveVisitorsIntervalId = setInterval(recomputeLiveVisitorsFromDocs, 10000);
         };
 
         const stopLiveVisitorsWatcher = () => {
@@ -3740,6 +3873,11 @@ const saveBulkProducts = async (products) => {
         });
 
         document.addEventListener('click', (e) => {
+            const liveVisitorsCard = e.target.closest('#live-visitors-card');
+            if (liveVisitorsCard) {
+                openLiveVisitorsModal();
+                return;
+            }
 // Show edit coupon modal and populate fields
 async function openEditCouponModal(couponId) {
     // Create modal if not exists
@@ -4610,6 +4748,12 @@ async function handleEditCouponSubmit(e) {
         });
 
         document.getElementById('modal-cancel-btn').addEventListener('click', hideConfirmationModal);
+        UI.liveVisitorsModalCloseBtn?.addEventListener('click', () => closeLiveVisitorsModal());
+        UI.liveVisitorsModal?.addEventListener('click', (event) => {
+            if (event.target === UI.liveVisitorsModal) {
+                closeLiveVisitorsModal();
+            }
+        });
         
         const showDeliveryManDetails = async (deliveryManId) => {
             UI.deliveryManDetailsContent.innerHTML = '<p>Loading...</p>';
@@ -5586,7 +5730,7 @@ if (bulkUploadBtn && csvFileInput) {
             loadAdminProfile(user);
             setupDataListeners();
             loadDashboardStats();
-            // Start Live Visitors watcher (refreshes every 15s)
+            // Start Live Visitors watcher (refreshes every 10s)
             startLiveVisitorsWatcher();
             // Initialize dashboard chart and its selector
             const daysSelect = document.getElementById('ordersChartDays');
