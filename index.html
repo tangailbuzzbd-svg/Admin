@@ -19,6 +19,7 @@
             --c-text-primary: #1f2937; /* dark gray */
             --c-text-secondary: #6b7280; /* gray-500 */
             --c-border: #e5e7eb; /* gray-200 */
+            --admin-font-size: 100%;
         }
         
         html.dark {
@@ -30,11 +31,134 @@
             --c-border: #374151; /* gray-700 */
         }
         
+        html {
+            font-size: var(--admin-font-size, 100%);
+        }
+
         body { 
             font-family: 'Inter', sans-serif;
             background-color: var(--c-bg-primary);
             color: var(--c-text-primary);
         }
+
+        .text-resize-btn {
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            border: 1px solid var(--c-border);
+            background-color: transparent;
+            color: var(--c-text-primary);
+            font-weight: 600;
+            font-size: 0.85rem;
+            line-height: 1;
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .text-resize-btn:hover:not(:disabled),
+        .text-resize-btn:focus-visible:not(:disabled) {
+            background-color: var(--c-primary);
+            border-color: var(--c-primary);
+            color: #ffffff;
+            box-shadow: 0 0 0 2px color-mix(in srgb, var(--c-primary) 25%, transparent 75%);
+        }
+
+        .text-resize-btn:disabled {
+            opacity: 0.45;
+            cursor: not-allowed;
+        }
+
+        .text-resize-display {
+            font-variant-numeric: tabular-nums;
+            font-size: 0.75rem;
+        }
+
+        .footer-resize {
+            backdrop-filter: blur(12px);
+        }
+
+        .admin-sticky-header {
+            position: sticky;
+            top: 0;
+            z-index: 60;
+            backdrop-filter: blur(16px);
+            background-color: var(--c-bg-secondary);
+            box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08);
+        }
+
+        html.dark .admin-sticky-header {
+            box-shadow: 0 1px 0 rgba(15, 23, 42, 0.4);
+        }
+
+        .admin-sticky-footer {
+            position: sticky;
+            bottom: 0;
+            z-index: 60;
+            backdrop-filter: blur(16px);
+            background-color: var(--c-bg-secondary);
+            box-shadow: 0 -1px 0 rgba(15, 23, 42, 0.08);
+        }
+
+        html.dark .admin-sticky-footer {
+            box-shadow: 0 -1px 0 rgba(15, 23, 42, 0.6);
+        }
+
+        #header-live-visitors {
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+        }
+
+        html.dark #header-live-visitors {
+            background-color: rgba(30, 41, 59, 0.9);
+            border-color: rgba(100, 116, 139, 0.7);
+            color: #f8fafc;
+        }
+
+        html.dark #header-live-visitors span,
+        html.dark #header-live-visitors svg,
+        html.dark #header-live-visitors .lucide {
+            color: inherit;
+            stroke: currentColor;
+        }
+
+        .dashboard-clock-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.85rem;
+            border-radius: 9999px;
+            border: 1px solid var(--c-border);
+            background-color: rgba(15, 23, 42, 0.04);
+            font-size: 0.8rem;
+            font-weight: 600;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: 0.01em;
+            transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+        }
+
+        html.dark .dashboard-clock-pill {
+            background-color: rgba(15, 23, 42, 0.35);
+            border-color: rgba(148, 163, 184, 0.5);
+            color: #e2e8f0;
+        }
+
+        .dashboard-clock-dot {
+            width: 0.55rem;
+            height: 0.55rem;
+            border-radius: 9999px;
+            background: #16a34a;
+            box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.45);
+            animation: clock-dot-pulse 2s infinite;
+        }
+
+        html.dark .dashboard-clock-dot {
+            background: #4ade80;
+            box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.45);
+        }
+
+        @keyframes clock-dot-pulse {
+            0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.35); }
+            70% { box-shadow: 0 0 0 8px rgba(22, 163, 74, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
+        }
+
 
         .bg-primary { background-color: var(--c-bg-primary); }
         .bg-secondary { background-color: var(--c-bg-secondary); }
@@ -145,6 +269,105 @@
         }
         .welcome-animate { animation: welcome-pop 0.9s ease-out forwards; }
         .welcome-glow { text-shadow: 0 0 30px rgba(79, 70, 229, 0.6), 0 0 60px rgba(79, 70, 229, 0.35); }
+
+        /* Enhanced contrast for tables and form controls */
+        :root {
+            --c-table-header-bg: #eef2ff;
+            --c-table-header-text: #1e1b4b;
+            --c-table-header-border: #c7d2fe;
+            --c-input-bg: #f9fafb;
+            --c-input-border-strong: #cfd4ff;
+            --c-input-text: #111827;
+        }
+
+        html.dark {
+            --c-table-header-bg: rgba(79, 70, 229, 0.22);
+            --c-table-header-text: #f9fafb;
+            --c-table-header-border: rgba(129, 140, 248, 0.45);
+            --c-input-bg: rgba(17, 24, 39, 0.85);
+            --c-input-border-strong: rgba(129, 140, 248, 0.6);
+            --c-input-text: #f9fafb;
+        }
+
+        .bg-secondary table {
+            background-color: var(--c-bg-primary);
+            border: 1px solid var(--c-table-header-border);
+            border-radius: 0.75rem;
+            box-shadow: 0 10px 25px -18px rgba(15, 23, 42, 0.35);
+            overflow: hidden;
+        }
+
+        html.dark .bg-secondary table {
+            background-color: rgba(17, 24, 39, 0.9);
+            border-color: var(--c-table-header-border);
+            box-shadow: 0 16px 30px -20px rgba(15, 23, 42, 0.8);
+        }
+
+        .bg-secondary table thead tr {
+            background-color: var(--c-table-header-bg) !important;
+        }
+
+        .bg-secondary table thead th {
+            color: var(--c-table-header-text) !important;
+            border-bottom: 1px solid var(--c-table-header-border) !important;
+            letter-spacing: 0.08em;
+        }
+
+        .bg-secondary table tbody tr:nth-child(even) {
+            background-color: color-mix(in srgb, var(--c-table-header-bg) 35%, transparent 65%);
+        }
+
+        html.dark .bg-secondary table tbody tr:nth-child(even) {
+            background-color: rgba(99, 102, 241, 0.18);
+        }
+
+        .bg-secondary table tbody tr:hover {
+            background-color: color-mix(in srgb, var(--c-table-header-bg) 50%, var(--c-bg-primary) 50%);
+        }
+
+        html.dark .bg-secondary table tbody tr:hover {
+            background-color: rgba(99, 102, 241, 0.25);
+        }
+
+        .bg-secondary table tbody td {
+            border-bottom: 1px solid color-mix(in srgb, var(--c-table-header-border) 40%, transparent 60%);
+        }
+
+        html.dark .bg-secondary table tbody td {
+            border-bottom-color: rgba(129, 140, 248, 0.35);
+        }
+
+        .bg-secondary input:not([type="checkbox"]):not([type="radio"]),
+        .bg-secondary select,
+        .bg-secondary textarea {
+            background-color: var(--c-input-bg) !important;
+            border: 1px solid var(--c-input-border-strong) !important;
+            border-radius: 0.75rem;
+            box-shadow: 0 6px 18px -12px rgba(15, 23, 42, 0.35);
+            color: var(--c-input-text) !important;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+        }
+
+        html.dark .bg-secondary input:not([type="checkbox"]):not([type="radio"]),
+        html.dark .bg-secondary select,
+        html.dark .bg-secondary textarea {
+            box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.9);
+        }
+
+        .bg-secondary input:not([type="checkbox"]):not([type="radio"]):focus,
+        .bg-secondary select:focus,
+        .bg-secondary textarea:focus {
+            background-color: color-mix(in srgb, var(--c-input-bg) 90%, white 10%);
+            border-color: var(--c-primary) !important;
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 25%, transparent 75%), 0 8px 20px -12px rgba(79, 70, 229, 0.45);
+        }
+
+        html.dark .bg-secondary input:not([type="checkbox"]):not([type="radio"]):focus,
+        html.dark .bg-secondary select:focus,
+        html.dark .bg-secondary textarea:focus {
+            background-color: rgba(17, 24, 39, 0.95);
+            box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.45), 0 18px 30px -20px rgba(99, 102, 241, 0.75);
+        }
     </style>
 </head>
 <body class="bg-primary">
@@ -217,6 +440,7 @@
                     <a href="#low-stock" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="low-stock"><i data-lucide="alert-triangle" class="w-5 h-5 mr-3"></i><span>Low Stock</span></a>
                     <a href="#top-sales" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="top-sales"><i data-lucide="trending-up" class="w-5 h-5 mr-3"></i><span>Top Sales</span></a>
                     <a href="#top-rated" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="top-rated"><i data-lucide="star" class="w-5 h-5 mr-3"></i><span>Top Rated</span></a>
+                    <a href="#flash-sale" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="flash-sale"><i data-lucide="zap" class="w-5 h-5 mr-3"></i><span>Flash Sale</span></a>
                     <a href="#add-product" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="add-product"><i data-lucide="plus-circle" class="w-5 h-5 mr-3"></i><span>Add Product</span></a>
                     <a href="#reviews" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="reviews"><i data-lucide="star" class="w-5 h-5 mr-3"></i><span>Reviews & Ratings</span></a>
                     <a href="#banners" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="banners"><i data-lucide="image" class="w-5 h-5 mr-3"></i><span>Banners</span></a>
@@ -241,8 +465,8 @@
             <div x-show="sidebarOpen && !isDesktop" x-transition.opacity class="fixed inset-0 z-20 bg-black/50 lg:hidden" @click="sidebarOpen = false" x-cloak></div>
 
             <!-- Main Content -->
-            <div class="main-content flex-1 flex flex-col overflow-hidden transition-all duration-300 ease-in-out ml-0" :class="{'lg:ml-64': sidebarOpen && isDesktop}">
-                <header class="flex flex-wrap items-center justify-between gap-3 px-4 py-4 bg-secondary border-b border-color sm:flex-nowrap sm:px-6">
+            <div class="main-content flex-1 flex h-screen min-h-0 flex-col overflow-hidden transition-all duration-300 ease-in-out ml-0" :class="{'lg:ml-64': sidebarOpen && isDesktop}">
+                <header class="admin-sticky-header bg-secondary flex flex-wrap items-center justify-between gap-3 px-4 py-4 border-b border-color sm:flex-nowrap sm:px-6">
                     <button @click="sidebarOpen = !sidebarOpen" class="text-text-secondary focus:outline-none lg:hidden"><i data-lucide="menu" class="w-6 h-6"></i></button>
                     <div class="text-lg font-semibold text-text-primary flex-1 sm:text-2xl" id="page-title">Dashboard</div>
                     <div class="flex items-center gap-3 ml-auto w-full flex-wrap sm:w-auto sm:justify-end">
@@ -256,22 +480,29 @@
                             <select id="quick-section-select" class="w-full px-3 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-theme-primary sm:w-auto">
                                 <option value="dashboard">Dashboard</option>
                                 <option value="products">Products</option>
+                                <option value="flash-sale">Flash Sale</option>
                                 <option value="low-stock">Low Stock</option>
                                 <option value="reviews">Reviews</option>
                                 <option value="orders">All Orders</option>
                                 <option value="users">All Users</option>
                             </select>
                         </div>
-                        <!-- UPDATED: Digital Clock container -->
-                        <div id="digital-clock" class="text-right text-text-secondary hidden sm:block tabular-nums leading-tight">
-                            <!-- Clock content will be injected by JS -->
-                        </div>
+                        <!-- Live Visitors Header Badge -->
+                        <button id="header-live-visitors" type="button" class="hidden sm:flex items-center gap-2 rounded-full border border-color bg-white/90 px-3 py-1.5 text-sm font-medium text-text-secondary transition-colors hover:border-theme-primary hover:text-theme-primary dark:hover:text-theme-primary focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                            <i data-lucide="activity" class="w-4 h-4"></i>
+                            <span class="uppercase tracking-wide text-xs text-text-secondary dark:text-slate-200">Live Visitors</span>
+                            <span id="header-live-visitors-count" class="text-base font-semibold text-text-primary dark:text-white">0</span>
+                        </button>
                         <!-- Manual Refresh Button -->
                         <div class="flex items-center space-x-2">
                             <button id="manual-refresh-button" class="text-text-secondary focus:outline-none" title="Refresh Data">
                                 <i data-lucide="refresh-cw" class="w-5 h-5"></i>
                             </button>
-                            <span id="dashboard-last-updated" class="text-xs text-text-secondary hidden sm:block"></span>
+                            <span id="dashboard-last-updated" class="dashboard-clock-pill hidden sm:inline-flex text-text-secondary">
+                                <span class="dashboard-clock-dot" aria-hidden="true"></span>
+                                <span class="uppercase tracking-wide text-[0.7rem]">Live</span>
+                                <span id="dashboard-last-updated-time" class="text-xs"></span>
+                            </span>
                         </div>
                         <!-- Notification Bell -->
                         <div x-data="{ notificationsOpen: false }" class="relative">
@@ -305,7 +536,7 @@
                     </div>
                 </header>
 
-                <main class="flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 bg-primary sm:px-6">
+                <main class="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-4 pt-6 pb-24 bg-primary sm:px-6">
                     <!-- Dashboard Page -->
                     <div id="dashboard-page" class="page-content">
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -677,6 +908,46 @@
                                     </thead>
                                     <tbody class="divide-y border-color" id="top-rated-body">
                                         <tr class="text-text-primary"><td colspan="7" class="px-4 py-3 text-center">Loading...</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Flash Sale Page -->
+                    <div id="flash-sale-page" class="page-content hidden">
+                        <div class="bg-secondary p-6 rounded-lg shadow-md">
+                            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-text-primary">Flash Sale Products</h3>
+                                    <p class="text-sm text-text-secondary">Track upcoming, live, and expired flash deals at a glance.</p>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm">
+                                    <span class="px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-text-secondary">Total: <span id="flash-sale-summary-total">0</span></span>
+                                    <span class="px-2 py-1 rounded-full bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-300">Live: <span id="flash-sale-summary-active">0</span></span>
+                                    <span class="px-2 py-1 rounded-full bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-300">Upcoming: <span id="flash-sale-summary-upcoming">0</span></span>
+                                    <span class="px-2 py-1 rounded-full bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-200">Ended: <span id="flash-sale-summary-ended">0</span></span>
+                                </div>
+                                <button id="flash-sale-add-product" class="bg-theme-primary hover:bg-theme-primary-hover text-white font-semibold py-2 px-4 rounded-lg btn-glow flex items-center gap-2">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    <span>New Flash Sale Product</span>
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead>
+                                        <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700">
+                                            <th class="px-4 py-3">#</th>
+                                            <th class="px-4 py-3">Product</th>
+                                            <th class="px-4 py-3">Model</th>
+                                            <th class="px-4 py-3">Flash Price</th>
+                                            <th class="px-4 py-3">Window</th>
+                                            <th class="px-4 py-3">Status</th>
+                                            <th class="px-4 py-3">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="flash-sale-body" class="divide-y border-color">
+                                        <tr><td colspan="7" class="px-4 py-6 text-center text-text-secondary">Loading flash sale products...</td></tr>
                                     </tbody>
                                 </table>
                             </div>
@@ -1073,6 +1344,18 @@
                         </div>
                     </div>
                 </main>
+                <footer class="footer-resize admin-sticky-footer bg-secondary border-t border-color px-4 py-4 sm:px-6">
+                    <div class="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+                        <p class="text-text-secondary">Tangail Buzz Admin Panel &mdash; adjust the layout and text size for comfortable viewing.</p>
+                        <div class="flex flex-wrap items-center gap-2">
+                            <span class="text-xs uppercase tracking-wide text-text-secondary">Text size</span>
+                            <button type="button" id="font-size-decrease" class="text-resize-btn">A-</button>
+                            <button type="button" id="font-size-reset" class="text-resize-btn">Reset</button>
+                            <button type="button" id="font-size-increase" class="text-resize-btn">A+</button>
+                            <span id="font-size-display" class="text-text-secondary text-resize-display">100%</span>
+                        </div>
+                    </div>
+                </footer>
             </div>
         </div>
     </div>
@@ -1292,7 +1575,7 @@
             // PIN verification removed
         };
         
-    const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'low-stock': 'Low Stock Products', 'top-sales': 'Top Sales', 'top-rated': 'Top Rated Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', 'side-promo': 'Side Promo', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
+    const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'low-stock': 'Low Stock Products', 'top-sales': 'Top Sales', 'top-rated': 'Top Rated Products', 'flash-sale': 'Flash Sale Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', 'side-promo': 'Side Promo', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
 
         const CATEGORY_MAP = {
             'electronics': 'Electronics',
@@ -1396,6 +1679,50 @@
         const escapeHtml = (value) => {
             if (value === undefined || value === null) return '';
             return String(value).replace(/[&<>"']/g, (char) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[char]));
+        };
+
+        const coerceToDate = (value) => {
+            if (!value && value !== 0) return null;
+            if (value instanceof Date) {
+                return Number.isNaN(value.getTime()) ? null : value;
+            }
+            if (typeof value?.toDate === 'function') {
+                try {
+                    const converted = value.toDate();
+                    return (converted instanceof Date && !Number.isNaN(converted.getTime())) ? converted : null;
+                } catch (_) {
+                    return null;
+                }
+            }
+            if (typeof value === 'object' && typeof value.seconds === 'number') {
+                const millis = value.seconds * 1000 + ((value.nanoseconds || 0) / 1e6);
+                const date = new Date(millis);
+                return Number.isNaN(date.getTime()) ? null : date;
+            }
+            if (typeof value === 'number') {
+                if (!Number.isFinite(value)) return null;
+                const millis = value > 1e12 ? value : value * 1000;
+                const date = new Date(millis);
+                return Number.isNaN(date.getTime()) ? null : date;
+            }
+            if (typeof value === 'string') {
+                const trimmed = value.trim();
+                if (!trimmed) return null;
+                if (/^-?\d+(\.\d+)?$/.test(trimmed)) {
+                    const numeric = Number(trimmed);
+                    if (Number.isFinite(numeric)) {
+                        const millis = numeric > 1e12 ? numeric : numeric * 1000;
+                        const numericDate = new Date(millis);
+                        if (!Number.isNaN(numericDate.getTime())) return numericDate;
+                    }
+                }
+                const isoCandidate = trimmed.includes('T') ? trimmed : trimmed.replace(' ', 'T');
+                const parsedIso = new Date(isoCandidate);
+                if (!Number.isNaN(parsedIso.getTime())) return parsedIso;
+                const parsed = new Date(trimmed);
+                return Number.isNaN(parsed.getTime()) ? null : parsed;
+            }
+            return null;
         };
         
         const showToast = (message, type = 'success') => {
@@ -1625,6 +1952,10 @@
         };
 
         const startClock = () => {
+            if (!document.getElementById('digital-clock')) {
+                stopClock();
+                return;
+            }
             if (clockInterval) clearInterval(clockInterval);
             updateClock(); // Initial display
             clockInterval = setInterval(updateClock, 1000);
@@ -1642,6 +1973,23 @@
  * @returns {Array<Object>} প্রোডাক্ট ডেটার অ্যারে।
  */
 const parseCSV = (csvText) => {
+    const parseBooleanField = (raw) => {
+        if (raw === undefined || raw === null) return false;
+        const normalized = String(raw).trim().toLowerCase();
+        if (!normalized) return false;
+        if (['true', 'yes', '1', 'on', 'enabled', 'y'].includes(normalized)) return true;
+        if (['false', 'no', '0', 'off', 'disabled', 'n'].includes(normalized)) return false;
+        return false;
+    };
+
+    const parseNumberField = (raw) => {
+        if (raw === undefined || raw === null) return 0;
+        const cleaned = String(raw).replace(/[^0-9+\-.]/g, '').trim();
+        if (!cleaned) return 0;
+        const parsed = parseFloat(cleaned);
+        return Number.isNaN(parsed) ? 0 : parsed;
+    };
+
     const lines = csvText.split('\n').filter(line => line.trim() !== '');
     if (lines.length === 0) return [];
 
@@ -1658,60 +2006,132 @@ const parseCSV = (csvText) => {
             continue;
         }
 
-    const obj = {};
-    // Collect raw Specification Description chunks (may come from one or more columns)
-    const specDescriptionChunks = [];
-    // Collect unlimited thumbnails
-    const thumbnails = [];
+        const obj = {};
+        // Collect raw Specification Description chunks (may come from one or more columns)
+        const specDescriptionChunks = [];
+        // Collect unlimited thumbnails
+        const thumbnails = [];
 
         headers.forEach((header, index) => {
-            let value = values[index].trim().replace(/^"|"$/g, ''); // ডাবল কোটেশন সরিয়ে দেওয়া
+            const rawValue = values[index] ?? '';
+            let value = String(rawValue).trim().replace(/^"|"$/g, ''); // ডাবল কোটেশন সরিয়ে দেওয়া
+            const headerKey = header.trim().toLowerCase();
             let key;
 
             // আপনার CSV header-কে কোডের key-তে রূপান্তর (Mapping)
-            switch (header) {
-                case 'Product Name': key = 'name'; break;
-                case 'Main Price': key = 'mainPrice'; break;
-                case 'Offer Price': key = 'offerPrice'; break;
-                case 'Discount %': key = 'discount'; break;
-                case 'Stock Count': key = 'stock'; break;
+            switch (headerKey) {
+                case 'product name': key = 'name'; break;
+                case 'main price': key = 'mainPrice'; break;
+                case 'offer price': key = 'offerPrice'; break;
+                case 'discount %': key = 'discount'; break;
+                case 'stock count': key = 'stock'; break;
                 // 'Rating' ফিল্ডটি CSV-তে নেই, তাই এটিকে বাদ দেওয়া হলো।
-                case 'On Offer': key = 'isOnOffer'; break;
-                case 'Refundable': key = 'isRefundable'; break;
-                case 'main Image URL': key = 'imageUrl'; break; // নতুন মেইন ইমেজ ফিল্ড
+                case 'on offer': key = 'isOnOffer'; break;
+                case 'refundable': key = 'isRefundable'; break;
+                case 'main image url': key = 'imageUrl'; break; // নতুন মেইন ইমেজ ফিল্ড
                 // Backward compatibility: single thumbnail column
-                case 'thumbnil image URL': {
+                case 'thumbnil image url': {
                     // Support multiple URLs in a single cell separated by | ; or whitespace
                     const parts = String(value).split(/\s*[|;\n]\s*/).map(s => s.trim()).filter(Boolean);
                     thumbnails.push(...parts);
                     return;
                 }
                 // New: combined thumbnails column (comma-safe in CSV if quoted)
-                case 'Thumbnails':
                 case 'thumbnails':
-                case 'Thumbnail URLs':
-                case 'thumbnail urls': {
+                case 'thumbnail urls':
+                case 'thumbnail url':
+                case 'thumbnail': {
                     const parts = String(value).split(/\s*[|;\n]\s*/).map(s => s.trim()).filter(Boolean);
                     thumbnails.push(...parts);
                     return;
                 }
-                case 'Description': key = 'details'; break;
-                case 'Sub-Category': key = 'subcategory'; break;
-                case 'Category': key = 'category'; break;
-                case 'Brand': key = 'brand'; break;
-                case 'Warranty': key = 'warranty'; break;
-                case 'Specifications Description': {
+                case 'description': key = 'details'; break;
+                case 'sub-category': key = 'subcategory'; break;
+                case 'category': key = 'category'; break;
+                case 'brand': key = 'brand'; break;
+                case 'warranty': key = 'warranty'; break;
+                case 'specifications description': {
                     if (value) specDescriptionChunks.push(value);
                     return; // handled
                 }
-                default: key = header.toLowerCase().replace(/\s/g, ''); 
+                case 'flash sale':
+                case 'flash sale enabled':
+                case 'flashsale':
+                case 'flashsaleenabled':
+                case 'flash sale active':
+                case 'flash enabled':
+                case 'flash enabled?':
+                case 'flash sell':
+                case 'flash sell enabled':
+                case 'flashsell':
+                case 'flashsellenabled':
+                case 'flash deal':
+                case 'flash deal enabled':
+                case 'flashdeal':
+                case 'flashdealenabled':
+                case 'flash offer':
+                case 'flash offer enabled':
+                case 'is flash sale':
+                case 'is flashsale':
+                case 'isflashsale':
+                    obj.flashSaleEnabled = parseBooleanField(value);
+                    return;
+                case 'flash sale price':
+                case 'flashsale price':
+                case 'flashsaleprice':
+                case 'flash price':
+                case 'flash price ৳':
+                case 'flashprice':
+                case 'flash sell price':
+                case 'flashsell price':
+                case 'flashsellprice':
+                case 'flash deal price':
+                case 'flashdeal price':
+                case 'flashdealprice':
+                case 'flash offer price':
+                case 'flashofferprice':
+                    obj.flashPrice = parseNumberField(value);
+                    return;
+                case 'flash sale start':
+                case 'flashsale start':
+                case 'flash sale start date':
+                case 'flash sale start time':
+                case 'flash start':
+                case 'flash start date':
+                case 'flash start time':
+                case 'flashstart':
+                case 'flashstartdate':
+                case 'flashstarttime':
+                case 'flash sale from':
+                case 'flash from':
+                case 'flash start at':
+                case 'flash start datetime':
+                    obj.flashStart = value;
+                    return;
+                case 'flash sale end':
+                case 'flashsale end':
+                case 'flash sale end date':
+                case 'flash sale end time':
+                case 'flash end':
+                case 'flash end date':
+                case 'flash end time':
+                case 'flashend':
+                case 'flashenddate':
+                case 'flashendtime':
+                case 'flash sale to':
+                case 'flash to':
+                case 'flash end at':
+                case 'flash end datetime':
+                    obj.flashEnd = value;
+                    return;
+                default: key = headerKey.replace(/\s/g, ''); 
             }
             
             // ডেটা টাইপ রূপান্তর: সংখ্যা, বুলিয়ান ইত্যাদি।
             if (key === 'mainPrice' || key === 'offerPrice' || key === 'stock' || key === 'discount') {
-                obj[key] = parseFloat(value) || 0;
+                obj[key] = parseNumberField(value);
             } else if (key === 'isOnOffer' || key === 'isRefundable') {
-                obj[key] = value.toLowerCase() === 'yes' || value.toLowerCase() === 'true' || false;
+                obj[key] = parseBooleanField(value);
             } else {
                 obj[key] = value;
             }
@@ -1803,6 +2223,231 @@ const saveBulkProducts = async (products) => {
         return;
     }
 
+    const normalizeKey = (key) => (typeof key === 'string' ? key.toLowerCase().replace(/[\s_\-]/g, '') : '');
+
+    const createNormalizedKeyMap = (obj) => {
+        if (!obj || typeof obj !== 'object') return {};
+        return Object.keys(obj).reduce((acc, key) => {
+            const normalized = normalizeKey(key);
+            if (!normalized) return acc;
+            acc[normalized] = key;
+            return acc;
+        }, {});
+    };
+
+    const pickValueFromKeys = (source, keyMap, candidates) => {
+        for (const candidate of candidates) {
+            const normalizedCandidate = normalizeKey(candidate);
+            const actualKey = keyMap[normalizedCandidate];
+            if (actualKey === undefined) continue;
+            const value = source[actualKey];
+            if (value === undefined || value === null) continue;
+            if (typeof value === 'string' && value.trim() === '') continue;
+            return value;
+        }
+        return undefined;
+    };
+
+    const parseBooleanish = (value) => {
+        if (value === undefined || value === null) return undefined;
+        if (typeof value === 'boolean') return value;
+        if (typeof value === 'number') {
+            if (Number.isNaN(value)) return undefined;
+            return value !== 0;
+        }
+        if (typeof value === 'string') {
+            const normalized = value.trim().toLowerCase();
+            if (!normalized) return undefined;
+            if (['true', 'yes', '1', 'on', 'enabled', 'y'].includes(normalized)) return true;
+            if (['false', 'no', '0', 'off', 'disabled', 'n'].includes(normalized)) return false;
+        }
+        return undefined;
+    };
+
+    const parseNumberish = (value) => {
+        if (value === undefined || value === null || value === '') return undefined;
+        if (typeof value === 'number') {
+            if (Number.isNaN(value)) return undefined;
+            return value;
+        }
+        if (typeof value === 'string') {
+            const cleaned = value.replace(/[^0-9+\-.]/g, '').trim();
+            if (!cleaned) return undefined;
+            const parsed = Number(cleaned);
+            if (Number.isNaN(parsed)) return undefined;
+            return parsed;
+        }
+        return undefined;
+    };
+
+    const parseDateCandidate = (value) => {
+        if (value === undefined || value === null || value === '') return undefined;
+        if (value instanceof Date) {
+            return Number.isNaN(value.getTime()) ? undefined : value;
+        }
+        if (typeof value?.toDate === 'function') {
+            try {
+                const converted = value.toDate();
+                return (converted instanceof Date && !Number.isNaN(converted.getTime())) ? converted : undefined;
+            } catch (_) {
+                return undefined;
+            }
+        }
+        if (typeof value === 'object' && typeof value.seconds === 'number') {
+            const millis = value.seconds * 1000 + ((value.nanoseconds || 0) / 1e6);
+            const date = new Date(millis);
+            return Number.isNaN(date.getTime()) ? undefined : date;
+        }
+        if (typeof value === 'number') {
+            if (!Number.isFinite(value)) return undefined;
+            const millis = value > 1e12 ? value : value * 1000;
+            const date = new Date(millis);
+            return Number.isNaN(date.getTime()) ? undefined : date;
+        }
+        if (typeof value === 'string') {
+            const trimmed = value.trim();
+            if (!trimmed) return undefined;
+            if (/^-?\d+(\.\d+)?$/.test(trimmed)) {
+                const numeric = Number(trimmed);
+                if (Number.isFinite(numeric)) {
+                    const millis = numeric > 1e12 ? numeric : numeric * 1000;
+                    const numericDate = new Date(millis);
+                    if (!Number.isNaN(numericDate.getTime())) return numericDate;
+                }
+            }
+            const normalized = trimmed.includes('T') ? trimmed : trimmed.replace(' ', 'T');
+            const parsed = new Date(normalized);
+            if (!Number.isNaN(parsed.getTime())) return parsed;
+            const fallback = new Date(trimmed);
+            if (!Number.isNaN(fallback.getTime())) return fallback;
+        }
+        return undefined;
+    };
+
+    const toFiniteNumber = (value) => {
+        const parsed = parseNumberish(value);
+        if (parsed !== undefined) return parsed;
+        const direct = Number(value);
+        return Number.isFinite(direct) ? direct : 0;
+    };
+
+    const buildFlashSalePayload = (product) => {
+        const flashObj = (product.flashSale && typeof product.flashSale === 'object') ? product.flashSale : {};
+        const productKeyMap = createNormalizedKeyMap(product);
+        const flashKeyMap = createNormalizedKeyMap(flashObj);
+
+        const enabledCandidates = [
+            pickValueFromKeys(flashObj, flashKeyMap, ['enabled', 'active']),
+            pickValueFromKeys(product, productKeyMap, [
+                'flashSaleEnabled',
+                'flashSaleActive',
+                'flashEnabled',
+                'flashSale',
+                'flashDeal',
+                'flashSell',
+                'flash offer',
+                'flashOffer',
+                'isFlashSale',
+                'flashsaleenabled',
+                'flashsaleactive'
+            ])
+        ];
+
+        let enabled = false;
+        let enabledResolved = false;
+        for (const candidate of enabledCandidates) {
+            const parsed = parseBooleanish(candidate);
+            if (parsed !== undefined) {
+                enabled = parsed;
+                enabledResolved = true;
+                break;
+            }
+        }
+
+        const priceCandidates = [
+            pickValueFromKeys(flashObj, flashKeyMap, ['price', 'amount', 'flashPrice', 'dealPrice']),
+            pickValueFromKeys(product, productKeyMap, [
+                'flashPrice',
+                'flashSalePrice',
+                'flashDealPrice',
+                'flashSellPrice',
+                'flashofferprice',
+                'flashprice'
+            ])
+        ];
+
+        let price = null;
+        for (const candidate of priceCandidates) {
+            const parsed = parseNumberish(candidate);
+            if (parsed !== undefined) {
+                price = parsed;
+                break;
+            }
+        }
+
+        const startCandidates = [
+            pickValueFromKeys(flashObj, flashKeyMap, ['start', 'startDate', 'startTime', 'startAt', 'begin', 'from']),
+            pickValueFromKeys(product, productKeyMap, [
+                'flashStart',
+                'flashSaleStart',
+                'flashStartDate',
+                'flashStartTime',
+                'flashStartAt',
+                'flashsaleStart'
+            ])
+        ];
+
+        let start = null;
+        for (const candidate of startCandidates) {
+            const parsed = parseDateCandidate(candidate);
+            if (parsed !== undefined) {
+                start = parsed;
+                break;
+            }
+        }
+
+        const endCandidates = [
+            pickValueFromKeys(flashObj, flashKeyMap, ['end', 'endDate', 'endTime', 'endAt', 'until', 'to']),
+            pickValueFromKeys(product, productKeyMap, [
+                'flashEnd',
+                'flashSaleEnd',
+                'flashEndDate',
+                'flashEndTime',
+                'flashEndAt',
+                'flashsaleEnd'
+            ])
+        ];
+
+        let end = null;
+        for (const candidate of endCandidates) {
+            const parsed = parseDateCandidate(candidate);
+            if (parsed !== undefined) {
+                end = parsed;
+                break;
+            }
+        }
+
+        if (start && end && end < start) {
+            console.warn(`Flash sale end precedes start for product ${product.name || product.model || ''}. Setting end time to null.`);
+            end = null;
+        }
+
+        if (!enabledResolved && (price !== null || start !== null || end !== null)) {
+            enabled = true;
+        }
+
+        if (!enabled) {
+            return { enabled: false };
+        }
+
+        return {
+            enabled: true,
+            price: price ?? null,
+            start: start ?? null,
+            end: end ?? null
+        };
+    };
+
     let batch = writeBatch(db);
     const productsCollectionRef = collection(db, 'products');
     let successfulCount = 0;
@@ -1811,22 +2456,31 @@ const saveBulkProducts = async (products) => {
         const newDocRef = doc(productsCollectionRef);
         const productModel = product.model || newDocRef.id.substring(0, 8); 
 
+        const flashSale = buildFlashSalePayload(product);
+        const resolvedIsOnOffer = parseBooleanish(product.isOnOffer);
+        const resolvedIsRefundable = parseBooleanish(product.isRefundable);
+
         const productData = { 
             ...product,
             createdAt: serverTimestamp(),
             // নিশ্চিত করা যে data types ঠিক আছে
-            mainPrice: Number(product.mainPrice || 0),
-            offerPrice: Number(product.offerPrice || 0),
-            discount: Number(product.discount || 0),
-            stock: Number(product.stock || 0),
-            rating: Number(product.rating || 0),
-            isOnOffer: product.isOnOffer || false,
-            isRefundable: product.isRefundable || false,
+            mainPrice: toFiniteNumber(product.mainPrice),
+            offerPrice: toFiniteNumber(product.offerPrice),
+            discount: toFiniteNumber(product.discount),
+            stock: toFiniteNumber(product.stock),
+            rating: toFiniteNumber(product.rating),
+            isOnOffer: resolvedIsOnOffer !== undefined ? resolvedIsOnOffer : false,
+            isRefundable: resolvedIsRefundable !== undefined ? resolvedIsRefundable : false,
             model: productModel,
             // নতুন কাঠামোর ডেটা
             specification: product.specification || {},
             thumbnails: product.thumbnails || [],
             imageUrl: product.imageUrl || '',
+            flashSale,
+            flashSaleEnabled: flashSale.enabled,
+            flashPrice: flashSale.enabled ? (flashSale.price ?? null) : null,
+            flashStart: flashSale.enabled ? (flashSale.start ?? null) : null,
+            flashEnd: flashSale.enabled ? (flashSale.end ?? null) : null,
         };
 
         batch.set(newDocRef, productData);
@@ -2028,6 +2682,9 @@ const saveBulkProducts = async (products) => {
             }
             if (pageId === 'top-rated' && typeof renderTopRated === 'function') {
                 renderTopRated();
+            }
+            if (pageId === 'flash-sale' && typeof renderFlashSaleProducts === 'function') {
+                renderFlashSaleProducts();
             }
         };
 
@@ -2689,12 +3346,16 @@ const saveBulkProducts = async (products) => {
 
         const updateDashboardLastUpdatedLabel = () => {
             const label = document.getElementById('dashboard-last-updated');
-            if (!label) return;
+            const timeTarget = document.getElementById('dashboard-last-updated-time');
+            if (!label || !timeTarget) return;
             const tz = localStorage.getItem('adminTimeZone') || 'Asia/Riyadh';
             const now = new Date();
             const dateFormatter = new Intl.DateTimeFormat('en-GB', { timeZone: tz, day: '2-digit', month: 'short', year: 'numeric' });
             const timeFormatter = new Intl.DateTimeFormat('en-GB', { timeZone: tz, hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: true });
-            label.textContent = `Live · ${dateFormatter.format(now)} ${timeFormatter.format(now)}`;
+            const formattedDate = dateFormatter.format(now);
+            const formattedTime = timeFormatter.format(now);
+            timeTarget.textContent = `${formattedDate} ${formattedTime}`;
+            label.title = `Last refreshed at ${formattedDate} ${formattedTime} (${tz})`;
             label.classList.remove('hidden');
             lastDashboardUpdateAt = now;
         };
@@ -2935,11 +3596,14 @@ const saveBulkProducts = async (products) => {
         };
 
         const recomputeLiveVisitorsFromDocs = () => {
-            const el = document.getElementById('live-visitors');
-            if (!el) return;
+            const cardCountEl = document.getElementById('live-visitors');
+            const headerCountEl = document.getElementById('header-live-visitors-count');
+            if (!cardCountEl && !headerCountEl) return;
             try {
                 const activeRecords = getActivePresenceRecords();
-                el.textContent = String(activeRecords.length);
+                const countText = String(activeRecords.length);
+                if (cardCountEl) cardCountEl.textContent = countText;
+                if (headerCountEl) headerCountEl.textContent = countText;
                 updateLiveVisitorsModalIfOpen();
             } catch (e) {
                 console.warn('Live visitors recompute failed', e);
@@ -3180,6 +3844,147 @@ const saveBulkProducts = async (products) => {
                 `);
             });
             lucide.createIcons();
+        };
+
+        const renderFlashSaleProducts = () => {
+            const body = document.getElementById('flash-sale-body');
+            if (!body) return;
+
+            const totalEl = document.getElementById('flash-sale-summary-total');
+            const activeEl = document.getElementById('flash-sale-summary-active');
+            const upcomingEl = document.getElementById('flash-sale-summary-upcoming');
+            const endedEl = document.getElementById('flash-sale-summary-ended');
+
+            const parsePrice = (value) => {
+                if (value === undefined || value === null || value === '') return null;
+                if (typeof value === 'number') {
+                    return Number.isFinite(value) ? value : null;
+                }
+                const trimmed = String(value).trim();
+                if (!trimmed) return null;
+                const direct = Number(trimmed);
+                if (Number.isFinite(direct)) return direct;
+                const cleaned = trimmed.replace(/[^0-9+\-.]/g, '');
+                if (!cleaned) return null;
+                const parsed = Number(cleaned);
+                return Number.isFinite(parsed) ? parsed : null;
+            };
+
+            const now = new Date();
+            const rows = [];
+            let activeCount = 0;
+            let upcomingCount = 0;
+            let endedCount = 0;
+
+            const formatDateTime = (date) => {
+                if (!date) return '—';
+                return date.toLocaleString(undefined, { dateStyle: 'medium', timeStyle: 'short' });
+            };
+
+            const describeWindow = (start, end) => {
+                if (start && end) {
+                    return `${formatDateTime(start)} → ${formatDateTime(end)}`;
+                }
+                if (start) {
+                    return `Starts ${formatDateTime(start)}`;
+                }
+                if (end) {
+                    return `Ends ${formatDateTime(end)}`;
+                }
+                return 'No schedule';
+            };
+
+            const resolveStatus = (start, end) => {
+                if (start && now < start) {
+                    upcomingCount += 1;
+                    return { label: 'Upcoming', className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200' };
+                }
+                if (end && now > end) {
+                    endedCount += 1;
+                    return { label: 'Ended', className: 'bg-gray-200 text-gray-700 dark:bg-gray-800 dark:text-gray-200' };
+                }
+                activeCount += 1;
+                return { label: 'Live', className: 'bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-200' };
+            };
+
+            const flashDocs = allProducts.filter(doc => {
+                const data = doc.data();
+                const flashInfo = (data.flashSale && typeof data.flashSale === 'object') ? data.flashSale : {};
+                const enabled = Boolean(flashInfo.enabled ?? data.flashSaleEnabled ?? false);
+                if (!enabled) return false;
+                const price = parsePrice(flashInfo.price ?? data.flashPrice ?? null);
+                const start = coerceToDate(flashInfo.start ?? data.flashStart ?? null);
+                const end = coerceToDate(flashInfo.end ?? data.flashEnd ?? null);
+                rows.push({ doc, data, price, start, end });
+                return true;
+            });
+
+            if (flashDocs.length === 0) {
+                body.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-text-secondary">No flash sale products configured yet.</td></tr>`;
+                if (totalEl) totalEl.textContent = '0';
+                if (activeEl) activeEl.textContent = '0';
+                if (upcomingEl) upcomingEl.textContent = '0';
+                if (endedEl) endedEl.textContent = '0';
+                return;
+            }
+
+            rows.sort((a, b) => {
+                const startA = a.start ? a.start.getTime() : 0;
+                const startB = b.start ? b.start.getTime() : 0;
+                const score = (row) => {
+                    if (row.end && now > row.end) return 2; // ended
+                    if (row.start && now < row.start) return 1; // upcoming
+                    return 0; // live
+                };
+                const statusDiff = score(a) - score(b);
+                if (statusDiff !== 0) return statusDiff;
+                return startA - startB;
+            });
+
+            body.innerHTML = '';
+            rows.forEach((row, index) => {
+                const { doc, data, price, start, end } = row;
+                const status = resolveStatus(start, end);
+                const mainPrice = Number(data.mainPrice ?? 0);
+                const fallbackPrice = price ?? (Number(data.offerPrice ?? 0) || null);
+                const priceDisplay = fallbackPrice !== null ? `৳${fallbackPrice}` : '—';
+                const modelDisplay = data.model || data.productId || doc.id;
+                const windowText = describeWindow(start, end);
+                const discountBadge = (price !== null && mainPrice > 0 && price < mainPrice)
+                    ? `<span class="ml-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200">-${Math.round(((mainPrice - price) / mainPrice) * 100)}%</span>`
+                    : '';
+
+                body.insertAdjacentHTML('beforeend', `
+                    <tr class="text-text-primary">
+                        <td class="px-4 py-3 text-sm">${index + 1}</td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-3">
+                                <img src="${data.imageUrl || ''}" onerror="this.src='https://placehold.co/56x56/e2e8f0/64748b?text=Img'" class="h-12 w-12 rounded object-cover">
+                                <div>
+                                    <p class="font-semibold text-sm">${escapeHtml(data.name || 'N/A')}</p>
+                                    <p class="text-xs text-text-secondary">Main: ৳${mainPrice || 0}${discountBadge}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm font-mono" title="Document ID: ${doc.id}">${escapeHtml(modelDisplay)}</td>
+                        <td class="px-4 py-3 text-sm">${priceDisplay}</td>
+                        <td class="px-4 py-3 text-sm">${windowText}</td>
+                        <td class="px-4 py-3 text-xs"><span class="px-2 py-1 rounded-full font-semibold ${status.className}">${status.label}</span></td>
+                        <td class="px-4 py-3 flex items-center gap-2">
+                            <button class="edit-btn text-indigo-500 hover:text-indigo-700" data-id="${doc.id}" title="Edit product">
+                                <i data-lucide="edit" class="w-5 h-5"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+
+            if (totalEl) totalEl.textContent = String(rows.length);
+            if (activeEl) activeEl.textContent = String(activeCount);
+            if (upcomingEl) upcomingEl.textContent = String(upcomingCount);
+            if (endedEl) endedEl.textContent = String(endedCount);
+
+            if (window.lucide?.createIcons) lucide.createIcons();
         };
         const getDeliveryManDropdown = (deliveryMen, orderId, currentDeliveryManId) => {
             let options = deliveryMen
@@ -3554,6 +4359,32 @@ const saveBulkProducts = async (products) => {
                         </label>
                     </div>
                 </div>
+                <div class="pt-4 border-t border-dashed border-color space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-text-primary font-medium">Flash Sale</span>
+                            <p class="text-xs text-text-secondary">Enable limited-time pricing with a countdown on the storefront.</p>
+                        </div>
+                        <label for="${prefix}product-flash-enabled" class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="${prefix}product-flash-enabled" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-600 peer-checked:bg-theme-primary peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                        </label>
+                    </div>
+                    <div id="${prefix}flash-sale-fields" class="grid grid-cols-1 md:grid-cols-3 gap-6 hidden">
+                        <div>
+                            <label for="${prefix}product-flash-price" class="block text-text-primary font-medium mb-2">Flash Price (৳)</label>
+                            <input type="number" id="${prefix}product-flash-price" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" min="0" step="0.01" disabled>
+                        </div>
+                        <div>
+                            <label for="${prefix}product-flash-start" class="block text-text-primary font-medium mb-2">Start Time</label>
+                            <input type="datetime-local" id="${prefix}product-flash-start" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" disabled>
+                        </div>
+                        <div>
+                            <label for="${prefix}product-flash-end" class="block text-text-primary font-medium mb-2">End Time</label>
+                            <input type="datetime-local" id="${prefix}product-flash-end" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" disabled>
+                        </div>
+                    </div>
+                </div>
                 <div><label for="${prefix}product-main-image" class="block text-text-primary font-medium mb-2">Main Image URL</label><input type="url" id="${prefix}product-main-image" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="https://example.com/main-image.jpg"></div>
                 <div>
                     <div class="flex items-center justify-between mb-2"><label class="block text-text-primary font-medium">Specifications</label><button type="button" id="${prefix}add-specification-btn" class="text-sm bg-theme-primary text-white py-1 px-3 rounded-lg hover:bg-theme-primary-hover">+ Add</button></div>
@@ -3642,6 +4473,31 @@ const saveBulkProducts = async (products) => {
                 const container = document.getElementById(`${prefix}specification-container`);
                 createSpecificationInput(container);
             });
+
+            const flashToggle = document.getElementById(`${prefix}product-flash-enabled`);
+            const flashFields = document.getElementById(`${prefix}flash-sale-fields`);
+            const flashPriceInput = document.getElementById(`${prefix}product-flash-price`);
+            const flashStartInput = document.getElementById(`${prefix}product-flash-start`);
+            const flashEndInput = document.getElementById(`${prefix}product-flash-end`);
+
+            const syncFlashSaleState = (preserveValues = true) => {
+                if (!flashFields || !flashToggle) return;
+                const enabled = !!flashToggle.checked;
+                flashFields.classList.toggle('hidden', !enabled);
+                [flashPriceInput, flashStartInput, flashEndInput].forEach(input => {
+                    if (!input) return;
+                    input.disabled = !enabled;
+                    if (!enabled && !preserveValues) {
+                        input.value = '';
+                    }
+                });
+            };
+
+            if (flashToggle) {
+                flashToggle.addEventListener('change', () => syncFlashSaleState(false));
+            }
+            syncFlashSaleState(true);
+            formElement.__syncFlashSale = syncFlashSaleState;
         };
 
         const getProductDataFromForm = (form, prefix) => {
@@ -3657,6 +4513,24 @@ const saveBulkProducts = async (products) => {
                     specification[key] = value;
                 }
             });
+
+            const parseDateInputValue = (value) => {
+                if (!value) return null;
+                const date = new Date(value);
+                return Number.isNaN(date.getTime()) ? null : date;
+            };
+
+            const flashEnabled = form.querySelector(`#${prefix}product-flash-enabled`)?.checked || false;
+            const flashPriceValue = parseFloat(form.querySelector(`#${prefix}product-flash-price`)?.value) || 0;
+            const flashStartValue = form.querySelector(`#${prefix}product-flash-start`)?.value || '';
+            const flashEndValue = form.querySelector(`#${prefix}product-flash-end`)?.value || '';
+
+            const flashSale = flashEnabled ? {
+                enabled: true,
+                price: flashPriceValue > 0 ? flashPriceValue : null,
+                start: parseDateInputValue(flashStartValue),
+                end: parseDateInputValue(flashEndValue)
+            } : { enabled: false };
 
             return {
                 name: form.querySelector(`#${prefix}product-name`).value,
@@ -3675,7 +4549,12 @@ const saveBulkProducts = async (products) => {
                 details: form.querySelector(`#${prefix}product-details`).value,
                 specification: specification,
                 isOnOffer: form.querySelector(`#${prefix}product-on-offer`).checked,
-                isRefundable: form.querySelector(`#${prefix}product-refundable`).checked
+                isRefundable: form.querySelector(`#${prefix}product-refundable`).checked,
+                flashSale,
+                flashSaleEnabled: flashSale.enabled,
+                flashPrice: flashSale.enabled && flashSale.price ? flashSale.price : null,
+                flashStart: flashSale.enabled && flashSale.start ? flashSale.start : null,
+                flashEnd: flashSale.enabled && flashSale.end ? flashSale.end : null
             };
         };
 
@@ -3694,6 +4573,9 @@ const saveBulkProducts = async (products) => {
                     e.target.reset();
                     document.getElementById('add-thumbnail-container').innerHTML = '';
                     document.getElementById('add-specification-container').innerHTML = '';
+                    if (typeof e.target.__syncFlashSale === 'function') {
+                        e.target.__syncFlashSale(false);
+                    }
                 } catch (err) {
                     console.error("Error adding product: ", err);
                     showToast('Failed to add product!', 'error');
@@ -3883,6 +4765,11 @@ const saveBulkProducts = async (products) => {
                 openLiveVisitorsModal();
                 return;
             }
+            const liveVisitorsHeader = e.target.closest('#header-live-visitors');
+            if (liveVisitorsHeader) {
+                openLiveVisitorsModal();
+                return;
+            }
 // Show edit coupon modal and populate fields
 async function openEditCouponModal(couponId) {
     // Create modal if not exists
@@ -4065,6 +4952,28 @@ async function handleEditCouponSubmit(e) {
                     : '<i data-lucide="alert-triangle" class="w-4 h-4 mr-2"></i> Show Duplicates';
                 renderFilteredProducts();
                 if (window.lucide?.createIcons) lucide.createIcons();
+                return;
+            }
+
+            const flashSaleAddBtn = e.target.closest('#flash-sale-add-product');
+            if (flashSaleAddBtn) {
+                history.pushState({ pageId: 'add-product' }, '', '#add-product');
+                showPage('add-product');
+                const addForm = document.getElementById('add-product-form');
+                if (addForm) {
+                    const flashToggle = document.getElementById('add-product-flash-enabled');
+                    if (flashToggle && !flashToggle.checked) {
+                        flashToggle.checked = true;
+                    }
+                    if (typeof addForm.__syncFlashSale === 'function') {
+                        addForm.__syncFlashSale(true);
+                    }
+                    const flashPriceInput = document.getElementById('add-product-flash-price');
+                    if (flashPriceInput) {
+                        flashPriceInput.disabled = false;
+                        flashPriceInput.focus();
+                    }
+                }
                 return;
             }
             
@@ -4479,6 +5388,54 @@ async function handleEditCouponSubmit(e) {
 
                 form.querySelector('#edit-product-on-offer').checked = data.isOnOffer || false;
                 form.querySelector('#edit-product-refundable').checked = data.isRefundable || false;
+
+                const normalizeToDateInput = (raw) => {
+                    if (!raw) return '';
+                    let dateValue = null;
+                    if (raw instanceof Date) {
+                        dateValue = raw;
+                    } else if (typeof raw?.toDate === 'function') {
+                        try { dateValue = raw.toDate(); } catch (_) { dateValue = null; }
+                    } else if (typeof raw === 'number') {
+                        dateValue = new Date(raw);
+                    } else if (typeof raw === 'string') {
+                        const parsed = new Date(raw);
+                        if (!Number.isNaN(parsed.getTime())) {
+                            dateValue = parsed;
+                        }
+                    } else if (typeof raw === 'object' && typeof raw.seconds === 'number') {
+                        const millis = raw.seconds * 1000 + (raw.nanoseconds || 0) / 1e6;
+                        dateValue = new Date(millis);
+                    }
+                    if (!dateValue || Number.isNaN(dateValue.getTime())) return '';
+                    const tzOffset = dateValue.getTimezoneOffset();
+                    const local = new Date(dateValue.getTime() - tzOffset * 60000);
+                    return local.toISOString().slice(0, 16);
+                };
+
+                const flashSaleInfo = (data.flashSale && typeof data.flashSale === 'object') ? data.flashSale : {};
+                const flashToggle = form.querySelector('#edit-product-flash-enabled');
+                const flashPriceInput = form.querySelector('#edit-product-flash-price');
+                const flashStartInput = form.querySelector('#edit-product-flash-start');
+                const flashEndInput = form.querySelector('#edit-product-flash-end');
+
+                const resolvedFlashEnabled = Boolean(flashSaleInfo.enabled ?? data.flashSaleEnabled ?? false);
+                if (flashToggle) flashToggle.checked = resolvedFlashEnabled;
+                if (flashPriceInput) {
+                    const priceValue = flashSaleInfo.price ?? data.flashPrice ?? '';
+                    flashPriceInput.value = priceValue !== null && priceValue !== undefined ? priceValue : '';
+                }
+                if (flashStartInput) {
+                    const startValue = flashSaleInfo.start ?? data.flashStart ?? null;
+                    flashStartInput.value = normalizeToDateInput(startValue);
+                }
+                if (flashEndInput) {
+                    const endValue = flashSaleInfo.end ?? data.flashEnd ?? null;
+                    flashEndInput.value = normalizeToDateInput(endValue);
+                }
+                if (typeof form.__syncFlashSale === 'function') {
+                    form.__syncFlashSale(true);
+                }
                 
                 const thumbnailContainer = form.querySelector('#edit-thumbnail-container');
                 thumbnailContainer.innerHTML = '';
@@ -5347,6 +6304,7 @@ async function handleEditCouponSubmit(e) {
                 renderProductFilters();
                 renderSubCategoryFilter();
                 renderFilteredProducts();
+                if (typeof renderFlashSaleProducts === 'function') renderFlashSaleProducts();
                 if (typeof renderLowStockProducts === 'function') renderLowStockProducts();
                 // Sidebar badge: count of out-of-stock items (stock === 0)
                 const outOfStock = allProducts.filter(d => Number(d.data().stock ?? 0) === 0).length;
@@ -5532,6 +6490,52 @@ async function handleEditCouponSubmit(e) {
                 }
             });
             ta.dataset.enhanced = 'true';
+        };
+
+        const FONT_SCALE_KEY = 'adminFontScale';
+        const FONT_SCALE_DEFAULT = 1;
+        const FONT_SCALE_MIN = 0.85;
+        const FONT_SCALE_MAX = 1.35;
+        const FONT_SCALE_STEP = 0.05;
+
+        const setupFontResizer = () => {
+            const decreaseBtn = document.getElementById('font-size-decrease');
+            const increaseBtn = document.getElementById('font-size-increase');
+            const resetBtn = document.getElementById('font-size-reset');
+            const display = document.getElementById('font-size-display');
+            if (!decreaseBtn || !increaseBtn || !resetBtn || !display) return;
+
+            const clampScale = (value) => {
+                const numeric = typeof value === 'number' ? value : parseFloat(value);
+                if (Number.isNaN(numeric)) return FONT_SCALE_DEFAULT;
+                return Math.min(FONT_SCALE_MAX, Math.max(FONT_SCALE_MIN, numeric));
+            };
+
+            let scale = clampScale(localStorage.getItem(FONT_SCALE_KEY) ?? FONT_SCALE_DEFAULT);
+
+            const applyScale = () => {
+                const percent = Math.round(scale * 100);
+                document.documentElement.style.setProperty('--admin-font-size', `${percent}%`);
+                display.textContent = `${percent}%`;
+                decreaseBtn.disabled = scale <= FONT_SCALE_MIN + 0.001;
+                increaseBtn.disabled = scale >= FONT_SCALE_MAX - 0.001;
+            };
+
+            const updateScale = (next) => {
+                scale = clampScale(next);
+                if (Math.abs(scale - FONT_SCALE_DEFAULT) < 0.001) {
+                    localStorage.removeItem(FONT_SCALE_KEY);
+                } else {
+                    localStorage.setItem(FONT_SCALE_KEY, scale.toFixed(2));
+                }
+                applyScale();
+            };
+
+            decreaseBtn.addEventListener('click', () => updateScale(scale - FONT_SCALE_STEP));
+            increaseBtn.addEventListener('click', () => updateScale(scale + FONT_SCALE_STEP));
+            resetBtn.addEventListener('click', () => updateScale(FONT_SCALE_DEFAULT));
+
+            applyScale();
         };
 
         // --- Settings Page Logic ---
@@ -5768,6 +6772,7 @@ if (bulkUploadBtn && csvFileInput) {
         // Initialize on load
         document.addEventListener('DOMContentLoaded', () => {
             initializeAppearance();
+            setupFontResizer();
             // Global search: try orders, users, products, deliveryMen by id or key
             const globalSearchInput = document.getElementById('global-search-input');
             if (globalSearchInput) {
