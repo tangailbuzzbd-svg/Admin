@@ -1,6 +1,4 @@
-<!DOCTYPE html>
-<html lang="en" class="theme-indigo">
-<head>
+<!DOCTYPE html><html lang="en" class="theme-indigo"><head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
@@ -10,17 +8,8 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <style>
-        :root {
-            /* Default Light Mode Colors */
-            --c-bg-primary: #ffffff; /* white */
-            --c-bg-secondary: #ffffff; /* white */
-            --c-text-primary: #1f2937; /* dark gray */
-            --c-text-secondary: #6b7280; /* gray-500 */
-            --c-border: #e5e7eb; /* gray-200 */
-            --admin-font-size: 100%;
-        }
         
         html.dark {
             /* Dark Mode Colors */
@@ -34,13 +23,13 @@
         html {
             font-size: var(--admin-font-size, 100%);
         }
-
+        
         body { 
             font-family: 'Inter', sans-serif;
             background-color: var(--c-bg-primary);
             color: var(--c-text-primary);
         }
-
+        
         .text-resize-btn {
             padding: 0.35rem 0.75rem;
             border-radius: 9999px;
@@ -52,7 +41,7 @@
             line-height: 1;
             transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
         }
-
+        
         .text-resize-btn:hover:not(:disabled),
         .text-resize-btn:focus-visible:not(:disabled) {
             background-color: var(--c-primary);
@@ -60,21 +49,21 @@
             color: #ffffff;
             box-shadow: 0 0 0 2px color-mix(in srgb, var(--c-primary) 25%, transparent 75%);
         }
-
+        
         .text-resize-btn:disabled {
             opacity: 0.45;
             cursor: not-allowed;
         }
-
+        
         .text-resize-display {
             font-variant-numeric: tabular-nums;
             font-size: 0.75rem;
         }
-
+        
         .footer-resize {
             backdrop-filter: blur(12px);
         }
-
+        
         .admin-sticky-header {
             position: sticky;
             top: 0;
@@ -83,11 +72,11 @@
             background-color: var(--c-bg-secondary);
             box-shadow: 0 1px 0 rgba(15, 23, 42, 0.08);
         }
-
+        
         html.dark .admin-sticky-header {
             box-shadow: 0 1px 0 rgba(15, 23, 42, 0.4);
         }
-
+        
         .admin-sticky-footer {
             position: sticky;
             bottom: 0;
@@ -96,28 +85,28 @@
             background-color: var(--c-bg-secondary);
             box-shadow: 0 -1px 0 rgba(15, 23, 42, 0.08);
         }
-
+        
         html.dark .admin-sticky-footer {
             box-shadow: 0 -1px 0 rgba(15, 23, 42, 0.6);
         }
-
+        
         #header-live-visitors {
             transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
         }
-
+        
         html.dark #header-live-visitors {
             background-color: rgba(30, 41, 59, 0.9);
             border-color: rgba(100, 116, 139, 0.7);
             color: #f8fafc;
         }
-
+        
         html.dark #header-live-visitors span,
         html.dark #header-live-visitors svg,
         html.dark #header-live-visitors .lucide {
             color: inherit;
             stroke: currentColor;
         }
-
+        
         .dashboard-clock-pill {
             display: inline-flex;
             align-items: center;
@@ -132,13 +121,13 @@
             letter-spacing: 0.01em;
             transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
         }
-
+        
         html.dark .dashboard-clock-pill {
             background-color: rgba(15, 23, 42, 0.35);
             border-color: rgba(148, 163, 184, 0.5);
             color: #e2e8f0;
         }
-
+        
         .dashboard-clock-dot {
             width: 0.55rem;
             height: 0.55rem;
@@ -147,85 +136,49 @@
             box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.45);
             animation: clock-dot-pulse 2s infinite;
         }
-
+        
         html.dark .dashboard-clock-dot {
             background: #4ade80;
             box-shadow: 0 0 0 0 rgba(74, 222, 128, 0.45);
         }
-
-        @keyframes clock-dot-pulse {
-            0% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0.35); }
-            70% { box-shadow: 0 0 0 8px rgba(22, 163, 74, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(22, 163, 74, 0); }
-        }
-
-
+        
         .bg-primary { background-color: var(--c-bg-primary); }
+        
         .bg-secondary { background-color: var(--c-bg-secondary); }
-        .text-primary { color: var(--c-text-primary); }
-        .text-secondary { color: var(--c-text-secondary); }
+        
         .border-color { border-color: var(--c-border); }
-
+        
         .sidebar { transition: transform 0.3s ease-in-out; }
+        
         .main-content { transition: margin-left 0.3s ease-in-out; }
+        
         .stat-card { transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out; }
+        
         .stat-card:hover { transform: translateY(-5px); }
-        [x-cloak] { display: none !important; }
+        
         #new-order-alert { transition: transform 0.3s ease-in-out; }
-        .rotate-anim { animation: spin 1s ease-in-out; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-
-        /* --- Theme Variables --- */
+        
         .theme-indigo {
             --c-primary: #4f46e5; --c-primary-hover: #4338ca; --c-ring: #4f46e5;
             --c-text-theme: #4f46e5; --c-bg-light: #e0e7ff;
         }
-        .theme-forest {
-            --c-primary: #16a34a; --c-primary-hover: #15803d; --c-ring: #16a34a;
-            --c-text-theme: #16a34a; --c-bg-light: #dcfce7;
-        }
-        .theme-crimson {
-            --c-primary: #dc2626; --c-primary-hover: #b91c1c; --c-ring: #dc2626;
-            --c-text-theme: #dc2626; --c-bg-light: #fee2e2;
-        }
-        .theme-ocean {
-            --c-primary: #0284c7; --c-primary-hover: #0369a1; --c-ring: #0284c7;
-            --c-text-theme: #0284c7; --c-bg-light: #e0f2fe;
-        }
-        .theme-royal {
-            --c-primary: #9333ea; --c-primary-hover: #7e22ce; --c-ring: #9333ea;
-            --c-text-theme: #9333ea; --c-bg-light: #f3e8ff;
-        }
-
-        /* --- Theme-aware Component Styles --- */
+        
         .nav-link.active { background-color: var(--c-primary); color: white; }
+        
         .bg-theme-primary { background-color: var(--c-primary); }
-        .hover\:bg-theme-primary-hover:hover { background-color: var(--c-primary-hover); }
-        .focus\:ring-theme-primary:focus { --tw-ring-color: var(--c-ring) !important; box-shadow: 0 0 0 2px var(--c-ring) !important; }
+        
         .text-theme-primary { color: var(--c-text-theme); }
-        .bg-theme-bg-light { background-color: var(--c-bg-light); }
+        
         .peer:checked ~ .peer-checked\:bg-theme-primary { background-color: var(--c-primary); }
         
-        /* Custom style for pending order highlighting */
-        .pending-order {
-            background-color: #fffbeb; /* Light yellow background */
-        }
         html.dark .pending-order {
             background-color: #2b2b23; /* Darker yellow/gray for dark mode */
         }
-
-        /* Custom style for unread chat highlighting */
-        .unread-chat {
-            background-color: #eef2ff; /* indigo-100 */
-        }
+        
         html.dark .unread-chat {
             background-color: #3730a3; /* indigo-800 */
         }
-        .chat-list-item {
-            transition: background-color 0.2s ease-in-out;
-        }
-
-        /* Neon Button Glow Effect */
+        
         .btn-glow {
             --glow-color: var(--c-primary);
             --glow-ring-color: var(--c-ring);
@@ -233,11 +186,12 @@
             transition: all 0.2s ease-in-out;
             border: 1px solid color-mix(in srgb, var(--glow-color) 70%, white 30%);
         }
+        
         .btn-glow:hover {
             box-shadow: 0 0 4px rgba(255,255,255,0.4), 0 0 12px var(--glow-color), 0 0 20px var(--glow-ring-color);
             transform: translateY(-1px);
         }
-
+        
         .btn-glow-red {
             --glow-color: #dc2626; /* red-600 */
             --glow-ring-color: #f87171; /* red-400 */
@@ -245,11 +199,12 @@
             transition: all 0.2s ease-in-out;
             border: 1px solid var(--glow-ring-color);
         }
+        
         .btn-glow-red:hover {
             box-shadow: 0 0 4px rgba(255,255,255,0.4), 0 0 12px var(--glow-color), 0 0 20px var(--glow-ring-color);
             transform: translateY(-1px);
         }
-
+        
         .btn-glow-green {
             --glow-color: #16a34a; /* green-600 */
             --glow-ring-color: #4ade80; /* green-400 */
@@ -257,29 +212,16 @@
             transition: all 0.2s ease-in-out;
             border: 1px solid var(--glow-ring-color);
         }
+        
         .btn-glow-green:hover {
             box-shadow: 0 0 4px rgba(255,255,255,0.4), 0 0 12px var(--glow-color), 0 0 20px var(--glow-ring-color);
             transform: translateY(-1px);
         }
-
-        /* Welcome overlay animations */
-        @keyframes welcome-pop {
-            0% { transform: scale(0.92); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
+        
         .welcome-animate { animation: welcome-pop 0.9s ease-out forwards; }
+        
         .welcome-glow { text-shadow: 0 0 30px rgba(79, 70, 229, 0.6), 0 0 60px rgba(79, 70, 229, 0.35); }
-
-        /* Enhanced contrast for tables and form controls */
-        :root {
-            --c-table-header-bg: #eef2ff;
-            --c-table-header-text: #1e1b4b;
-            --c-table-header-border: #c7d2fe;
-            --c-input-bg: #f9fafb;
-            --c-input-border-strong: #cfd4ff;
-            --c-input-text: #111827;
-        }
-
+        
         html.dark {
             --c-table-header-bg: rgba(79, 70, 229, 0.22);
             --c-table-header-text: #f9fafb;
@@ -288,7 +230,7 @@
             --c-input-border-strong: rgba(129, 140, 248, 0.6);
             --c-input-text: #f9fafb;
         }
-
+        
         .bg-secondary table {
             background-color: var(--c-bg-primary);
             border: 1px solid var(--c-table-header-border);
@@ -296,47 +238,47 @@
             box-shadow: 0 10px 25px -18px rgba(15, 23, 42, 0.35);
             overflow: hidden;
         }
-
+        
         html.dark .bg-secondary table {
             background-color: rgba(17, 24, 39, 0.9);
             border-color: var(--c-table-header-border);
             box-shadow: 0 16px 30px -20px rgba(15, 23, 42, 0.8);
         }
-
+        
         .bg-secondary table thead tr {
             background-color: var(--c-table-header-bg) !important;
         }
-
+        
         .bg-secondary table thead th {
             color: var(--c-table-header-text) !important;
             border-bottom: 1px solid var(--c-table-header-border) !important;
             letter-spacing: 0.08em;
         }
-
+        
         .bg-secondary table tbody tr:nth-child(even) {
             background-color: color-mix(in srgb, var(--c-table-header-bg) 35%, transparent 65%);
         }
-
+        
         html.dark .bg-secondary table tbody tr:nth-child(even) {
             background-color: rgba(99, 102, 241, 0.18);
         }
-
+        
         .bg-secondary table tbody tr:hover {
             background-color: color-mix(in srgb, var(--c-table-header-bg) 50%, var(--c-bg-primary) 50%);
         }
-
+        
         html.dark .bg-secondary table tbody tr:hover {
             background-color: rgba(99, 102, 241, 0.25);
         }
-
+        
         .bg-secondary table tbody td {
             border-bottom: 1px solid color-mix(in srgb, var(--c-table-header-border) 40%, transparent 60%);
         }
-
+        
         html.dark .bg-secondary table tbody td {
             border-bottom-color: rgba(129, 140, 248, 0.35);
         }
-
+        
         .bg-secondary input:not([type="checkbox"]):not([type="radio"]),
         .bg-secondary select,
         .bg-secondary textarea {
@@ -347,13 +289,13 @@
             color: var(--c-input-text) !important;
             transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
         }
-
+        
         html.dark .bg-secondary input:not([type="checkbox"]):not([type="radio"]),
         html.dark .bg-secondary select,
         html.dark .bg-secondary textarea {
             box-shadow: 0 12px 24px -18px rgba(0, 0, 0, 0.9);
         }
-
+        
         .bg-secondary input:not([type="checkbox"]):not([type="radio"]):focus,
         .bg-secondary select:focus,
         .bg-secondary textarea:focus {
@@ -361,14 +303,13 @@
             border-color: var(--c-primary) !important;
             box-shadow: 0 0 0 3px color-mix(in srgb, var(--c-primary) 25%, transparent 75%), 0 8px 20px -12px rgba(79, 70, 229, 0.45);
         }
-
+        
         html.dark .bg-secondary input:not([type="checkbox"]):not([type="radio"]):focus,
         html.dark .bg-secondary select:focus,
         html.dark .bg-secondary textarea:focus {
             background-color: rgba(17, 24, 39, 0.95);
             box-shadow: 0 0 0 3px rgba(129, 140, 248, 0.45), 0 18px 30px -20px rgba(99, 102, 241, 0.75);
-        }
-    </style>
+        }</style>
 </head>
 <body class="bg-primary">
 
@@ -386,11 +327,11 @@
                 <form id="login-form" class="space-y-4">
                     <div>
                         <label for="email" class="text-sm font-medium text-white block mb-1">Enter Your Email</label>
-                        <input type="email" id="email" name="email" required class="w-full px-4 py-2 bg-white/25 dark:bg-gray-700/30 border-0 border-b-2 border-white/30 text-white placeholder-gray-300 focus:ring-0 focus:border-white transition">
+                        <input type="email" id="email" name="email" required="" class="w-full px-4 py-2 bg-white/25 dark:bg-gray-700/30 border-0 border-b-2 border-white/30 text-white placeholder-gray-300 focus:ring-0 focus:border-white transition">
                     </div>
                     <div>
                         <label for="password" class="text-sm font-medium text-white block mb-1">Enter Your Password</label>
-                        <input type="password" id="password" name="password" required class="w-full px-4 py-2 bg-white/25 dark:bg-gray-700/30 border-0 border-b-2 border-white/30 text-white placeholder-gray-300 focus:ring-0 focus:border-white transition">
+                        <input type="password" id="password" name="password" required="" class="w-full px-4 py-2 bg-white/25 dark:bg-gray-700/30 border-0 border-b-2 border-white/30 text-white placeholder-gray-300 focus:ring-0 focus:border-white transition">
                     </div>
                     
                     <p id="login-error" class="text-sm text-red-300"></p>
@@ -407,7 +348,7 @@
             <form id="pin-verification-form" class="space-y-4">
                 <div>
                     <label for="pin-input" class="text-sm font-medium text-white block mb-1">Your 4-Digit PIN</label>
-                    <input type="password" id="pin-input" name="pin" required maxlength="4" pattern="\d{4}" class="w-full px-4 py-2 bg-white/25 dark:bg-gray-700/30 border-0 border-b-2 border-white/30 text-white text-center text-2xl tracking-[1em] focus:ring-0 focus:border-white transition">
+                    <input type="password" id="pin-input" name="pin" required="" maxlength="4" pattern="\d{4}" class="w-full px-4 py-2 bg-white/25 dark:bg-gray-700/30 border-0 border-b-2 border-white/30 text-white text-center text-2xl tracking-[1em] focus:ring-0 focus:border-white transition">
                 </div>
                 <p id="pin-error" class="text-sm text-red-300"></p>
                 <button type="submit" class="w-full py-3 font-semibold text-white bg-green-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-400 disabled:bg-green-400 btn-glow-green">VERIFY</button>
@@ -428,21 +369,22 @@
  
      <!-- Admin Panel -->
      <div id="admin-panel" class="hidden">
-         <div class="flex min-h-screen" x-data="{ sidebarOpen: window.innerWidth >= 1024, isDesktop: window.innerWidth >= 1024 }" x-init="$watch('sidebarOpen', value => { document.body.classList.toggle('overflow-hidden', value && !isDesktop); })" @resize.window="isDesktop = window.innerWidth >= 1024; if (isDesktop) { sidebarOpen = true; } else { sidebarOpen = false; }" @keydown.window.escape="if (!isDesktop) sidebarOpen = false">
+         <div class="flex min-h-screen" x-data="{ sidebarOpen: window.innerWidth >= 1024, isDesktop: window.innerWidth >= 1024 }" x-init="$watch('sidebarOpen', value => { document.body.classList.toggle('overflow-hidden', value &amp;&amp; !isDesktop); })" @resize.window="isDesktop = window.innerWidth >= 1024; if (isDesktop) { sidebarOpen = true; } else { sidebarOpen = false; }" @keydown.window.escape="if (!isDesktop) sidebarOpen = false">
             <!-- Sidebar -->
             <aside class="sidebar fixed inset-y-0 left-0 z-30 w-64 bg-secondary transform transition-transform duration-300 ease-in-out overflow-y-auto lg:translate-x-0" :class="{'translate-x-0': sidebarOpen, '-translate-x-full': !sidebarOpen}">
                 <div class="flex items-center justify-between h-20 px-6 border-b border-color">
                     <h1 class="text-2xl font-bold text-theme-primary">Admin</h1>
                 </div>
-                <nav class="mt-6" @click="if (!isDesktop && $event.target.closest('a')) sidebarOpen = false">
+                <nav class="mt-6" @click="if (!isDesktop &amp;&amp; $event.target.closest('a')) sidebarOpen = false">
                     <a href="#dashboard" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary active" data-page="dashboard"><i data-lucide="layout-dashboard" class="w-5 h-5 mr-3"></i><span>Dashboard</span></a>
                     <a href="#products" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="products"><i data-lucide="package" class="w-5 h-5 mr-3"></i><span>Products</span></a>
                     <a href="#low-stock" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="low-stock"><i data-lucide="alert-triangle" class="w-5 h-5 mr-3"></i><span>Low Stock</span></a>
                     <a href="#top-sales" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="top-sales"><i data-lucide="trending-up" class="w-5 h-5 mr-3"></i><span>Top Sales</span></a>
                     <a href="#top-rated" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="top-rated"><i data-lucide="star" class="w-5 h-5 mr-3"></i><span>Top Rated</span></a>
                     <a href="#flash-sale" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="flash-sale"><i data-lucide="zap" class="w-5 h-5 mr-3"></i><span>Flash Sale</span></a>
+                    <a href="#mega-sale" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="mega-sale"><i data-lucide="flame" class="w-5 h-5 mr-3"></i><span>Mega Sale</span></a>
                     <a href="#add-product" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="add-product"><i data-lucide="plus-circle" class="w-5 h-5 mr-3"></i><span>Add Product</span></a>
-                    <a href="#reviews" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="reviews"><i data-lucide="star" class="w-5 h-5 mr-3"></i><span>Reviews & Ratings</span></a>
+                    <a href="#reviews" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="reviews"><i data-lucide="star" class="w-5 h-5 mr-3"></i><span>Reviews &amp; Ratings</span></a>
                     <a href="#banners" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="banners"><i data-lucide="image" class="w-5 h-5 mr-3"></i><span>Banners</span></a>
                     <a href="#side-promo" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="side-promo">
                         <i data-lucide="image-plus" class="w-5 h-5 mr-3"></i>
@@ -462,10 +404,10 @@
                 </nav>
             </aside>
 
-            <div x-show="sidebarOpen && !isDesktop" x-transition.opacity class="fixed inset-0 z-20 bg-black/50 lg:hidden" @click="sidebarOpen = false" x-cloak></div>
+            <div x-show="sidebarOpen &amp;&amp; !isDesktop" x-transition.opacity="" class="fixed inset-0 z-20 bg-black/50 lg:hidden" @click="sidebarOpen = false" x-cloak=""></div>
 
             <!-- Main Content -->
-            <div class="main-content flex-1 flex h-screen min-h-0 flex-col overflow-hidden transition-all duration-300 ease-in-out ml-0" :class="{'lg:ml-64': sidebarOpen && isDesktop}">
+            <div class="main-content flex-1 flex h-screen min-h-0 flex-col overflow-hidden transition-all duration-300 ease-in-out ml-0" :class="{'lg:ml-64': sidebarOpen &amp;&amp; isDesktop}">
                 <header class="admin-sticky-header bg-secondary flex flex-wrap items-center justify-between gap-3 px-4 py-4 border-b border-color sm:flex-nowrap sm:px-6">
                     <button @click="sidebarOpen = !sidebarOpen" class="text-text-secondary focus:outline-none lg:hidden"><i data-lucide="menu" class="w-6 h-6"></i></button>
                     <div class="text-lg font-semibold text-text-primary flex-1 sm:text-2xl" id="page-title">Dashboard</div>
@@ -473,7 +415,7 @@
                         <!-- Global Search -->
                         <div class="hidden md:flex items-center relative w-full md:w-72">
                             <i data-lucide="search" class="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-text-secondary"></i>
-                            <input id="global-search-input" type="text" placeholder="Search by Order/User/Product/Delivery ID..." class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" />
+                            <input id="global-search-input" type="text" placeholder="Search by Order/User/Product/Delivery ID..." class="w-full pl-10 pr-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
                         </div>
                         <!-- Quick section select -->
                         <div class="w-full sm:w-auto">
@@ -481,10 +423,12 @@
                                 <option value="dashboard">Dashboard</option>
                                 <option value="products">Products</option>
                                 <option value="flash-sale">Flash Sale</option>
+                                <option value="mega-sale">Mega Sale</option>
                                 <option value="low-stock">Low Stock</option>
                                 <option value="reviews">Reviews</option>
                                 <option value="orders">All Orders</option>
                                 <option value="users">All Users</option>
+                                <option value="add-product">Add Product</option>
                             </select>
                         </div>
                         <!-- Live Visitors Header Badge -->
@@ -510,7 +454,7 @@
                                 <i data-lucide="bell" class="w-6 h-6"></i>
                                 <span id="notification-count" class="absolute -top-1 -right-1 flex items-center justify-center w-4 h-4 text-xs font-bold text-white bg-red-500 rounded-full hidden"></span>
                             </button>
-                            <div x-show="notificationsOpen" @click.away="notificationsOpen = false" x-cloak class="absolute right-0 mt-2 w-80 bg-secondary rounded-lg shadow-xl overflow-hidden z-10">
+                            <div x-show="notificationsOpen" @click.away="notificationsOpen = false" x-cloak="" class="absolute right-0 mt-2 w-80 bg-secondary rounded-lg shadow-xl overflow-hidden z-10">
                                 <div class="py-2 px-4 text-sm font-semibold text-text-primary border-b border-color">Notifications</div>
                                 <div id="notification-list" class="max-h-64 overflow-y-auto">
                                     <p class="p-4 text-sm text-text-secondary">No new notifications.</p>
@@ -524,7 +468,7 @@
                                 <span id="header-admin-name" class="hidden sm:inline text-sm font-medium text-text-primary">Admin</span>
                                 <img id="header-admin-image" class="w-8 h-8 rounded-full object-cover" src="https://placehold.co/32x32/e2e8f0/64748b?text=A" alt="Admin Profile">
                             </button>
-                            <div x-show="profileOpen" @click.away="profileOpen = false" x-cloak class="absolute right-0 mt-2 w-48 bg-secondary rounded-lg shadow-xl overflow-hidden z-10">
+                            <div x-show="profileOpen" @click.away="profileOpen = false" x-cloak="" class="absolute right-0 mt-2 w-48 bg-secondary rounded-lg shadow-xl overflow-hidden z-10">
                                 <div class="px-4 py-2 border-b border-color">
                                     <p id="dropdown-admin-name" class="text-sm font-semibold text-text-primary">Admin</p>
                                     <p id="dropdown-admin-email" class="text-xs text-text-secondary truncate">email@example.com</p>
@@ -633,7 +577,7 @@
                                     <div class="flex items-center gap-2">
                                         <select id="ordersChartDays" class="px-3 py-1.5 text-sm rounded-md bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-theme-primary">
                                             <option value="1">Last 1 day</option>
-                                            <option value="7" selected>Last 7 days</option>
+                                            <option value="7" selected="">Last 7 days</option>
                                             <option value="30">Last 1 month</option>
                                             <option value="180">Last 6 months</option>
                                             <option value="365">Last 1 year</option>
@@ -642,12 +586,12 @@
                                     </div>
                                 </div>
                                 <div class="flex flex-wrap gap-3 text-sm">
-                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-orders" type="checkbox" class="accent-theme-primary" checked> <span>Orders</span></label>
-                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-delivered" type="checkbox" class="accent-theme-primary" checked> <span>Delivered</span></label>
+                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-orders" type="checkbox" class="accent-theme-primary" checked=""> <span>Orders</span></label>
+                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-delivered" type="checkbox" class="accent-theme-primary" checked=""> <span>Delivered</span></label>
                                     <label class="inline-flex items-center gap-2 select-none"><input id="metric-ofd" type="checkbox" class="accent-theme-primary"> <span>Out for Delivery</span></label>
                                     <label class="inline-flex items-center gap-2 select-none"><input id="metric-users" type="checkbox" class="accent-theme-primary"> <span>New Users</span></label>
                                     <label class="inline-flex items-center gap-2 select-none"><input id="metric-products" type="checkbox" class="accent-theme-primary"> <span>New Products</span></label>
-                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-sales" type="checkbox" class="accent-theme-primary" checked> <span>Sales Amount</span></label>
+                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-sales" type="checkbox" class="accent-theme-primary" checked=""> <span>Sales Amount</span></label>
                                 </div>
                                 <div class="h-72">
                                     <canvas id="ordersChart"></canvas>
@@ -665,11 +609,11 @@
                                     <h3 class="text-lg font-semibold text-text-primary">Conversations</h3>
                                     <div class="mt-3 flex items-center gap-2">
                                         <div class="relative flex-1">
-                                            <input id="chat-search-input" type="text" placeholder="Search name or message..." class="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-theme-primary" />
+                                            <input id="chat-search-input" type="text" placeholder="Search name or message..." class="w-full pl-9 pr-3 py-2 text-sm bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-md focus:outline-none focus:ring-2 focus:ring-theme-primary">
                                             <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-secondary"></i>
                                         </div>
                                         <label class="flex items-center gap-2 text-xs text-text-secondary select-none">
-                                            <input id="chat-unread-toggle" type="checkbox" class="accent-theme-primary" />
+                                            <input id="chat-unread-toggle" type="checkbox" class="accent-theme-primary">
                                             Unread only
                                         </label>
                                     </div>
@@ -837,7 +781,7 @@
                                     <label for="top-sales-range" class="text-text-secondary">Range</label>
                                     <select id="top-sales-range" class="border border-color rounded px-2 py-1 bg-primary text-text-primary">
                                         <option value="7">Last 7 days</option>
-                                        <option value="30" selected>Last 30 days</option>
+                                        <option value="30" selected="">Last 30 days</option>
                                         <option value="90">Last 90 days</option>
                                         <option value="180">Last 180 days</option>
                                         <option value="365">Last 365 days</option>
@@ -954,12 +898,46 @@
                         </div>
                     </div>
 
+                    <!-- Mega Sale Page -->
+                    <div id="mega-sale-page" class="page-content hidden">
+                        <div class="bg-secondary p-6 rounded-lg shadow-md">
+                            <div class="flex flex-wrap items-center justify-between gap-4 mb-4">
+                                <div>
+                                    <h3 class="text-xl font-semibold text-text-primary">Mega Sale Products</h3>
+                                    <p class="text-sm text-text-secondary">Curate the high-impact offers that appear in the Mega Sale spotlight.</p>
+                                </div>
+                                <button id="mega-sale-add-product" class="bg-theme-primary hover:bg-theme-primary-hover text-white font-semibold py-2 px-4 rounded-lg btn-glow flex items-center gap-2">
+                                    <i data-lucide="plus" class="w-4 h-4"></i>
+                                    <span>New Mega Sale Product</span>
+                                </button>
+                            </div>
+                            <div class="overflow-x-auto">
+                                <table class="w-full text-left">
+                                    <thead>
+                                        <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700">
+                                            <th class="px-4 py-3">#</th>
+                                            <th class="px-4 py-3">Product</th>
+                                            <th class="px-4 py-3">Product ID</th>
+                                            <th class="px-4 py-3">Category</th>
+                                            <th class="px-4 py-3">Offer Pricing</th>
+                                            <th class="px-4 py-3">Status</th>
+                                            <th class="px-4 py-3">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="mega-sale-body" class="divide-y border-color">
+                                        <tr><td colspan="7" class="px-4 py-6 text-center text-text-secondary">Mega sale products will appear here once configured.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Add Product Page -->
                     <!-- Reviews & Ratings Page -->
                     <div id="reviews-page" class="page-content hidden">
                         <div class="bg-secondary p-6 rounded-lg shadow-md">
                             <div class="flex flex-wrap items-center justify-between mb-4 gap-3">
-                                <h3 class="text-xl font-semibold text-text-primary">Product Reviews & Ratings</h3>
+                                <h3 class="text-xl font-semibold text-text-primary">Product Reviews &amp; Ratings</h3>
                                 <div class="flex items-center gap-2 text-sm">
                                     <span class="px-2 py-1 rounded-full bg-gray-100 dark:bg-gray-700 text-text-secondary">Total: <span id="reviews-summary-total">0</span></span>
                                     <span class="px-2 py-1 rounded-full bg-yellow-100 dark:bg-yellow-900/30 text-yellow-700 dark:text-yellow-300">Avg: <span id="reviews-summary-avg">0.0</span> ★</span>
@@ -1009,7 +987,7 @@
                                  <!-- Reusable form content will be injected here by JS -->
                                  <div class="p-4 border rounded-lg bg-gray-50/50 dark:bg-gray-800/50 border-color">
                                      <label class="block text-text-primary font-medium mb-1">Document ID</label>
-                                     <input id="edit-product-doc-id" type="text" class="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-mono" readonly value="" />
+                                     <input id="edit-product-doc-id" type="text" class="w-full px-4 py-2 bg-gray-200 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg text-sm font-mono" readonly="" value="">
                                  </div>
                             </form>
                         </div>
@@ -1018,7 +996,7 @@
                     <!-- Banners Page -->
                     <div id="banners-page" class="page-content hidden">
                         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                            <div class="lg-col-span-1"><div class="bg-secondary p-8 rounded-lg shadow-md"><h2 class="text-2xl font-bold mb-6 text-text-primary">Add New Banner</h2><form id="add-banner-form"><div class="mb-4"><label for="banner-image" class="block text-text-primary font-medium mb-2">Banner Image URL</label><input type="url" id="banner-image" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="https://example.com/banner.jpg"></div><div class="mb-4"><label for="banner-link" class="block text-text-primary font-medium mb-2">Link (Optional)</label><input type="url" id="banner-link" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="/products/promo"></div><button type="submit" class="w-full bg-theme-primary text-white font-bold py-3 px-4 rounded-lg disabled:bg-opacity-70 btn-glow">Add Banner</button></form></div></div>
+                            <div class="lg-col-span-1"><div class="bg-secondary p-8 rounded-lg shadow-md"><h2 class="text-2xl font-bold mb-6 text-text-primary">Add New Banner</h2><form id="add-banner-form"><div class="mb-4"><label for="banner-image" class="block text-text-primary font-medium mb-2">Banner Image URL</label><input type="url" id="banner-image" required="" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="https://example.com/banner.jpg"></div><div class="mb-4"><label for="banner-link" class="block text-text-primary font-medium mb-2">Link (Optional)</label><input type="url" id="banner-link" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="/products/promo"></div><button type="submit" class="w-full bg-theme-primary text-white font-bold py-3 px-4 rounded-lg disabled:bg-opacity-70 btn-glow">Add Banner</button></form></div></div>
                             <div class="lg-col-span-2"><div class="bg-secondary p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold text-text-primary mb-4">Current Banners</h3><div id="banners-list" class="grid grid-cols-1 md:grid-cols-2 gap-4"><div class="text-text-primary">Loading...</div></div></div></div>
                         </div>
                     </div>
@@ -1032,7 +1010,7 @@
                                     <form id="add-side-promo-form" class="space-y-4">
                                         <div>
                                             <label for="side-promo-image" class="block text-text-primary font-medium mb-2">Image URL</label>
-                                            <input type="url" id="side-promo-image" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="https://example.com/side-promo.jpg">
+                                            <input type="url" id="side-promo-image" required="" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="https://example.com/side-promo.jpg">
                                         </div>
                                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
@@ -1069,7 +1047,7 @@
                                         <div class="flex items-center justify-between">
                                             <span class="text-text-primary font-medium">Active</span>
                                             <label for="side-promo-active" class="relative inline-flex items-center cursor-pointer">
-                                                <input type="checkbox" id="side-promo-active" class="sr-only peer" checked>
+                                                <input type="checkbox" id="side-promo-active" class="sr-only peer" checked="">
                                                 <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-600 peer-checked:bg-theme-primary peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                                             </label>
                                         </div>
@@ -1097,22 +1075,22 @@
                                     <form id="add-coupon-form" class="space-y-4">
                                         <div>
                                             <label for="coupon-code" class="block text-text-primary font-medium mb-2">Coupon Code</label>
-                                            <input type="text" id="coupon-code" required placeholder="e.g., SUMMER25" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary uppercase">
+                                            <input type="text" id="coupon-code" required="" placeholder="e.g., SUMMER25" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary uppercase">
                                         </div>
                                         <div>
                                             <label for="coupon-type" class="block text-text-primary font-medium mb-2">Discount Type</label>
-                                            <select id="coupon-type" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                            <select id="coupon-type" required="" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
                                                 <option value="percentage">Percentage</option>
                                                 <option value="fixed">Fixed Amount</option>
                                             </select>
                                         </div>
                                         <div>
                                             <label for="coupon-value" class="block text-text-primary font-medium mb-2">Value (e.g., 25 or 100)</label>
-                                            <input type="number" id="coupon-value" required min="0" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                            <input type="number" id="coupon-value" required="" min="0" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
                                         </div>
                                         <div>
                                             <label for="coupon-expiry" class="block text-text-primary font-medium mb-2">Expiry Date</label>
-                                            <input type="date" id="coupon-expiry" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                            <input type="date" id="coupon-expiry" required="" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
                                         </div>
                                         <div>
                                             <label for="coupon-min-spend" class="block text-text-primary font-medium mb-2">Minimum Spend (Optional)</label>
@@ -1172,7 +1150,7 @@
                              </div>
                              <div class="overflow-x-auto">
                                  <table class="w-full text-left">
-                                     <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Sl. No.</th><th class="px-4 py-3 text-center">Select</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer Name</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Date & Time</th><th class="px-4 py-3">Items</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Payment Method</th><th class="px-4 py-3">Delivery Charge</th><th class="px-4 py-3">Assign Delivery Man</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr></thead>
+                                     <thead><tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700"><th class="px-4 py-3">Sl. No.</th><th class="px-4 py-3 text-center">Select</th><th class="px-4 py-3">Order ID</th><th class="px-4 py-3">Customer Name</th><th class="px-4 py-3">Mobile</th><th class="px-4 py-3">Date &amp; Time</th><th class="px-4 py-3">Items</th><th class="px-4 py-3">Amount</th><th class="px-4 py-3">Location</th><th class="px-4 py-3">Payment Method</th><th class="px-4 py-3">Delivery Charge</th><th class="px-4 py-3">Assign Delivery Man</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Actions</th></tr></thead>
                                      <tbody class="divide-y border-color" id="all-orders-body"><tr class="text-text-primary"><td colspan="14" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
                                  </table>
                              </div>
@@ -1210,19 +1188,19 @@
                                      <form id="add-delivery-man-form" class="space-y-4">
                                          <div>
                                              <label for="delivery-man-name" class="block text-text-primary font-medium mb-2">Name</label>
-                                             <input type="text" id="delivery-man-name" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                             <input type="text" id="delivery-man-name" required="" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
                                          </div>
                                          <div>
                                              <label for="delivery-man-email" class="block text-text-primary font-medium mb-2">Email</label>
-                                             <input type="email" id="delivery-man-email" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                             <input type="email" id="delivery-man-email" required="" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
                                          </div>
                                          <div>
                                              <label for="delivery-man-password" class="block text-text-primary font-medium mb-2">Password</label>
-                                             <input type="password" id="delivery-man-password" required minlength="6" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                             <input type="password" id="delivery-man-password" required="" minlength="6" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
                                          </div>
                                          <div>
                                              <label for="delivery-man-phone" class="block text-text-primary font-medium mb-2">Phone Number</label>
-                                             <input type="tel" id="delivery-man-phone" required class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                             <input type="tel" id="delivery-man-phone" required="" class="w-full px-4 py-2 bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
                                          </div>
                                          <div>
                                              <label for="delivery-man-vehicle" class="block text-text-primary font-medium mb-2">Vehicle Details (e.g., Bike, Cycle)</label>
@@ -1315,7 +1293,7 @@
                                 <div class="mt-6 pt-4 border-t border-color">
                                     <label for="login-bg-url-input" class="block text-text-primary font-medium mb-2">Login Screen Wallpaper URL</label>
                                     <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-start">
-                                        <input type="url" id="login-bg-url-input" placeholder="https://example.com/wallpaper.jpg" class="flex-1 px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-theme-primary" />
+                                        <input type="url" id="login-bg-url-input" placeholder="https://example.com/wallpaper.jpg" class="flex-1 px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-theme-primary">
                                         <div class="flex gap-2">
                                             <button id="login-bg-save-btn" class="bg-theme-primary text-white font-semibold px-4 py-2 rounded-lg btn-glow">Save</button>
                                             <button id="login-bg-reset-btn" class="bg-gray-200 dark:bg-gray-700 text-text-primary font-semibold px-4 py-2 rounded-lg border border-color">Reset</button>
@@ -1329,14 +1307,14 @@
                                 <div class="mt-6 pt-4 border-t border-color">
                                     <label for="login-profile-url-input" class="block text-text-primary font-medium mb-2">Login Screen Profile Picture URL</label>
                                     <div class="flex flex-col sm:flex-row gap-3 items-stretch sm:items-start">
-                                        <input type="url" id="login-profile-url-input" placeholder="https://example.com/avatar.jpg" class="flex-1 px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-theme-primary" />
+                                        <input type="url" id="login-profile-url-input" placeholder="https://example.com/avatar.jpg" class="flex-1 px-4 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 text-text-primary border border-gray-300 dark:border-gray-600 focus:outline-none focus:ring-2 focus:ring-theme-primary">
                                         <div class="flex gap-2">
                                             <button id="login-profile-save-btn" class="bg-theme-primary text-white font-semibold px-4 py-2 rounded-lg btn-glow">Save</button>
                                             <button id="login-profile-reset-btn" class="bg-gray-200 dark:bg-gray-700 text-text-primary font-semibold px-4 py-2 rounded-lg border border-color">Reset</button>
                                         </div>
                                     </div>
                                     <div class="mt-4 flex items-center gap-3">
-                                        <img id="login-profile-preview" src="" alt="Profile Preview" class="w-16 h-16 rounded-full border border-color object-cover bg-gray-100 dark:bg-gray-800" />
+                                        <img id="login-profile-preview" src="" alt="Profile Preview" class="w-16 h-16 rounded-full border border-color object-cover bg-gray-100 dark:bg-gray-800">
                                         <p class="text-xs text-text-secondary">Shown at the top of the login form.</p>
                                     </div>
                                 </div>
@@ -1346,7 +1324,7 @@
                 </main>
                 <footer class="footer-resize admin-sticky-footer bg-secondary border-t border-color px-4 py-4 sm:px-6">
                     <div class="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-                        <p class="text-text-secondary">Tangail Buzz Admin Panel &mdash; adjust the layout and text size for comfortable viewing.</p>
+                        <p class="text-text-secondary">Tangail Buzz Admin Panel — adjust the layout and text size for comfortable viewing.</p>
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="text-xs uppercase tracking-wide text-text-secondary">Text size</span>
                             <button type="button" id="font-size-decrease" class="text-resize-btn">A-</button>
@@ -1365,7 +1343,7 @@
         <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-color pb-3 mb-4">
                 <h3 class="text-xl font-semibold text-text-primary">Order Details</h3>
-                <button id="modal-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">&times;</button>
+                <button id="modal-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">×</button>
             </div>
             <div id="modal-order-content" class="space-y-4">
                 <p>Loading...</p>
@@ -1378,7 +1356,7 @@
         <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-color pb-3 mb-4">
                 <h3 class="text-xl font-semibold text-text-primary">Delivery Man Details</h3>
-                <button id="delivery-modal-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">&times;</button>
+                <button id="delivery-modal-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">×</button>
             </div>
             <div id="modal-delivery-man-content" class="space-y-4">
                 <p>Loading...</p>
@@ -1391,7 +1369,7 @@
         <div class="bg-secondary rounded-lg shadow-xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
             <div class="flex justify-between items-center border-b border-color pb-3 mb-4">
                 <h3 class="text-xl font-semibold text-text-primary">User Profile</h3>
-                <button id="user-profile-modal-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">&times;</button>
+                <button id="user-profile-modal-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">×</button>
             </div>
             <div id="modal-user-profile-content" class="space-y-4">
                 <p>Loading...</p>
@@ -1407,7 +1385,7 @@
                 <i data-lucide="bell-ring" class="text-green-500"></i>
                 <h3 class="text-lg font-semibold text-text-primary">New Order Received!</h3>
             </div>
-            <button id="new-order-alert-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">&times;</button>
+            <button id="new-order-alert-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">×</button>
         </div>
         <div id="new-order-alert-content" class="space-y-2 text-sm">
             <!-- Dynamic content will go here -->
@@ -1424,7 +1402,7 @@
                 <i data-lucide="message-square-text" class="text-blue-500"></i>
                 <h3 class="text-lg font-semibold text-text-primary">New Message Received!</h3>
             </div>
-            <button id="new-message-alert-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">&times;</button>
+            <button id="new-message-alert-close-btn" class="text-text-secondary text-3xl leading-none hover:text-text-primary">×</button>
         </div>
         <div id="new-message-alert-content" class="space-y-2 text-sm">
             <!-- Dynamic content will go here -->
@@ -1476,7 +1454,7 @@
 
     <div id="toast" class="fixed bottom-5 right-5 text-white py-2 px-4 rounded-lg shadow-lg transition-transform transform translate-y-20 opacity-0"><p id="toast-message"></p></div>
     
-    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer></script>
+    <script src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js" defer=""></script>
 
     <script type="module">
         import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
@@ -1575,7 +1553,7 @@
             // PIN verification removed
         };
         
-    const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'low-stock': 'Low Stock Products', 'top-sales': 'Top Sales', 'top-rated': 'Top Rated Products', 'flash-sale': 'Flash Sale Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', 'side-promo': 'Side Promo', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
+    const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'low-stock': 'Low Stock Products', 'top-sales': 'Top Sales', 'top-rated': 'Top Rated Products', 'flash-sale': 'Flash Sale Products', 'mega-sale': 'Mega Sale Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', 'side-promo': 'Side Promo', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
 
         const CATEGORY_MAP = {
             'electronics': 'Electronics',
@@ -2686,6 +2664,9 @@ const saveBulkProducts = async (products) => {
             if (pageId === 'flash-sale' && typeof renderFlashSaleProducts === 'function') {
                 renderFlashSaleProducts();
             }
+            if (pageId === 'mega-sale' && typeof renderMegaSaleProducts === 'function') {
+                renderMegaSaleProducts();
+            }
         };
 
         // --- Appearance & Theming ---
@@ -3249,6 +3230,169 @@ const saveBulkProducts = async (products) => {
                     <td class="px-4 py-3">${row.stock}</td>
                 </tr>
             `).join('');
+            if (window.lucide?.createIcons) lucide.createIcons();
+        };
+
+        const renderMegaSaleProducts = () => {
+            const body = document.getElementById('mega-sale-body');
+            if (!body) return;
+
+            const parsePrice = (value) => {
+                if (value === undefined || value === null || value === '') return null;
+                if (typeof value === 'number') {
+                    return Number.isFinite(value) ? value : null;
+                }
+                const cleaned = String(value).replace(/[^0-9+\-.]/g, '').trim();
+                if (!cleaned) return null;
+                const parsed = Number(cleaned);
+                return Number.isFinite(parsed) ? parsed : null;
+            };
+
+            const isExplicitTrue = (value) => {
+                if (value === true) return true;
+                if (typeof value === 'number') return Number.isFinite(value) && value !== 0;
+                if (typeof value === 'string') {
+                    const normalized = value.trim().toLowerCase();
+                    return ['true', 'yes', '1', 'on', 'enabled', 'enable', 'active'].includes(normalized);
+                }
+                return false;
+            };
+
+            const isExplicitFalse = (value) => {
+                if (value === false) return true;
+                if (typeof value === 'number') return Number.isFinite(value) && value === 0;
+                if (typeof value === 'string') {
+                    const normalized = value.trim().toLowerCase();
+                    return ['false', 'no', '0', 'off', 'disabled', 'disable', 'inactive'].includes(normalized);
+                }
+                return false;
+            };
+
+            const formatCurrency = (value) => {
+                const num = Number(value);
+                if (!Number.isFinite(num)) return null;
+                return `৳${num.toLocaleString('en-US', { minimumFractionDigits: 0 })}`;
+            };
+
+            const MEGA_THRESHOLD = 25;
+            const rows = [];
+
+            allProducts.forEach(doc => {
+                const data = doc.data() || {};
+                const mega = (data.megaSale && typeof data.megaSale === 'object') ? data.megaSale : {};
+
+                const price = [mega.price, data.megaSalePrice, data.offerPrice, data.flashPrice, data.price]
+                    .map(parsePrice)
+                    .find(value => value !== null) ?? null;
+
+                const original = [mega.originalPrice, data.megaSaleOriginalPrice, data.mainPrice, data.basePrice, data.price]
+                    .map(parsePrice)
+                    .find(value => value !== null) ?? null;
+
+                let discount = parsePrice(mega.discountPercent);
+                if (!Number.isFinite(discount)) {
+                    const discountPercentFromData = parsePrice(data.discountPercent);
+                    if (Number.isFinite(discountPercentFromData)) {
+                        discount = discountPercentFromData;
+                    }
+                }
+                if (!Number.isFinite(discount) && original && price && original > price) {
+                    discount = Math.round(((original - price) / original) * 100);
+                }
+                if (!Number.isFinite(discount)) {
+                    discount = null;
+                }
+
+                const manualTrue = [mega.enabled, data.megaSaleEnabled, data.mega_sale_enabled]
+                    .some(value => isExplicitTrue(value));
+                const manualFalse = [mega.enabled, data.megaSaleEnabled, data.mega_sale_enabled]
+                    .some(value => isExplicitFalse(value));
+
+                const qualifiesByDiscount = !manualFalse && Number.isFinite(discount) && discount >= MEGA_THRESHOLD && original && price && original > price;
+                const shouldInclude = manualTrue || qualifiesByDiscount;
+
+                if (!shouldInclude) {
+                    return;
+                }
+
+                const status = manualTrue
+                    ? { label: 'Manual Flag', className: 'bg-purple-100 text-purple-700 dark:bg-purple-900/40 dark:text-purple-200' }
+                    : { label: 'Auto (≥25%)', className: 'bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200' };
+
+                const category = data.categoryName || data.category || data.categoryId || data.categoryTitle || '—';
+                const modelDisplay = data.model || data.productId || data.productCode || data.sku || doc.id;
+                const imageUrl = data.imageUrl || data.thumbnail || (Array.isArray(data.thumbnails) ? data.thumbnails[0] : '') || 'https://placehold.co/56x56/e2e8f0/64748b?text=Img';
+
+                const formattedPrice = formatCurrency(price);
+                const formattedOriginal = formatCurrency(original);
+                const discountTag = Number.isFinite(discount) && discount > 0 ? `-${Math.round(discount)}%` : null;
+
+                rows.push({
+                    doc,
+                    data,
+                    modelDisplay,
+                    category,
+                    imageUrl,
+                    formattedPrice,
+                    formattedOriginal,
+                    discountTag,
+                    status
+                });
+            });
+
+            if (rows.length === 0) {
+                body.innerHTML = `<tr><td colspan="7" class="px-4 py-6 text-center text-text-secondary">No mega sale products configured yet.</td></tr>`;
+                if (window.lucide?.createIcons) lucide.createIcons();
+                return;
+            }
+
+            rows.sort((a, b) => {
+                const getValue = (row) => {
+                    const tag = row.discountTag;
+                    if (!tag) return 0;
+                    const numeric = Number(tag.replace(/[^0-9]/g, ''));
+                    return Number.isFinite(numeric) ? numeric : 0;
+                };
+                return getValue(b) - getValue(a);
+            });
+
+            body.innerHTML = '';
+            rows.forEach((row, index) => {
+                const priceBlock = `
+                    <div class="flex flex-col text-sm leading-tight">
+                        <span class="font-semibold">${row.formattedPrice || '—'}</span>
+                        ${row.formattedOriginal && row.formattedOriginal !== row.formattedPrice ? `<span class="text-xs text-text-secondary line-through">${row.formattedOriginal}</span>` : ''}
+                        ${row.discountTag ? `<span class="text-xs font-semibold text-theme-primary mt-0.5">${row.discountTag}</span>` : ''}
+                    </div>`;
+
+                body.insertAdjacentHTML('beforeend', `
+                    <tr class="text-text-primary">
+                        <td class="px-4 py-3 text-sm">${index + 1}</td>
+                        <td class="px-4 py-3">
+                            <div class="flex items-center gap-3">
+                                <img src="${row.imageUrl}" onerror="this.src='https://placehold.co/56x56/e2e8f0/64748b?text=Img'" class="h-12 w-12 rounded object-cover" alt="Product image">
+                                <div>
+                                    <p class="font-semibold text-sm">${escapeHtml(row.data.name || 'N/A')}</p>
+                                    <p class="text-xs text-text-secondary">${escapeHtml(row.data.brand || row.category || '—')}</p>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-4 py-3 text-sm font-mono" title="Document ID: ${row.doc.id}">${escapeHtml(String(row.modelDisplay || '—'))}</td>
+                        <td class="px-4 py-3 text-sm">${escapeHtml(row.category || '—')}</td>
+                        <td class="px-4 py-3">${priceBlock}</td>
+                        <td class="px-4 py-3 text-xs"><span class="px-2 py-1 rounded-full font-semibold ${row.status.className}">${row.status.label}</span></td>
+                        <td class="px-4 py-3 flex items-center gap-2">
+                            <button class="edit-btn text-indigo-500 hover:text-indigo-700" data-id="${row.doc.id}" title="Edit product">
+                                <i data-lucide="edit" class="w-5 h-5"></i>
+                            </button>
+                            <button class="mega-sale-remove-btn text-red-500 hover:text-red-700" data-id="${row.doc.id}" title="Remove from Mega Sale">
+                                <i data-lucide="minus-circle" class="w-5 h-5"></i>
+                            </button>
+                        </td>
+                    </tr>
+                `);
+            });
+
             if (window.lucide?.createIcons) lucide.createIcons();
         };
 
@@ -3974,6 +4118,9 @@ const saveBulkProducts = async (products) => {
                             <button class="edit-btn text-indigo-500 hover:text-indigo-700" data-id="${doc.id}" title="Edit product">
                                 <i data-lucide="edit" class="w-5 h-5"></i>
                             </button>
+                            <button class="flash-sale-remove-btn text-red-500 hover:text-red-700" data-id="${doc.id}" title="Remove from Flash Sale">
+                                <i data-lucide="minus-circle" class="w-5 h-5"></i>
+                            </button>
                         </td>
                     </tr>
                 `);
@@ -4385,6 +4532,36 @@ const saveBulkProducts = async (products) => {
                         </div>
                     </div>
                 </div>
+                <div class="pt-4 border-t border-dashed border-color space-y-4">
+                    <div class="flex items-center justify-between">
+                        <div>
+                            <span class="text-text-primary font-medium">Mega Sale</span>
+                            <p class="text-xs text-text-secondary">Pin hero deals on the storefront Mega Sale rail with custom pricing.</p>
+                        </div>
+                        <label for="${prefix}product-mega-enabled" class="relative inline-flex items-center cursor-pointer">
+                            <input type="checkbox" id="${prefix}product-mega-enabled" class="sr-only peer">
+                            <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-600 peer-checked:bg-theme-primary peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
+                        </label>
+                    </div>
+                    <div id="${prefix}mega-sale-fields" class="grid grid-cols-1 md:grid-cols-2 gap-6 hidden">
+                        <div>
+                            <label for="${prefix}product-mega-discount" class="block text-text-primary font-medium mb-2">Discount (%)</label>
+                            <input type="number" id="${prefix}product-mega-discount" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" min="0" max="100" step="0.01" disabled>
+                        </div>
+                        <div>
+                            <label for="${prefix}product-mega-label" class="block text-text-primary font-medium mb-2">Badge Label</label>
+                            <input type="text" id="${prefix}product-mega-label" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="e.g., Mega Deal" maxlength="32" disabled>
+                        </div>
+                        <div>
+                            <label for="${prefix}product-mega-price" class="block text-text-primary font-medium mb-2">Mega Price (৳)</label>
+                            <input type="number" id="${prefix}product-mega-price" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" min="0" step="0.01" disabled>
+                        </div>
+                        <div>
+                            <label for="${prefix}product-mega-original" class="block text-text-primary font-medium mb-2">Original Price (৳)</label>
+                            <input type="number" id="${prefix}product-mega-original" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" min="0" step="0.01" disabled>
+                        </div>
+                    </div>
+                </div>
                 <div><label for="${prefix}product-main-image" class="block text-text-primary font-medium mb-2">Main Image URL</label><input type="url" id="${prefix}product-main-image" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" placeholder="https://example.com/main-image.jpg"></div>
                 <div>
                     <div class="flex items-center justify-between mb-2"><label class="block text-text-primary font-medium">Specifications</label><button type="button" id="${prefix}add-specification-btn" class="text-sm bg-theme-primary text-white py-1 px-3 rounded-lg hover:bg-theme-primary-hover">+ Add</button></div>
@@ -4498,6 +4675,48 @@ const saveBulkProducts = async (products) => {
             }
             syncFlashSaleState(true);
             formElement.__syncFlashSale = syncFlashSaleState;
+
+            const megaToggle = document.getElementById(`${prefix}product-mega-enabled`);
+            const megaFields = document.getElementById(`${prefix}mega-sale-fields`);
+            const megaDiscountInput = document.getElementById(`${prefix}product-mega-discount`);
+            const megaLabelInput = document.getElementById(`${prefix}product-mega-label`);
+            const megaPriceInput = document.getElementById(`${prefix}product-mega-price`);
+            const megaOriginalInput = document.getElementById(`${prefix}product-mega-original`);
+            const megaInputs = [megaDiscountInput, megaLabelInput, megaPriceInput, megaOriginalInput];
+
+            const autoSyncMegaDiscount = () => {
+                if (!megaDiscountInput) return;
+                const price = parseFloat(megaPriceInput?.value || '');
+                const original = parseFloat(megaOriginalInput?.value || '');
+                if (Number.isFinite(price) && Number.isFinite(original) && original > 0 && price > 0 && original > price) {
+                    megaDiscountInput.value = Math.round(((original - price) / original) * 100);
+                }
+            };
+
+            const syncMegaSaleState = (preserveValues = true) => {
+                if (!megaFields || !megaToggle) return;
+                const enabled = !!megaToggle.checked;
+                megaFields.classList.toggle('hidden', !enabled);
+                megaInputs.forEach(input => {
+                    if (!input) return;
+                    input.disabled = !enabled;
+                    if (!enabled && !preserveValues) {
+                        input.value = '';
+                    }
+                });
+                if (enabled) {
+                    autoSyncMegaDiscount();
+                }
+            };
+
+            if (megaToggle) {
+                megaToggle.addEventListener('change', () => syncMegaSaleState(false));
+            }
+            if (megaPriceInput) megaPriceInput.addEventListener('input', autoSyncMegaDiscount);
+            if (megaOriginalInput) megaOriginalInput.addEventListener('input', autoSyncMegaDiscount);
+
+            syncMegaSaleState(true);
+            formElement.__syncMegaSale = syncMegaSaleState;
         };
 
         const getProductDataFromForm = (form, prefix) => {
@@ -4532,6 +4751,33 @@ const saveBulkProducts = async (products) => {
                 end: parseDateInputValue(flashEndValue)
             } : { enabled: false };
 
+            const normalizeNumber = (value) => {
+                const num = Number(value);
+                return Number.isFinite(num) ? num : null;
+            };
+
+            const megaEnabled = form.querySelector(`#${prefix}product-mega-enabled`)?.checked || false;
+            const megaDiscountRaw = form.querySelector(`#${prefix}product-mega-discount`)?.value;
+            const megaPriceRaw = form.querySelector(`#${prefix}product-mega-price`)?.value;
+            const megaOriginalRaw = form.querySelector(`#${prefix}product-mega-original`)?.value;
+            const megaLabelRaw = form.querySelector(`#${prefix}product-mega-label`)?.value?.trim();
+
+            const megaPrice = normalizeNumber(megaPriceRaw);
+            const megaOriginal = normalizeNumber(megaOriginalRaw);
+            let megaDiscount = normalizeNumber(megaDiscountRaw);
+            if (megaEnabled && (!Number.isFinite(megaDiscount) || megaDiscount === null) && Number.isFinite(megaOriginal) && Number.isFinite(megaPrice) && megaOriginal > megaPrice) {
+                megaDiscount = Math.round(((megaOriginal - megaPrice) / megaOriginal) * 100);
+            }
+
+            const megaLabel = megaLabelRaw ? megaLabelRaw : null;
+            const megaSale = megaEnabled ? {
+                enabled: true,
+                discountPercent: Number.isFinite(megaDiscount) ? megaDiscount : null,
+                price: Number.isFinite(megaPrice) ? megaPrice : null,
+                originalPrice: Number.isFinite(megaOriginal) ? megaOriginal : null,
+                label: megaLabel
+            } : { enabled: false };
+
             return {
                 name: form.querySelector(`#${prefix}product-name`).value,
                 model: form.querySelector(`#${prefix}product-id`).value,
@@ -4554,7 +4800,14 @@ const saveBulkProducts = async (products) => {
                 flashSaleEnabled: flashSale.enabled,
                 flashPrice: flashSale.enabled && flashSale.price ? flashSale.price : null,
                 flashStart: flashSale.enabled && flashSale.start ? flashSale.start : null,
-                flashEnd: flashSale.enabled && flashSale.end ? flashSale.end : null
+                flashEnd: flashSale.enabled && flashSale.end ? flashSale.end : null,
+                megaSale,
+                megaSaleEnabled: megaEnabled,
+                mega_sale_enabled: megaEnabled,
+                megaSalePrice: megaEnabled && Number.isFinite(megaPrice) ? megaPrice : null,
+                megaSaleOriginalPrice: megaEnabled && Number.isFinite(megaOriginal) ? megaOriginal : null,
+                megaSaleDiscount: megaEnabled && Number.isFinite(megaDiscount) ? megaDiscount : null,
+                megaSaleLabel: megaLabel
             };
         };
 
@@ -4575,6 +4828,9 @@ const saveBulkProducts = async (products) => {
                     document.getElementById('add-specification-container').innerHTML = '';
                     if (typeof e.target.__syncFlashSale === 'function') {
                         e.target.__syncFlashSale(false);
+                    }
+                    if (typeof e.target.__syncMegaSale === 'function') {
+                        e.target.__syncMegaSale(false);
                     }
                 } catch (err) {
                     console.error("Error adding product: ", err);
@@ -4974,6 +5230,76 @@ async function handleEditCouponSubmit(e) {
                         flashPriceInput.focus();
                     }
                 }
+                return;
+            }
+
+            const flashSaleRemoveBtn = e.target.closest('.flash-sale-remove-btn');
+            if (flashSaleRemoveBtn) {
+                const productId = flashSaleRemoveBtn.dataset.id;
+                showConfirmationModal(async () => {
+                    try {
+                        await updateDoc(doc(db, 'products', productId), {
+                            flashSale: { enabled: false },
+                            flashSaleEnabled: false,
+                            flashPrice: null,
+                            flashStart: null,
+                            flashEnd: null
+                        });
+                        showToast('Removed from Flash Sale.');
+                        if (typeof renderFlashSaleProducts === 'function') renderFlashSaleProducts();
+                        if (typeof renderFilteredProducts === 'function') renderFilteredProducts();
+                    } catch (err) {
+                        console.error('Failed to remove flash sale settings', err);
+                        showToast('Failed to remove from Flash Sale!', 'error');
+                    }
+                }, 'Remove from Flash Sale?', 'This keeps the product but clears flash sale pricing and schedule.');
+                return;
+            }
+
+            const megaSaleAddBtn = e.target.closest('#mega-sale-add-product');
+            if (megaSaleAddBtn) {
+                history.pushState({ pageId: 'add-product' }, '', '#add-product');
+                showPage('add-product');
+                const addForm = document.getElementById('add-product-form');
+                if (addForm) {
+                    const megaToggle = document.getElementById('add-product-mega-enabled');
+                    if (megaToggle && !megaToggle.checked) {
+                        megaToggle.checked = true;
+                    }
+                    if (typeof addForm.__syncMegaSale === 'function') {
+                        addForm.__syncMegaSale(true);
+                    }
+                    const megaDiscountInput = document.getElementById('add-product-mega-discount');
+                    if (megaDiscountInput) {
+                        megaDiscountInput.focus();
+                    }
+                }
+                return;
+            }
+
+            const megaSaleRemoveBtn = e.target.closest('.mega-sale-remove-btn');
+            if (megaSaleRemoveBtn) {
+                const productId = megaSaleRemoveBtn.dataset.id;
+                showConfirmationModal(async () => {
+                    try {
+                        await updateDoc(doc(db, 'products', productId), {
+                            megaSale: { enabled: false },
+                            megaSaleEnabled: false,
+                            mega_sale_enabled: false,
+                            megaSalePrice: null,
+                            megaSaleOriginalPrice: null,
+                            megaSaleDiscount: null,
+                            megaSaleLabel: null,
+                            mega_sale_label: null
+                        });
+                        showToast('Removed from Mega Sale.');
+                        if (typeof renderMegaSaleProducts === 'function') renderMegaSaleProducts();
+                        if (typeof renderFilteredProducts === 'function') renderFilteredProducts();
+                    } catch (err) {
+                        console.error('Failed to remove mega sale settings', err);
+                        showToast('Failed to remove from Mega Sale!', 'error');
+                    }
+                }, 'Remove from Mega Sale?', 'This keeps the product but clears mega sale pricing and badge.');
                 return;
             }
             
@@ -5435,6 +5761,44 @@ async function handleEditCouponSubmit(e) {
                 }
                 if (typeof form.__syncFlashSale === 'function') {
                     form.__syncFlashSale(true);
+                }
+
+                const megaInfo = (data.megaSale && typeof data.megaSale === 'object') ? data.megaSale : {};
+                const megaToggle = form.querySelector('#edit-product-mega-enabled');
+                const megaDiscountInput = form.querySelector('#edit-product-mega-discount');
+                const megaLabelInput = form.querySelector('#edit-product-mega-label');
+                const megaPriceInput = form.querySelector('#edit-product-mega-price');
+                const megaOriginalInput = form.querySelector('#edit-product-mega-original');
+
+                const resolveNumericValue = (...candidates) => {
+                    for (const candidate of candidates) {
+                        if (candidate === null || candidate === undefined || candidate === '') continue;
+                        const num = Number(candidate);
+                        if (Number.isFinite(num)) return num;
+                    }
+                    return '';
+                };
+
+                const resolvedMegaEnabled = Boolean(megaInfo.enabled ?? data.megaSaleEnabled ?? data.mega_sale_enabled ?? false);
+                if (megaToggle) megaToggle.checked = resolvedMegaEnabled;
+
+                if (megaDiscountInput) {
+                    const discountValue = resolveNumericValue(megaInfo.discountPercent, data.megaSaleDiscount, data.megaSalePercent, data.discountPercent);
+                    megaDiscountInput.value = discountValue === '' ? '' : discountValue;
+                }
+                if (megaPriceInput) {
+                    const priceValue = resolveNumericValue(megaInfo.price, data.megaSalePrice, data.mega_sale_price, data.offerPrice);
+                    megaPriceInput.value = priceValue === '' ? '' : priceValue;
+                }
+                if (megaOriginalInput) {
+                    const originalValue = resolveNumericValue(megaInfo.originalPrice, data.megaSaleOriginalPrice, data.mega_sale_original_price, data.mainPrice);
+                    megaOriginalInput.value = originalValue === '' ? '' : originalValue;
+                }
+                if (megaLabelInput) {
+                    megaLabelInput.value = megaInfo.label || data.megaSaleLabel || data.mega_sale_label || '';
+                }
+                if (typeof form.__syncMegaSale === 'function') {
+                    form.__syncMegaSale(true);
                 }
                 
                 const thumbnailContainer = form.querySelector('#edit-thumbnail-container');
@@ -6305,6 +6669,7 @@ async function handleEditCouponSubmit(e) {
                 renderSubCategoryFilter();
                 renderFilteredProducts();
                 if (typeof renderFlashSaleProducts === 'function') renderFlashSaleProducts();
+                if (typeof renderMegaSaleProducts === 'function') renderMegaSaleProducts();
                 if (typeof renderLowStockProducts === 'function') renderLowStockProducts();
                 // Sidebar badge: count of out-of-stock items (stock === 0)
                 const outOfStock = allProducts.filter(d => Number(d.data().stock ?? 0) === 0).length;
@@ -6907,5 +7272,6 @@ if (bulkUploadBtn && csvFileInput) {
         });
 
     </script>
+
 </body>
 </html>
