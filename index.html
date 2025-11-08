@@ -11,6 +11,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet">
     <style>
         
+        :root {
+            --c-table-header-bg: #f8fafc;
+            --c-table-header-text: #1f2937;
+            --c-table-header-border: rgba(148, 163, 184, 0.45);
+            --c-table-row-bg: rgba(255, 255, 255, 0.92);
+            --c-table-row-alt-bg: rgba(241, 245, 249, 0.95);
+            --c-table-row-hover-bg: rgba(79, 70, 229, 0.12);
+            --c-table-row-border: rgba(148, 163, 184, 0.35);
+        }
+        
         html.dark {
             /* Dark Mode Colors */
             --c-bg-primary: #111827; /* gray-900 */
@@ -18,6 +28,13 @@
             --c-text-primary: #f3f4f6; /* light gray */
             --c-text-secondary: #d1d5db; /* gray-300 */
             --c-border: #374151; /* gray-700 */
+            --c-table-header-bg: rgba(79, 70, 229, 0.22);
+            --c-table-header-text: #f9fafb;
+            --c-table-header-border: rgba(129, 140, 248, 0.45);
+            --c-table-row-bg: rgba(17, 24, 39, 0.82);
+            --c-table-row-alt-bg: rgba(30, 41, 59, 0.78);
+            --c-table-row-hover-bg: rgba(99, 102, 241, 0.32);
+            --c-table-row-border: rgba(129, 140, 248, 0.35);
         }
         
         html {
@@ -223,9 +240,6 @@
         .welcome-glow { text-shadow: 0 0 30px rgba(79, 70, 229, 0.6), 0 0 60px rgba(79, 70, 229, 0.35); }
         
         html.dark {
-            --c-table-header-bg: rgba(79, 70, 229, 0.22);
-            --c-table-header-text: #f9fafb;
-            --c-table-header-border: rgba(129, 140, 248, 0.45);
             --c-input-bg: rgba(17, 24, 39, 0.85);
             --c-input-border-strong: rgba(129, 140, 248, 0.6);
             --c-input-text: #f9fafb;
