@@ -77,10 +77,6 @@
             font-size: 0.75rem;
         }
         
-        .footer-resize {
-            backdrop-filter: blur(12px);
-        }
-        
         .admin-sticky-header {
             position: sticky;
             top: 0;
@@ -98,13 +94,6 @@
             position: sticky;
             bottom: 0;
             z-index: 60;
-            backdrop-filter: blur(16px);
-            background-color: var(--c-bg-secondary);
-            box-shadow: 0 -1px 0 rgba(15, 23, 42, 0.08);
-        }
-        
-        html.dark .admin-sticky-footer {
-            box-shadow: 0 -1px 0 rgba(15, 23, 42, 0.6);
         }
         
         #header-live-visitors {
@@ -1295,6 +1284,21 @@
                                         <div class="w-11 h-6 bg-gray-200 rounded-full peer dark:bg-gray-600 peer-checked:bg-theme-primary peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all"></div>
                                     </label>
                                 </div>
+                                <div class="mt-6 pt-4 border-t border-color">
+                                    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                                        <div>
+                                            <span class="text-text-primary font-medium">Interface Text Size</span>
+                                            <p class="text-xs text-text-secondary mt-1">Adjust the global font scale for easier reading.</p>
+                                        </div>
+                                        <div class="flex flex-wrap items-center gap-2">
+                                            <span class="text-xs uppercase tracking-wide text-text-secondary">Text size</span>
+                                            <button type="button" id="font-size-decrease" class="text-resize-btn">A-</button>
+                                            <button type="button" id="font-size-reset" class="text-resize-btn">Reset</button>
+                                            <button type="button" id="font-size-increase" class="text-resize-btn">A+</button>
+                                            <span id="font-size-display" class="text-text-secondary text-resize-display">100%</span>
+                                        </div>
+                                    </div>
+                                </div>
                                 <!-- NEW: Time Zone Setting -->
                                 <div class="flex items-center justify-between mt-6 pt-4 border-t border-color">
                                     <span class="text-text-primary">Time Zone</span>
@@ -1336,18 +1340,7 @@
                         </div>
                     </div>
                 </main>
-                <footer class="footer-resize admin-sticky-footer bg-secondary border-t border-color px-4 py-4 sm:px-6">
-                    <div class="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between">
-                        <p class="text-text-secondary">Tangail Buzz Admin Panel — adjust the layout and text size for comfortable viewing.</p>
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="text-xs uppercase tracking-wide text-text-secondary">Text size</span>
-                            <button type="button" id="font-size-decrease" class="text-resize-btn">A-</button>
-                            <button type="button" id="font-size-reset" class="text-resize-btn">Reset</button>
-                            <button type="button" id="font-size-increase" class="text-resize-btn">A+</button>
-                            <span id="font-size-display" class="text-text-secondary text-resize-display">100%</span>
-                        </div>
-                    </div>
-                </footer>
+                <footer class="admin-sticky-footer"></footer>
             </div>
         </div>
     </div>
@@ -1577,18 +1570,22 @@
             'sports-outdoors': 'Sports & Outdoors',
             'books-stationery': 'Books & Stationery',
             'kids-toys': 'Kids & Toys',
-            'cars-bikes': 'Cars & Bikes'
+            // Align with frontend slug naming
+            'cars': 'Cars & Bikes'
         };
 
         const SUB_CATEGORY_MAP = {
             'electronics': ['Mobile Phone', 'Laptop & Computer', 'Tablet', 'TV & Home Theater', 'Headphone & Speaker', 'Camera & Accessories', 'Wearable Smart Watch', 'Gaming Console'],
-            'fashion': ['Men\'s Clothing', 'Women\'s Clothing', 'Kids\' Clothing', 'Shoes & Sandals', 'Watch & Jewelry', 'Bags & Accessories', 'Traditional Wear (Saree, Panjabi)'],
+            // Trimmed to match simplified frontend filter options
+            'fashion': ['Men\'s Clothing', 'Women\'s Clothing', 'Kids\' Clothing', 'Shoes & Sandals', 'Watch & Jewelry', 'Bags & Accessories', 'Traditional Wear'],
             'home-garden': ['Furniture', 'Kitchen Items', 'Home Decor', 'Lighting', 'Garden Tools', 'Home Appliances', 'Storage & Organizer'],
-            'health-beauty': ['Skincare', 'Haircare', 'Makeup', 'Perfume', 'Health Supplement', 'Fitness Equipment', 'Personal Care (Shaver, Trimmer)', 'Oral Care'],
+            // Consolidated grooming accessories per frontend scope
+            'health-beauty': ['Skincare', 'Haircare', 'Makeup', 'Perfume', 'Health Supplement', 'Fitness Equipment', 'Personal Care', 'Oral Care'],
             'sports-outdoors': ['Sports Apparel', 'Sports Shoes', 'Fitness Gear', 'Cycles', 'Gym Equipment', 'Outdoor Camping Gear', 'Football, Cricket, Badminton Items'],
             'books-stationery': ['Educational Books', 'Story Books', 'Religious Books', 'Office Stationery', 'School Stationery', 'Notebook & Diary', 'Arts & Crafts Supplies'],
-            'kids-toys': ['Educational Toys', 'Soft Toys', 'Dolls & Action Figures', 'Games & Puzzles', 'Outdoor Toys (Cycles, Scooters)', 'Remote Control Toys', 'Lego & Building Blocks'],
-            'cars-bikes': ['Car Accessories', 'Bike Accessories', 'Helmets & Riding Gear', 'Tires & Wheels', 'Car Care Products', 'Motor Oil & Lubricants', 'Electric Scooters & Bikes']
+            // Removed ride-on items to mirror the storefront taxonomy
+            'kids-toys': ['Educational Toys', 'Soft Toys', 'Dolls & Action Figures', 'Games & Puzzles', 'Outdoor Toys', 'Remote Control Toys', 'Lego & Building Blocks'],
+            'cars': ['Car Accessories', 'Bike Accessories', 'Helmets & Riding Gear', 'Tires & Wheels', 'Car Care Products', 'Motor Oil & Lubricants', 'Electric Scooters & Bikes']
         };
 
         // --- Helper & Utility Functions ---
@@ -2132,6 +2129,7 @@ const parseCSV = (csvText) => {
         // *গুরুত্বপূর্ণ ফিক্স:* ক্যাটাগরি ID কে ছোট হাতের অক্ষরে রূপান্তর করা হচ্ছে
         if (obj.category && typeof obj.category === 'string') {
             obj.category = obj.category.toLowerCase().replace(/\s/g, '-').replace('&', 'and');
+            if (obj.category === 'cars-bikes') obj.category = 'cars';
         }
 
         // Heuristic: also pick up columns that look like thumbnail or gallery slots (e.g., Thumbnail 1, Image2, Gallery3)
