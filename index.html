@@ -384,6 +384,7 @@
                     <a href="#low-stock" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="low-stock"><i data-lucide="alert-triangle" class="w-5 h-5 mr-3"></i><span>Low Stock</span></a>
                     <a href="#top-sales" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="top-sales"><i data-lucide="trending-up" class="w-5 h-5 mr-3"></i><span>Top Sales</span></a>
                     <a href="#top-rated" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="top-rated"><i data-lucide="star" class="w-5 h-5 mr-3"></i><span>Top Rated</span></a>
+                    <a href="#reports" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="reports"><i data-lucide="bar-chart-3" class="w-5 h-5 mr-3"></i><span>Reports</span></a>
                     <a href="#flash-sale" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="flash-sale"><i data-lucide="zap" class="w-5 h-5 mr-3"></i><span>Flash Sale</span></a>
                     <a href="#mega-sale" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="mega-sale"><i data-lucide="flame" class="w-5 h-5 mr-3"></i><span>Mega Sale</span></a>
                     <a href="#add-product" class="nav-link flex items-center px-6 py-3 text-text-primary hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-theme-primary" data-page="add-product"><i data-lucide="plus-circle" class="w-5 h-5 mr-3"></i><span>Add Product</span></a>
@@ -428,6 +429,7 @@
                                 <option value="flash-sale">Flash Sale</option>
                                 <option value="mega-sale">Mega Sale</option>
                                 <option value="low-stock">Low Stock</option>
+                                <option value="reports">Reports</option>
                                 <option value="reviews">Reviews</option>
                                 <option value="orders">All Orders</option>
                                 <option value="users">All Users</option>
@@ -494,13 +496,17 @@
                                 <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="dollar-sign" class="w-8 h-8"></i></div>
                                 <div><p class="text-sm font-medium text-blue-100">Total Sales</p><p class="text-3xl font-bold" id="total-sale">৳0</p></div>
                             </div>
+                            <div class="stat-card bg-gradient-to-br from-rose-500 to-amber-400 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="orders" data-filter="delivered" title="Delivered অর্ডার থেকে মোট লাভের হিসাব">
+                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="trending-up" class="w-8 h-8"></i></div>
+                                <div><p class="text-sm font-medium text-amber-100">Total Profit</p><p class="text-3xl font-bold" id="total-profit">৳0</p></div>
+                            </div>
                             <div class="stat-card bg-gradient-to-br from-green-500 to-teal-400 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="orders" data-filter="all">
                                 <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="shopping-bag" class="w-8 h-8"></i></div>
                                 <div><p class="text-sm font-medium text-teal-100">Total Orders</p><p class="text-3xl font-bold" id="total-orders">0</p></div>
                             </div>
                             <div class="stat-card bg-gradient-to-br from-teal-400 to-cyan-600 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" title="Total value of all products currently in stock">
                                <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="database" class="w-8 h-8"></i></div>
-                               <div><p class="text-sm font-medium text-cyan-100">Total Stock Value</p><p class="text-3xl font-bold" id="total-stock-value">৳0</p></div>
+                               <div><p class="text-sm font-medium text-cyan-100">Total Stock Cost</p><p class="text-3xl font-bold" id="total-stock-value">৳0</p></div>
                            </div>
                             <div class="stat-card bg-gradient-to-br from-lime-500 to-emerald-500 text-white p-4 rounded-lg shadow-lg flex items-center space-x-4 cursor-pointer" data-page="products" title="Total units of all products currently in stock">
                                 <div class="bg-white/20 rounded-full p-3 flex-shrink-0"><i data-lucide="layers" class="w-8 h-8"></i></div>
@@ -595,6 +601,7 @@
                                     <label class="inline-flex items-center gap-2 select-none"><input id="metric-users" type="checkbox" class="accent-theme-primary"> <span>New Users</span></label>
                                     <label class="inline-flex items-center gap-2 select-none"><input id="metric-products" type="checkbox" class="accent-theme-primary"> <span>New Products</span></label>
                                     <label class="inline-flex items-center gap-2 select-none"><input id="metric-sales" type="checkbox" class="accent-theme-primary" checked=""> <span>Sales Amount</span></label>
+                                    <label class="inline-flex items-center gap-2 select-none"><input id="metric-profit" type="checkbox" class="accent-theme-primary" checked=""> <span>Profit</span></label>
                                 </div>
                                 <div class="h-72">
                                     <canvas id="ordersChart"></canvas>
@@ -682,9 +689,13 @@
                             <div class="flex flex-wrap justify-between items-center mb-4 gap-4">
                                 <h3 class="text-xl font-semibold text-text-primary">All Products</h3>
                                 <div class="flex flex-wrap items-center gap-4 mt-2 sm:mt-0">
-								<button id="bulk-upload-btn" class="bg-theme-primary text-white font-bold py-2 px-4 rounded-lg disabled:bg-opacity-70 btn-glow flex items-center space-x-2 mr-4">
+				<button id="bulk-upload-btn" class="bg-theme-primary text-white font-bold py-2 px-4 rounded-lg disabled:bg-opacity-70 btn-glow flex items-center space-x-2">
     <i data-lucide="upload-cloud" class="w-5 h-5"></i>
     <span>Bulk Upload (CSV)</span>
+</button>
+<button id="download-template-btn" class="flex items-center gap-2 rounded-lg border border-color px-4 py-2 text-sm font-semibold text-theme-primary hover:border-theme-primary hover:bg-theme-primary/10 focus:outline-none focus:ring-2 focus:ring-theme-primary" title="Download CSV template">
+    <i data-lucide="download" class="w-4 h-4"></i>
+    <span>Download Template</span>
 </button>
 <input type="file" id="csv-file-input" accept=".csv" class="hidden">
                                     <!-- Category Filters -->
@@ -771,6 +782,75 @@
                                         <tr class="text-text-primary"><td colspan="8" class="px-4 py-3 text-center">Loading...</td></tr>
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Reports Page -->
+                    <div id="reports-page" class="page-content hidden">
+                        <div class="bg-secondary p-6 rounded-lg shadow-md space-y-6">
+                            <div class="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                                <div>
+                                    <h2 class="text-2xl font-semibold text-text-primary">Financial Reports</h2>
+                                    <p class="text-sm text-text-secondary">Select a date range to review sales, cost, and profit.</p>
+                                </div>
+                                <div class="flex flex-wrap items-center gap-3">
+                                    <div class="flex items-center gap-2">
+                                        <label for="reports-start-date" class="text-sm text-text-secondary">From</label>
+                                        <input type="date" id="reports-start-date" class="rounded-lg border border-color bg-white/80 px-3 py-2 text-sm text-text-primary focus:border-theme-primary focus:outline-none focus:ring-2 focus:ring-theme-primary dark:bg-gray-800/80">
+                                    </div>
+                                    <div class="flex items-center gap-2">
+                                        <label for="reports-end-date" class="text-sm text-text-secondary">To</label>
+                                        <input type="date" id="reports-end-date" class="rounded-lg border border-color bg-white/80 px-3 py-2 text-sm text-text-primary focus:border-theme-primary focus:outline-none focus:ring-2 focus:ring-theme-primary dark:bg-gray-800/80">
+                                    </div>
+                                    <button id="reports-apply-btn" class="inline-flex items-center rounded-lg bg-theme-primary px-4 py-2 text-sm font-semibold text-white shadow hover:bg-indigo-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-theme-primary">Apply</button>
+                                    <button id="reports-reset-btn" class="inline-flex items-center rounded-lg border border-color px-4 py-2 text-sm font-semibold text-text-secondary hover:border-theme-primary hover:text-theme-primary focus:outline-none focus:ring-2 focus:ring-theme-primary">Reset</button>
+                                </div>
+                            </div>
+
+                            <div class="grid gap-4 md:grid-cols-3">
+                                <div class="rounded-2xl border border-color bg-white/70 p-5 shadow-sm dark:bg-gray-800/60">
+                                    <p class="text-sm font-medium text-text-secondary">Total Sales</p>
+                                    <p id="reports-total-sales" class="mt-2 text-2xl font-bold text-emerald-500">৳0.00</p>
+                                </div>
+                                <div class="rounded-2xl border border-color bg-white/70 p-5 shadow-sm dark:bg-gray-800/60">
+                                    <p class="text-sm font-medium text-text-secondary">Total Cost</p>
+                                    <p id="reports-total-cost" class="mt-2 text-2xl font-bold text-rose-500">৳0.00</p>
+                                </div>
+                                <div class="rounded-2xl border border-color bg-white/70 p-5 shadow-sm dark:bg-gray-800/60">
+                                    <p class="text-sm font-medium text-text-secondary">Total Profit</p>
+                                    <p id="reports-total-profit" class="mt-2 text-2xl font-bold text-theme-primary">৳0.00</p>
+                                    <p id="reports-profit-badge" class="mt-1 text-xs font-semibold uppercase tracking-wide text-text-secondary">0 Orders</p>
+                                </div>
+                            </div>
+
+                            <div class="rounded-2xl border border-color bg-white/70 p-5 shadow-sm dark:bg-gray-800/60">
+                                <div class="flex flex-wrap items-center justify-between gap-3">
+                                    <div>
+                                        <h3 class="text-lg font-semibold text-text-primary">Orders Breakdown</h3>
+                                        <p id="reports-orders-summary" class="text-sm text-text-secondary">No data for the selected range.</p>
+                                    </div>
+                                    <button id="reports-export-btn" class="inline-flex items-center rounded-lg border border-color px-3 py-1.5 text-xs font-semibold text-text-secondary hover:border-theme-primary hover:text-theme-primary focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                                        <i data-lucide="download" class="mr-2 h-4 w-4"></i>
+                                        Export CSV
+                                    </button>
+                                </div>
+                                <div class="mt-4 overflow-x-auto">
+                                    <table class="min-w-full text-left text-sm">
+                                        <thead class="text-xs uppercase tracking-wide text-text-secondary">
+                                            <tr>
+                                                <th class="px-3 py-2">Order</th>
+                                                <th class="px-3 py-2">Date</th>
+                                                <th class="px-3 py-2">Status</th>
+                                                <th class="px-3 py-2 text-right">Sale</th>
+                                                <th class="px-3 py-2 text-right">Cost</th>
+                                                <th class="px-3 py-2 text-right">Profit</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="reports-table-body" class="divide-y divide-gray-200 text-text-primary dark:divide-gray-700"></tbody>
+                                    </table>
+                                    <p id="reports-empty-state" class="py-6 text-center text-sm text-text-secondary hidden">No delivered orders found for the selected range.</p>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1525,6 +1605,9 @@
     let totalDeliveryMenCount = null;
     let activeCouponsCount = null;
     let lastDashboardUpdateAt = null;
+    const reportsState = { startMs: null, endMs: null, rows: [] };
+    const REPORTS_DEFAULT_RANGE_DAYS = 0; // 0 = all time by default
+    let reportsPageInitialized = false;
     // Live visitors (website presence) tracking
     let liveVisitorsIntervalId = null;
     let unsubscribePresence = null;
@@ -1560,7 +1643,7 @@
             // PIN verification removed
         };
         
-    const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'low-stock': 'Low Stock Products', 'top-sales': 'Top Sales', 'top-rated': 'Top Rated Products', 'flash-sale': 'Flash Sale Products', 'mega-sale': 'Mega Sale Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', 'side-promo': 'Side Promo', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
+    const PAGE_TITLES = { dashboard: 'Dashboard', chat: 'Live Chat', products: 'All Products', 'low-stock': 'Low Stock Products', 'reports': 'Reports', 'top-sales': 'Top Sales', 'top-rated': 'Top Rated Products', 'flash-sale': 'Flash Sale Products', 'mega-sale': 'Mega Sale Products', 'add-product': 'Add Product', 'edit-product': 'Edit Product', banners: 'Banner Management', 'side-promo': 'Side Promo', coupons: 'Coupon Management', orders: 'All Orders', users: 'All Users', delivery: 'Delivery Management', settings: 'Settings' };
 
         const CATEGORY_MAP = {
             'electronics': 'Electronics',
@@ -1961,6 +2044,30 @@
  * @param {string} csvText - CSV ফাইলের সম্পূর্ণ টেক্সট।
  * @returns {Array<Object>} প্রোডাক্ট ডেটার অ্যারে।
  */
+const parseCsvLine = (line) => {
+    const values = [];
+    let current = '';
+    let inQuotes = false;
+    for (let i = 0; i < line.length; i++) {
+        const char = line[i];
+        if (char === '"') {
+            if (inQuotes && line[i + 1] === '"') {
+                current += '"';
+                i++;
+            } else {
+                inQuotes = !inQuotes;
+            }
+        } else if (char === ',' && !inQuotes) {
+            values.push(current);
+            current = '';
+        } else {
+            current += char;
+        }
+    }
+    values.push(current);
+    return values;
+};
+
 const parseCSV = (csvText) => {
     const parseBooleanField = (raw) => {
         if (raw === undefined || raw === null) return false;
@@ -1979,20 +2086,20 @@ const parseCSV = (csvText) => {
         return Number.isNaN(parsed) ? 0 : parsed;
     };
 
-    const lines = csvText.split('\n').filter(line => line.trim() !== '');
+    const lines = csvText.split(/\r?\n/).filter(line => line.trim() !== '');
     if (lines.length === 0) return [];
 
     // Header row কে কমা দ্বারা ভাগ করে key হিসেবে ব্যবহার করা
-    const headers = lines[0].split(',').map(header => header.trim());
+    const headers = parseCsvLine(lines[0]).map(header => header.trim());
     const result = [];
 
     for (let i = 1; i < lines.length; i++) {
-        // CSV তে কমা যুক্ত ডেটা (যেমন Description, Specifications) হ্যান্ডেল করার জন্য উন্নত Regex
-        const values = lines[i].match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g);
-
-        if (!values || values.length !== headers.length) {
-            console.warn(`Skipping line ${i + 1}: Column count mismatch. Values found: ${values ? values.length : 0}. Expected: ${headers.length}`);
-            continue;
+        const values = parseCsvLine(lines[i].replace(/\r$/, ''));
+        if (values.length < headers.length) {
+            while (values.length < headers.length) values.push('');
+        } else if (values.length > headers.length) {
+            console.warn(`Trimming extra columns on line ${i + 1}. Found ${values.length}, expected ${headers.length}.`);
+            values.length = headers.length;
         }
 
         const obj = {};
@@ -2003,7 +2110,7 @@ const parseCSV = (csvText) => {
 
         headers.forEach((header, index) => {
             const rawValue = values[index] ?? '';
-            let value = String(rawValue).trim().replace(/^"|"$/g, ''); // ডাবল কোটেশন সরিয়ে দেওয়া
+            let value = String(rawValue).trim();
             const headerKey = header.trim().toLowerCase();
             let key;
 
@@ -2014,6 +2121,15 @@ const parseCSV = (csvText) => {
                 case 'offer price': key = 'offerPrice'; break;
                 case 'discount %': key = 'discount'; break;
                 case 'stock count': key = 'stock'; break;
+                case 'cost price':
+                case 'cost price (৳)':
+                case 'cost price ৳':
+                case 'purchase price':
+                case 'buying price':
+                case 'unit cost':
+                case 'base cost':
+                    key = 'costPrice';
+                    break;
                 // 'Rating' ফিল্ডটি CSV-তে নেই, তাই এটিকে বাদ দেওয়া হলো।
                 case 'on offer': key = 'isOnOffer'; break;
                 case 'refundable': key = 'isRefundable'; break;
@@ -2117,7 +2233,7 @@ const parseCSV = (csvText) => {
             }
             
             // ডেটা টাইপ রূপান্তর: সংখ্যা, বুলিয়ান ইত্যাদি।
-            if (key === 'mainPrice' || key === 'offerPrice' || key === 'stock' || key === 'discount') {
+            if (key === 'mainPrice' || key === 'offerPrice' || key === 'stock' || key === 'discount' || key === 'costPrice') {
                 obj[key] = parseNumberField(value);
             } else if (key === 'isOnOffer' || key === 'isRefundable') {
                 obj[key] = parseBooleanField(value);
@@ -2200,6 +2316,188 @@ const parseCSV = (csvText) => {
         result.push(obj);
     }
     return result;
+};
+
+
+const BULK_UPLOAD_TEMPLATE_HEADERS = [
+    'Product Name',
+    'Category',
+    'Sub-Category',
+    'Brand',
+    'Main Price',
+    'Offer Price',
+    'Cost Price',
+    'Discount %',
+    'Stock Count',
+    'Main Image URL',
+    'Thumbnail URLs',
+    'Description',
+    'Specifications Description',
+    'Warranty',
+    'On Offer',
+    'Refundable',
+    'Flash Sale Enabled',
+    'Flash Sale Price',
+    'Flash Sale Start',
+    'Flash Sale End'
+];
+
+const BULK_UPLOAD_TEMPLATE_SAMPLE = [
+    'Classic Silk Sharee',
+    'fashion',
+    'Women Clothing',
+    'Tangail Buzz',
+    '1200',
+    '999',
+    '750',
+    '20',
+    '50',
+    'https://example.com/images/sharee-main.jpg',
+    'https://example.com/images/sharee-1.jpg | https://example.com/images/sharee-2.jpg',
+    'Soft silk sharee ideal for festive seasons.',
+    'Color:Red | Fabric:Silk | Length:5.5m',
+    '7 Days Replacement',
+    'Yes',
+    'Yes',
+    'No',
+    '',
+    '',
+    ''
+];
+
+const buildCsvRow = (values) => values.map(val => {
+    const str = String(val ?? '').replace(/"/g, '""');
+    return str.includes(',') || str.includes('\n') || str.includes('"') ? `"${str}"` : str;
+}).join(',');
+
+const templateBoolean = (value) => {
+    if (value === undefined || value === null) return '';
+    return value ? 'Yes' : 'No';
+};
+
+const templateNumeric = (value) => {
+    if (value === undefined || value === null || value === '') return '';
+    if (typeof value === 'number') {
+        return Number.isFinite(value) ? value : '';
+    }
+    if (typeof value === 'string') {
+        const trimmed = value.trim();
+        if (!trimmed) return '';
+        const parsed = Number(trimmed.replace(/[^0-9+\-.]/g, ''));
+        return Number.isNaN(parsed) ? trimmed : parsed;
+    }
+    return '';
+};
+
+const templateThumbnails = (data) => {
+    if (Array.isArray(data?.thumbnails) && data.thumbnails.length) return data.thumbnails.join(' | ');
+    if (Array.isArray(data?.images) && data.images.length) return data.images.join(' | ');
+    if (typeof data?.gallery === 'string') return data.gallery;
+    return '';
+};
+
+const templateSpecification = (spec) => {
+    if (!spec) return '';
+    if (typeof spec === 'string') return spec;
+    if (Array.isArray(spec)) {
+        return spec.map(item => {
+            if (typeof item === 'string') return item;
+            if (item && typeof item === 'object') {
+                const [k, v] = Object.entries(item)[0] || [];
+                return k && v ? `${k}:${v}` : '';
+            }
+            return '';
+        }).filter(Boolean).join(' | ');
+    }
+    if (typeof spec === 'object') {
+        return Object.entries(spec)
+            .filter(([k, v]) => k && v !== undefined && v !== null && v !== '')
+            .map(([k, v]) => `${k}:${v}`)
+            .join(' | ');
+    }
+    return '';
+};
+
+const resolveCostPrice = (data) => {
+    const candidates = [data.costPrice, data.purchasePrice, data.buyingPrice, data.basePrice, data.mainPrice, data.offerPrice];
+    for (const candidate of candidates) {
+        const normalized = templateNumeric(candidate);
+        if (normalized !== '') return normalized;
+    }
+    return '';
+};
+
+const productDocToTemplateRow = (doc) => {
+    const data = typeof doc?.data === 'function' ? doc.data() : doc || {};
+    const thumbString = templateThumbnails(data);
+    const description = data.details || data.description || data.longDescription || '';
+    const specString = templateSpecification(data.specification || data.specifications || data.specs || '');
+    const flashEnabled = templateBoolean(
+        data.flashSaleEnabled ?? data.flashEnabled ?? data.flashSale?.enabled ?? false
+    );
+    const flashPrice = templateNumeric(
+        data.flashPrice ?? data.flashSalePrice ?? (data.flashSale && data.flashSale.price)
+    );
+    const flashStart = data.flashStart || data.flashSaleStart || (data.flashSale && data.flashSale.start) || '';
+    const flashEnd = data.flashEnd || data.flashSaleEnd || (data.flashSale && data.flashSale.end) || '';
+
+    return [
+        data.name || '',
+        data.category || '',
+        data.subcategory || '',
+        data.brand || '',
+        templateNumeric(data.mainPrice ?? data.price ?? data.sellingPrice ?? ''),
+        templateNumeric(data.offerPrice ?? data.salePrice ?? ''),
+        resolveCostPrice(data),
+        templateNumeric(data.discount ?? data.discountPercentage ?? ''),
+        templateNumeric(data.stock ?? data.quantity ?? ''),
+        data.imageUrl || data.mainImage || '',
+        thumbString,
+        description,
+        specString,
+        data.warranty || '',
+        templateBoolean(data.isOnOffer ?? data.onOffer ?? false),
+        templateBoolean(data.isRefundable ?? data.refundable ?? false),
+        flashEnabled,
+        flashPrice,
+        flashStart,
+        flashEnd
+    ];
+};
+
+const getSelectedProductDocs = () => {
+    const container = document.getElementById('products-page');
+    if (!container) return [];
+    const checkboxes = Array.from(container.querySelectorAll('input.row-select[data-coll="products"]:checked'));
+    if (!checkboxes.length) return [];
+    const selectedIds = new Set(checkboxes.map(cb => cb.dataset.id));
+    return (allProducts || []).filter(doc => selectedIds.has(doc.id));
+};
+
+const downloadBulkTemplate = (selectedDocs = []) => {
+    const rows = [buildCsvRow(BULK_UPLOAD_TEMPLATE_HEADERS)];
+    if (Array.isArray(selectedDocs) && selectedDocs.length) {
+        selectedDocs.forEach(doc => rows.push(buildCsvRow(productDocToTemplateRow(doc))));
+    } else {
+        rows.push(buildCsvRow(BULK_UPLOAD_TEMPLATE_SAMPLE));
+    }
+
+    const csvContent = rows.join('\n');
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'tangailbuzz-product-template.csv';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    setTimeout(() => URL.revokeObjectURL(url), 0);
+
+    if (selectedDocs.length) {
+        showToast(`Template downloaded with ${selectedDocs.length} selected product${selectedDocs.length > 1 ? 's' : ''}.`, 'success');
+    } else {
+        showToast('Template downloaded. Update the sample row with your products.', 'success');
+    }
 };
 
 
@@ -2458,6 +2756,13 @@ const saveBulkProducts = async (products) => {
             offerPrice: toFiniteNumber(product.offerPrice),
             discount: toFiniteNumber(product.discount),
             stock: toFiniteNumber(product.stock),
+            costPrice: toFiniteNumber(
+                product.costPrice ??
+                product.purchasePrice ??
+                product.buyingPrice ??
+                product.basePrice ??
+                product.cost
+            ),
             rating: toFiniteNumber(product.rating),
             isOnOffer: resolvedIsOnOffer !== undefined ? resolvedIsOnOffer : false,
             isRefundable: resolvedIsRefundable !== undefined ? resolvedIsRefundable : false,
@@ -2667,6 +2972,9 @@ const saveBulkProducts = async (products) => {
             if (pageId === 'low-stock' && typeof renderLowStockProducts === 'function') {
                 renderLowStockProducts();
             }
+            if (pageId === 'reports' && typeof prepareReportsView === 'function') {
+                prepareReportsView();
+            }
             if (pageId === 'top-sales' && typeof renderTopSales === 'function') {
                 renderTopSales();
             }
@@ -2718,6 +3026,425 @@ const saveBulkProducts = async (products) => {
             const bgUrl = `url('${localStorage.getItem('login-bg-url') || defaultBg}')`;
             loginScreenDivs.forEach(div => div.style.backgroundImage = bgUrl);
             loginProfilePic.src = localStorage.getItem('login-profile-url') || defaultAvatar;
+        };
+
+        // --- Reports Helpers ---
+        const safeNumber = (value, fallback = 0) => {
+            const num = Number(value);
+            return Number.isFinite(num) ? num : fallback;
+        };
+
+        const toMillisSafe = (value) => {
+            if (!value) return 0;
+            if (typeof value.toMillis === 'function') return value.toMillis();
+            if (typeof value.toDate === 'function') return value.toDate().getTime();
+            if (value instanceof Date) return value.getTime();
+            if (typeof value === 'number') return value < 1e12 ? value * 1000 : value;
+            if (typeof value === 'string') {
+                const parsed = new Date(value);
+                if (!Number.isNaN(parsed.getTime())) return parsed.getTime();
+            }
+            return 0;
+        };
+
+        const formatCurrencyBDT = (value) => {
+            const amount = safeNumber(value);
+            const sign = amount < 0 ? '-' : '';
+            const formatted = Math.abs(amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            return `${sign}৳${formatted}`;
+        };
+
+        const toDateInputValue = (ms) => {
+            if (!ms) return '';
+            const date = new Date(ms);
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        const parseDateInputValue = (value, isEnd = false) => {
+            if (!value) return null;
+            const [year, month, day] = value.split('-').map(Number);
+            if (![year, month, day].every(n => Number.isFinite(n))) return null;
+            if (isEnd) {
+                return new Date(year, month - 1, day, 23, 59, 59, 999).getTime();
+            }
+            return new Date(year, month - 1, day).getTime();
+        };
+
+        const getDefaultReportsRange = () => {
+            if (!REPORTS_DEFAULT_RANGE_DAYS) {
+                return { startMs: null, endMs: null };
+            }
+            const now = new Date();
+            const endMs = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999).getTime();
+            const startMs = endMs - (REPORTS_DEFAULT_RANGE_DAYS - 1) * 24 * 60 * 60 * 1000;
+            return { startMs, endMs };
+        };
+
+        const applyReportsRangeToInputs = (startMs, endMs) => {
+            const startInput = document.getElementById('reports-start-date');
+            const endInput = document.getElementById('reports-end-date');
+            if (startInput) startInput.value = startMs ? toDateInputValue(startMs) : '';
+            if (endInput) endInput.value = endMs ? toDateInputValue(endMs) : '';
+        };
+
+        const getOrderItemsArray = (orderData) => {
+            if (!orderData) return [];
+            const candidates = [orderData.items, orderData.products, orderData.orderItems, orderData.cartItems];
+            for (const list of candidates) {
+                if (Array.isArray(list) && list.length) return list;
+            }
+            return [];
+        };
+
+        const REPORTS_INCLUDED_STATUSES = new Set([
+            'delivered',
+            'completed',
+            'fulfilled',
+            'paid',
+            'confirmed',
+            'shipped',
+            'out-for-delivery',
+            'processing',
+            'processed',
+            'ready-for-delivery'
+        ]);
+
+        const buildProductCostLookup = () => {
+            const lookup = new Map();
+            (allProducts || []).forEach(productDoc => {
+                const data = typeof productDoc?.data === 'function' ? productDoc.data() : productDoc;
+                if (!data) return;
+                let finalCost = 0;
+                const costCandidates = [data.costPrice, data.purchasePrice, data.mainPrice, data.basePrice, data.buyingPrice, data.cost];
+                for (const candidate of costCandidates) {
+                    const numeric = safeNumber(candidate);
+                    if (numeric > 0) {
+                        finalCost = numeric;
+                        break;
+                    }
+                }
+                if (!finalCost) {
+                    const fallbackPrice = safeNumber(data.price ?? data.sellingPrice ?? data.offerPrice);
+                    if (fallbackPrice > 0) finalCost = fallbackPrice;
+                }
+                const keys = [
+                    productDoc?.id,
+                    data.id,
+                    data.productId,
+                    data.productID,
+                    data.productCode,
+                    data.code,
+                    data.sku,
+                    data.slug,
+                    data.model,
+                    data.name,
+                    data.title
+                ].filter(Boolean);
+                keys.forEach(key => {
+                    const normalized = String(key).toLowerCase();
+                    if (!lookup.has(normalized)) {
+                        lookup.set(normalized, finalCost);
+                    }
+                });
+            });
+            return lookup;
+        };
+
+        const resolveItemCost = (item, lookup) => {
+            if (!item) return 0;
+            const directCandidates = [item.costPrice, item.purchasePrice, item.mainPrice, item.basePrice, item.buyingPrice, item.cost];
+            for (const candidate of directCandidates) {
+                const numeric = safeNumber(candidate);
+                if (numeric > 0) return numeric;
+            }
+            const keyCandidates = [item.productId, item.productID, item.id, item.sku, item.slug, item.model, item.code, item.name, item.title].filter(Boolean);
+            for (const key of keyCandidates) {
+                const match = lookup.get(String(key).toLowerCase());
+                if (typeof match === 'number') return match;
+            }
+            return safeNumber(item.originalPrice ?? item.price);
+        };
+
+        const resolveItemName = (item) => {
+            return item?.name || item?.productName || item?.title || item?.productTitle || item?.productId || item?.model || 'Unnamed item';
+        };
+
+        const summariseOrderItems = (items, orderData, costLookup) => {
+            let totalQuantity = 0;
+            let derivedSales = 0;
+            let derivedCost = 0;
+            const itemSummaries = items.map(item => {
+                const quantityRaw = safeNumber(item.quantity ?? item.qty ?? item.count, 1);
+                const quantity = quantityRaw > 0 ? quantityRaw : 1;
+                const explicitTotal = safeNumber(item.totalPrice ?? item.total ?? item.lineTotal ?? item.subtotal ?? item.amount);
+                const unitPrice = safeNumber(item.sellingPrice ?? item.salePrice ?? item.offerPrice ?? item.price ?? item.unitPrice);
+                const lineSales = explicitTotal > 0 ? explicitTotal : unitPrice * quantity;
+                const unitCost = resolveItemCost(item, costLookup);
+                const lineCost = safeNumber(unitCost) * quantity;
+                totalQuantity += quantity;
+                derivedSales += safeNumber(lineSales);
+                derivedCost += safeNumber(lineCost);
+                return {
+                    name: resolveItemName(item),
+                    quantity,
+                    sales: safeNumber(lineSales),
+                    cost: safeNumber(lineCost)
+                };
+            });
+            const orderTotals = safeNumber(orderData?.totalAmount ?? orderData?.total ?? orderData?.totalPrice ?? orderData?.grandTotal ?? orderData?.netTotal);
+            const shipping = safeNumber(orderData?.shippingFee ?? orderData?.deliveryCharge ?? orderData?.deliveryFee ?? orderData?.shippingCost);
+            const discount = safeNumber(orderData?.discount ?? orderData?.couponDiscount ?? orderData?.promoDiscount);
+            const sales = orderTotals > 0 ? orderTotals : Math.max(0, derivedSales + shipping - discount);
+            return { itemSummaries, quantity: totalQuantity, sales, cost: derivedCost };
+        };
+
+        const normalizeStatus = (status) => {
+            if (!status) return '';
+            const raw = String(status).trim().toLowerCase();
+            if (raw === 'canceled') return 'cancelled';
+            return raw.replace(/\s+/g, '-');
+        };
+
+        const generateReportsRows = (startMs, endMs) => {
+            const costLookup = buildProductCostLookup();
+            const rows = [];
+            (allOrders || []).forEach(orderDoc => {
+                const data = typeof orderDoc?.data === 'function' ? orderDoc.data() : orderDoc;
+                if (!data) return;
+                const status = normalizeStatus(data.status || data.orderStatus || data.paymentStatus);
+                const deliveredTs = data.deliveredAt || data.completedAt || data.updatedAt || data.confirmedAt;
+                const baseTimestamp = deliveredTs || data.orderFulfilledAt || data.paymentCompletedAt || data.paymentDate;
+                const createdTimestamp = data.createdAt || data.orderDate || data.placedAt || data.timestamp;
+                let timestamp = toMillisSafe(baseTimestamp);
+                if (!timestamp) {
+                    timestamp = toMillisSafe(createdTimestamp);
+                }
+                if (!timestamp) return;
+                const shouldInclude = REPORTS_INCLUDED_STATUSES.has(status) || Boolean(baseTimestamp);
+                if (!shouldInclude) return;
+                if (startMs && timestamp < startMs) return;
+                if (endMs && timestamp > endMs) return;
+                const items = getOrderItemsArray(data);
+                const { itemSummaries, quantity, sales, cost } = summariseOrderItems(items, data, costLookup);
+                const productsLabel = itemSummaries.map(item => `${item.name} ×${item.quantity}`).join(', ');
+                const shortLabel = productsLabel.length > 90 ? `${productsLabel.slice(0, 87)}…` : productsLabel;
+                rows.push({
+                    id: orderDoc?.id || data.id,
+                    invoice: data.invoiceId || data.invoiceNumber || data.invoice || data.orderNo || data.orderNumber || data.orderId || orderDoc?.id || 'N/A',
+                    customer: data.userName || data.customerName || data.name || 'Customer',
+                    productsLabel: shortLabel,
+                    quantity,
+                    dateMs: timestamp,
+                    status,
+                    sales: safeNumber(sales),
+                    cost: safeNumber(cost),
+                    profit: safeNumber(sales) - safeNumber(cost)
+                });
+            });
+            return rows.sort((a, b) => b.dateMs - a.dateMs);
+        };
+
+        const renderReportsSummary = (rows) => {
+            const salesEl = document.getElementById('reports-total-sales');
+            const costEl = document.getElementById('reports-total-cost');
+            const profitEl = document.getElementById('reports-total-profit');
+            const totalSales = rows.reduce((sum, row) => sum + safeNumber(row.sales), 0);
+            const totalCost = rows.reduce((sum, row) => sum + safeNumber(row.cost), 0);
+            const totalProfit = totalSales - totalCost;
+            if (salesEl) salesEl.textContent = formatCurrencyBDT(totalSales);
+            if (costEl) costEl.textContent = formatCurrencyBDT(totalCost);
+            if (profitEl) {
+                profitEl.textContent = formatCurrencyBDT(totalProfit);
+                profitEl.classList.toggle('text-rose-500', totalProfit < 0);
+                profitEl.classList.toggle('text-theme-primary', totalProfit >= 0);
+            }
+        };
+
+        const updateReportsMeta = (rows) => {
+            const badgeEl = document.getElementById('reports-profit-badge');
+            const summaryEl = document.getElementById('reports-orders-summary');
+            if (!badgeEl || !summaryEl) return;
+            if (!rows.length) {
+                badgeEl.textContent = '0 Orders';
+                summaryEl.textContent = 'No data for the selected range.';
+                return;
+            }
+            const orderCount = rows.length;
+            const totalProfit = rows.reduce((sum, row) => sum + safeNumber(row.profit), 0);
+            const totalUnits = rows.reduce((sum, row) => sum + safeNumber(row.quantity), 0);
+            const avgProfit = orderCount ? totalProfit / orderCount : 0;
+            const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const startLabel = reportsState.startMs ? dateFormatter.format(new Date(reportsState.startMs)) : 'beginning';
+            const endLabel = reportsState.endMs ? dateFormatter.format(new Date(reportsState.endMs)) : 'now';
+            badgeEl.textContent = `${orderCount} ${orderCount === 1 ? 'Order' : 'Orders'} • Avg Profit ${formatCurrencyBDT(avgProfit)}`;
+            const unitLabel = `${totalUnits} ${totalUnits === 1 ? 'unit' : 'units'}`;
+            summaryEl.textContent = `Showing delivered orders from ${startLabel} to ${endLabel} • ${unitLabel} sold.`;
+        };
+
+        const renderReportsTable = (rows) => {
+            const tbody = document.getElementById('reports-table-body');
+            const emptyState = document.getElementById('reports-empty-state');
+            if (!tbody || !emptyState) return;
+            tbody.innerHTML = '';
+            if (!rows.length) {
+                emptyState.classList.remove('hidden');
+                return;
+            }
+            emptyState.classList.add('hidden');
+            const statusStyles = {
+                delivered: 'bg-emerald-100 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400',
+                completed: 'bg-blue-100 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400',
+                fulfilled: 'bg-indigo-100 text-indigo-600 dark:bg-indigo-500/10 dark:text-indigo-400',
+                paid: 'bg-teal-100 text-teal-600 dark:bg-teal-500/10 dark:text-teal-400'
+            };
+            const dateFormatter = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            rows.forEach(row => {
+                const statusClass = statusStyles[row.status] || 'bg-gray-100 text-gray-600 dark:bg-gray-700/60 dark:text-gray-300';
+                const statusLabel = row.status ? row.status.replace(/-/g, ' ') : 'delivered';
+                const dateLabel = dateFormatter.format(new Date(row.dateMs));
+                const profitClass = row.profit >= 0 ? 'text-emerald-500' : 'text-rose-500';
+                const invoiceLabel = escapeHtml(row.invoice || row.id || 'N/A');
+                const customerLabel = escapeHtml(row.customer || '');
+                const productsLabel = escapeHtml(row.productsLabel || '—');
+                const statusDisplay = escapeHtml(statusLabel.charAt(0).toUpperCase() + statusLabel.slice(1));
+                tbody.insertAdjacentHTML('beforeend', `
+                    <tr>
+                        <td class="px-3 py-2 align-top">
+                            <div class="font-semibold text-text-primary">${invoiceLabel}</div>
+                            <div class="text-xs text-text-secondary">${customerLabel}</div>
+                            <div class="text-xs text-text-secondary truncate max-w-xs" title="${productsLabel}">${productsLabel}</div>
+                        </td>
+                        <td class="px-3 py-2 align-top whitespace-nowrap">${dateLabel}</td>
+                        <td class="px-3 py-2 align-top">
+                            <span class="inline-flex items-center rounded-full px-2 py-0.5 text-xs font-semibold ${statusClass}">
+                                ${statusDisplay}
+                            </span>
+                        </td>
+                        <td class="px-3 py-2 align-top text-right">${formatCurrencyBDT(row.sales)}</td>
+                        <td class="px-3 py-2 align-top text-right">${formatCurrencyBDT(row.cost)}</td>
+                        <td class="px-3 py-2 align-top text-right ${profitClass}">${formatCurrencyBDT(row.profit)}</td>
+                    </tr>
+                `);
+            });
+            if (window.lucide?.createIcons) window.lucide.createIcons();
+        };
+
+        const renderReportsView = () => {
+            const rows = reportsState.rows || [];
+            renderReportsSummary(rows);
+            renderReportsTable(rows);
+            updateReportsMeta(rows);
+        };
+
+        const applyReportsFilters = () => {
+            const startValue = document.getElementById('reports-start-date')?.value || '';
+            const endValue = document.getElementById('reports-end-date')?.value || '';
+            const startMs = parseDateInputValue(startValue);
+            const endMs = parseDateInputValue(endValue, true);
+            if (startMs && endMs && startMs > endMs) {
+                showToast('Start date cannot be after end date.', 'warning');
+                return;
+            }
+            reportsState.startMs = startMs || null;
+            reportsState.endMs = endMs || null;
+            reportsState.rows = generateReportsRows(reportsState.startMs, reportsState.endMs);
+            renderReportsView();
+        };
+
+        const resetReportsFilters = (silent = false) => {
+            const { startMs, endMs } = getDefaultReportsRange();
+            reportsState.startMs = startMs;
+            reportsState.endMs = endMs;
+            applyReportsRangeToInputs(startMs, endMs);
+            reportsState.rows = generateReportsRows(startMs, endMs);
+            renderReportsView();
+            if (!silent) {
+                if (!REPORTS_DEFAULT_RANGE_DAYS) {
+                    showToast('Showing all delivered orders.', 'success');
+                } else {
+                    showToast(`Showing last ${REPORTS_DEFAULT_RANGE_DAYS} days.`, 'success');
+                }
+            }
+        };
+
+        const csvEscape = (value) => {
+            const str = String(value ?? '');
+            if (/[",\n]/.test(str)) {
+                return `"${str.replace(/"/g, '""')}"`;
+            }
+            return str;
+        };
+
+        const exportReportsCsv = () => {
+            if (!reportsState.rows.length) {
+                showToast('No data to export for the selected range.', 'warning');
+                return;
+            }
+            const header = ['Order', 'Date', 'Status', 'Sale', 'Cost', 'Profit'];
+            const dataRows = reportsState.rows.map(row => [
+                csvEscape(row.invoice || row.id),
+                csvEscape(toDateInputValue(row.dateMs)),
+                csvEscape(row.status || 'delivered'),
+                csvEscape(safeNumber(row.sales).toFixed(2)),
+                csvEscape(safeNumber(row.cost).toFixed(2)),
+                csvEscape(safeNumber(row.profit).toFixed(2))
+            ].join(','));
+            const csvContent = [header.join(','), ...dataRows].join('\n');
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const fromLabel = reportsState.startMs ? toDateInputValue(reportsState.startMs) : 'all';
+            const toLabel = reportsState.endMs ? toDateInputValue(reportsState.endMs) : 'latest';
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `tangailbuzz-reports-${fromLabel}-to-${toLabel}.csv`;
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            setTimeout(() => URL.revokeObjectURL(url), 0);
+            showToast('Report exported as CSV.', 'success');
+        };
+
+        const refreshReportsData = () => {
+            if (!reportsPageInitialized) return;
+            reportsState.rows = generateReportsRows(reportsState.startMs, reportsState.endMs);
+            renderReportsView();
+        };
+
+        const ensureReportsPageSetup = () => {
+            if (reportsPageInitialized) return;
+            const applyBtn = document.getElementById('reports-apply-btn');
+            const resetBtn = document.getElementById('reports-reset-btn');
+            const exportBtn = document.getElementById('reports-export-btn');
+            if (!applyBtn || !resetBtn || !exportBtn) return;
+            applyBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                applyReportsFilters();
+            });
+            resetBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                resetReportsFilters();
+            });
+            exportBtn.addEventListener('click', (event) => {
+                event.preventDefault();
+                exportReportsCsv();
+            });
+            const { startMs, endMs } = getDefaultReportsRange();
+            reportsState.startMs = startMs;
+            reportsState.endMs = endMs;
+            applyReportsRangeToInputs(startMs, endMs);
+            reportsState.rows = generateReportsRows(startMs, endMs);
+            renderReportsView();
+            reportsPageInitialized = true;
+        };
+
+        const prepareReportsView = () => {
+            ensureReportsPageSetup();
+            if (!reportsPageInitialized) return;
+            applyReportsRangeToInputs(reportsState.startMs, reportsState.endMs);
+            refreshReportsData();
         };
 
         // --- Data Loading & Rendering ---
@@ -2862,6 +3589,7 @@ const saveBulkProducts = async (products) => {
                 // Filter for delivered orders to calculate Total Sales
                 const deliveredOrdersData = ordersData.filter(order => order.status === 'delivered');
                 const totalSales = deliveredOrdersData.reduce((sum, order) => sum + (order.totalAmount || 0), 0);
+                const formatCurrency = (value) => `৳${Number(value || 0).toFixed(2)}`;
                 
                 const usersSnap = await getCountFromServer(collection(db, "users"));
                 const productsSnap = await getCountFromServer(collection(db, "products"));
@@ -2898,9 +3626,71 @@ const saveBulkProducts = async (products) => {
                     }
                 });
 
-                const productsData = (await getDocs(query(collection(db, "products")))).docs.map(d => d.data());
-                // Calculate Total Stock Value: (Main Price * Stock) for all products
-                const totalStockValue = productsData.reduce((sum, product) => sum + ((product.mainPrice || 0) * (product.stock || 0)), 0);
+                const productsQuerySnap = await getDocs(query(collection(db, "products")));
+                const productDocs = productsQuerySnap.docs;
+                const productsData = productDocs.map(d => d.data());
+                const productCostLookup = new Map();
+                productDocs.forEach(docSnap => {
+                    const data = docSnap.data() || {};
+                    let finalCost = 0;
+                    const costCandidates = [data.costPrice, data.purchasePrice, data.buyingPrice, data.basePrice, data.cost, data.unitCost, data.mainPrice, data.offerPrice];
+                    for (const candidate of costCandidates) {
+                        const numeric = safeNumber(candidate);
+                        if (numeric > 0) {
+                            finalCost = numeric;
+                            break;
+                        }
+                    }
+                    const keys = [
+                        docSnap.id,
+                        data.id,
+                        data.productId,
+                        data.productID,
+                        data.productCode,
+                        data.code,
+                        data.sku,
+                        data.slug,
+                        data.model,
+                        data.name,
+                        data.title
+                    ].filter(Boolean);
+                    keys.forEach(key => {
+                        const normalized = String(key).toLowerCase();
+                        if (!productCostLookup.has(normalized)) {
+                            productCostLookup.set(normalized, finalCost);
+                        }
+                    });
+                });
+
+                let totalProfit = 0;
+                deliveredOrdersData.forEach(order => {
+                    const items = getOrderItemsArray(order);
+                    if (items.length) {
+                        const { itemSummaries } = summariseOrderItems(items, order, productCostLookup);
+                        totalProfit += itemSummaries.reduce((sum, item) => sum + (safeNumber(item.sales) - safeNumber(item.cost)), 0);
+                    } else {
+                        const orderTotal = safeNumber(order.totalAmount ?? order.total ?? order.totalPrice);
+                        const costHint = safeNumber(order.totalCost ?? order.costTotal ?? order.purchaseTotal ?? 0);
+                        if (orderTotal || costHint) {
+                            totalProfit += orderTotal - costHint;
+                        }
+                    }
+                });
+
+                // Calculate Total Stock Cost: (Main Price * Stock) for all products
+                const totalStockValue = productsData.reduce((sum, product) => {
+                    const unitCost = safeNumber(
+                        product.costPrice ??
+                        product.purchasePrice ??
+                        product.buyingPrice ??
+                        product.basePrice ??
+                        product.unitCost ??
+                        product.mainPrice ??
+                        product.price ??
+                        product.offerPrice
+                    );
+                    return sum + (unitCost > 0 ? unitCost : 0) * (safeNumber(product.stock) || 0);
+                }, 0);
                 const totalStockCount = productsData.reduce((sum, product) => sum + (product.stock || 0), 0);
 
                 const usersCount = usersSnap.data().count;
@@ -2911,7 +3701,9 @@ const saveBulkProducts = async (products) => {
                 activeCouponsCount = activeCoupons;
 
                 document.getElementById('total-orders').textContent = ordersData.length;
-                document.getElementById('total-sale').textContent = `৳${totalSales.toFixed(2)}`;
+                document.getElementById('total-sale').textContent = formatCurrency(totalSales);
+                const totalProfitEl = document.getElementById('total-profit');
+                if (totalProfitEl) totalProfitEl.textContent = formatCurrency(totalProfit);
                 document.getElementById('total-users').textContent = usersCount;
                 document.getElementById('total-products-stat').textContent = productsCount;
                 document.getElementById('total-delivery-men').textContent = deliveryMenCount;
@@ -2957,8 +3749,10 @@ const saveBulkProducts = async (products) => {
                 const mUsers = baseMap();
                 const mProducts = baseMap();
                 const mSales = baseMap(); // amount
+                const mProfit = baseMap(); // profit amount
 
                 const startDate = new Date(now.getTime() - (days - 1) * dayMs);
+                const costLookup = buildProductCostLookup();
 
                 // Helper: safe JS Date from various timestamp shapes
                 const toJSDate = (v) => {
@@ -2985,6 +3779,18 @@ const saveBulkProducts = async (products) => {
                         mDelivered.set(key, (mDelivered.get(key) || 0) + 1);
                         const amt = Number(o.totalAmount || 0);
                         mSales.set(key, (mSales.get(key) || 0) + (isNaN(amt) ? 0 : amt));
+                        const items = getOrderItemsArray(o);
+                        if (items.length) {
+                            const { itemSummaries } = summariseOrderItems(items, o, costLookup);
+                            const profit = itemSummaries.reduce((sum, item) => sum + (safeNumber(item.sales) - safeNumber(item.cost)), 0);
+                            mProfit.set(key, (mProfit.get(key) || 0) + profit);
+                        } else {
+                            const fallbackSales = safeNumber(o.totalAmount ?? o.total ?? o.totalPrice);
+                            const fallbackCost = safeNumber(o.totalCost ?? o.costTotal ?? o.purchaseTotal ?? 0);
+                            if (fallbackSales || fallbackCost) {
+                                mProfit.set(key, (mProfit.get(key) || 0) + (fallbackSales - fallbackCost));
+                            }
+                        }
                     }
                     if (status === 'out-for-delivery') {
                         mOFD.set(key, (mOFD.get(key) || 0) + 1);
@@ -3021,6 +3827,7 @@ const saveBulkProducts = async (products) => {
                 const wantUsers = isChecked('metric-users');
                 const wantProducts = isChecked('metric-products');
                 const wantSales = isChecked('metric-sales');
+                const wantProfit = isChecked('metric-profit');
 
                 const css = getComputedStyle(document.documentElement);
                 const cPrimary = (css.getPropertyValue('--c-primary') || '#4f46e5').trim();
@@ -3030,7 +3837,8 @@ const saveBulkProducts = async (products) => {
                     ofd: '#f59e0b',       // amber-500
                     users: '#3b82f6',     // blue-500
                     products: '#8b5cf6',  // violet-500
-                    sales: '#ef4444'      // red-500
+                    sales: '#ef4444',      // red-500
+                    profit: '#f97316'     // orange-500
                 };
 
                 const datasets = [];
@@ -3053,6 +3861,7 @@ const saveBulkProducts = async (products) => {
                 if (wantUsers) datasets.push(makeDataset('New Users', mUsers, palette.users));
                 if (wantProducts) datasets.push(makeDataset('New Products', mProducts, palette.products));
                 if (wantSales) datasets.push(makeDataset('Sales Amount', mSales, palette.sales, 'y1'));
+                if (wantProfit) datasets.push(makeDataset('Profit', mProfit, palette.profit, 'y1'));
 
                 const ctx = canvas.getContext('2d');
                 const isDark = document.documentElement.classList.contains('dark');
@@ -3073,7 +3882,8 @@ const saveBulkProducts = async (products) => {
                                     label: (ctx) => {
                                         const label = ctx.dataset.label || '';
                                         const v = ctx.parsed.y;
-                                        if (label.toLowerCase().includes('sales')) return ` ${label}: ৳${Number(v).toFixed(2)}`;
+                                        const lower = label.toLowerCase();
+                                        if (lower.includes('sales') || lower.includes('profit')) return ` ${label}: ৳${Number(v).toFixed(2)}`;
                                         return ` ${label}: ${v}`;
                                     }
                                 }
@@ -3111,8 +3921,10 @@ const saveBulkProducts = async (products) => {
             const mUsers = baseMap();
             const mProducts = baseMap();
             const mSales = baseMap();
+            const mProfit = baseMap();
             const startDate = new Date(now.getTime() - (days - 1) * dayMs);
             const toJSDate = (v) => (typeof v?.toDate === 'function') ? v.toDate() : (v instanceof Date ? v : (typeof v === 'number' ? new Date(v < 1e12 ? v * 1000 : v) : (typeof v === 'string' ? new Date(v) : null)));
+            const costLookup = buildProductCostLookup();
 
             // Orders
             const snapOrders = await getDocs(query(collection(db, 'orders'), where('createdAt', '>=', startDate), orderBy('createdAt', 'asc')));
@@ -3120,7 +3932,23 @@ const saveBulkProducts = async (products) => {
                 const o = s.data() || {}; const d = toJSDate(o.createdAt); if (!d) return; const k = fmtKey(d); if (!mOrders.has(k)) return;
                 mOrders.set(k, (mOrders.get(k) || 0) + 1);
                 const st = String(o.status || '').toLowerCase().replace(/\s+/g, '-');
-                if (st === 'delivered') { mDelivered.set(k, (mDelivered.get(k) || 0) + 1); mSales.set(k, (mSales.get(k) || 0) + Number(o.totalAmount || 0)); }
+                if (st === 'delivered') {
+                    mDelivered.set(k, (mDelivered.get(k) || 0) + 1);
+                    const saleAmount = Number(o.totalAmount || 0);
+                    mSales.set(k, (mSales.get(k) || 0) + (Number.isFinite(saleAmount) ? saleAmount : 0));
+                    const items = getOrderItemsArray(o);
+                    if (items.length) {
+                        const { itemSummaries } = summariseOrderItems(items, o, costLookup);
+                        const profit = itemSummaries.reduce((sum, item) => sum + (safeNumber(item.sales) - safeNumber(item.cost)), 0);
+                        mProfit.set(k, (mProfit.get(k) || 0) + profit);
+                    } else {
+                        const fallbackSales = safeNumber(o.totalAmount ?? o.total ?? o.totalPrice);
+                        const fallbackCost = safeNumber(o.totalCost ?? o.costTotal ?? o.purchaseTotal ?? 0);
+                        if (fallbackSales || fallbackCost) {
+                            mProfit.set(k, (mProfit.get(k) || 0) + (fallbackSales - fallbackCost));
+                        }
+                    }
+                }
                 if (st === 'out-for-delivery') { mOFD.set(k, (mOFD.get(k) || 0) + 1); }
             });
             // Users
@@ -3137,7 +3965,8 @@ const saveBulkProducts = async (products) => {
                 OutForDelivery: mOFD.get(k) || 0,
                 NewUsers: mUsers.get(k) || 0,
                 NewProducts: mProducts.get(k) || 0,
-                SalesAmount: Number(mSales.get(k) || 0)
+                SalesAmount: Number(mSales.get(k) || 0),
+                ProfitAmount: Number(mProfit.get(k) || 0)
             }));
 
             const wb = XLSX.utils.book_new();
@@ -3527,6 +4356,8 @@ const saveBulkProducts = async (products) => {
 
             const statusCounts = {};
             let totalSales = 0;
+            let totalProfit = 0;
+            const costLookup = buildProductCostLookup();
 
             const normalizeStatus = (value) => {
                 if (!value) return 'pending';
@@ -3543,12 +4374,25 @@ const saveBulkProducts = async (products) => {
                 statusCounts[status] = (statusCounts[status] || 0) + 1;
                 if (status === 'delivered') {
                     totalSales += Number(data.totalAmount) || 0;
+                    const items = getOrderItemsArray(data);
+                    if (items.length) {
+                        const { itemSummaries } = summariseOrderItems(items, data, costLookup);
+                        totalProfit += itemSummaries.reduce((sum, item) => sum + (safeNumber(item.sales) - safeNumber(item.cost)), 0);
+                    } else {
+                        const orderTotal = safeNumber(data.totalAmount ?? data.total ?? data.totalPrice);
+                        const costHint = safeNumber(data.totalCost ?? data.costTotal ?? data.purchaseTotal ?? 0);
+                        if (orderTotal || costHint) {
+                            totalProfit += orderTotal - costHint;
+                        }
+                    }
                 }
             });
 
             totalOrdersEl.textContent = String(allOrders.length);
             const totalSaleEl = document.getElementById('total-sale');
             if (totalSaleEl) totalSaleEl.textContent = toMoney(totalSales);
+            const totalProfitEl = document.getElementById('total-profit');
+            if (totalProfitEl) totalProfitEl.textContent = toMoney(totalProfit);
 
             const statusMapping = {
                 pending: 'total-pending',
@@ -3567,7 +4411,17 @@ const saveBulkProducts = async (products) => {
             let totalStockCount = 0;
             allProducts.forEach(docSnap => {
                 const data = typeof docSnap.data === 'function' ? docSnap.data() : docSnap?.data || {};
-                const price = Number(data.mainPrice ?? data.price ?? 0) || 0;
+                const costPrice = safeNumber(
+                    data.costPrice ??
+                    data.purchasePrice ??
+                    data.buyingPrice ??
+                    data.basePrice ??
+                    data.unitCost ??
+                    data.mainPrice ??
+                    data.price ??
+                    data.offerPrice
+                );
+                const price = costPrice > 0 ? costPrice : 0;
                 const stock = Number(data.stock ?? 0) || 0;
                 if (!Number.isNaN(price) && !Number.isNaN(stock)) {
                     totalStockValue += price * stock;
@@ -4498,8 +5352,9 @@ const saveBulkProducts = async (products) => {
                     <div><label for="${prefix}product-offer-price" class="block text-text-primary font-medium mb-2">Offer Price (৳)</label><input type="number" id="${prefix}product-offer-price" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary"></div>
                     <div><label for="${prefix}product-discount" class="block text-text-primary font-medium mb-2">Discount (%)</label><input type="number" id="${prefix}product-discount" readonly class="w-full px-4 py-2 bg-gray-200 dark:bg-gray-600 border border-gray-300 dark:border-gray-600 rounded-lg"></div>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div><label for="${prefix}product-stock" class="block text-text-primary font-medium mb-2">Stock Count</label><input type="number" id="${prefix}product-stock" required class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" value="0"></div>
+                    <div><label for="${prefix}product-cost-price" class="block text-text-primary font-medium mb-2">Cost Price (৳)</label><input type="number" id="${prefix}product-cost-price" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" value="0"></div>
                     <div><label for="${prefix}product-rating" class="block text-text-primary font-medium mb-2">Rating (0-5)</label><input type="number" id="${prefix}product-rating" step="0.1" min="0" max="5" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary" value="0"></div>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6 pt-2 border-t border-color">
@@ -4799,6 +5654,7 @@ const saveBulkProducts = async (products) => {
                 offerPrice: parseFloat(form.querySelector(`#${prefix}product-offer-price`).value) || 0,
                 discount: parseFloat(form.querySelector(`#${prefix}product-discount`).value) || 0,
                 stock: parseInt(form.querySelector(`#${prefix}product-stock`).value, 10) || 0,
+                costPrice: parseFloat(form.querySelector(`#${prefix}product-cost-price`)?.value) || 0,
                 rating: parseFloat(form.querySelector(`#${prefix}product-rating`).value) || 0,
                 imageUrl: form.querySelector(`#${prefix}product-main-image`).value,
                 thumbnails,
@@ -5791,6 +6647,19 @@ async function handleEditCouponSubmit(e) {
                     return '';
                 };
 
+                const costPriceInput = form.querySelector('#edit-product-cost-price');
+                if (costPriceInput) {
+                    const costValue = resolveNumericValue(
+                        data.costPrice,
+                        data.purchasePrice,
+                        data.buyingPrice,
+                        data.basePrice,
+                        data.cost,
+                        data.unitCost
+                    );
+                    costPriceInput.value = costValue === '' ? '' : costValue;
+                }
+
                 const resolvedMegaEnabled = Boolean(megaInfo.enabled ?? data.megaSaleEnabled ?? data.mega_sale_enabled ?? false);
                 if (megaToggle) megaToggle.checked = resolvedMegaEnabled;
 
@@ -6704,6 +7573,7 @@ async function handleEditCouponSubmit(e) {
                 if (typeof renderTopSales === 'function') renderTopSales();
                 if (typeof renderTopRated === 'function') renderTopRated();
                 updateDashboardSummary();
+                refreshReportsData();
             }, handleSnapshotError('All Products'));
             
             const unsubAllOrders = onSnapshot(collection(db, "orders"), snap => {
@@ -6724,6 +7594,7 @@ async function handleEditCouponSubmit(e) {
                     }
                 }
                 updateDashboardSummary();
+                refreshReportsData();
             }, handleSnapshotError('All Orders'));
 
             const unsubAllUsers = onSnapshot(collection(db, "users"), snap => {
@@ -7085,10 +7956,19 @@ if (bulkUploadBtn && csvFileInput) {
     });
 }
 
+const downloadTemplateBtn = document.getElementById('download-template-btn');
+if (downloadTemplateBtn) {
+    downloadTemplateBtn.addEventListener('click', () => {
+        const selectedDocs = getSelectedProductDocs();
+        downloadBulkTemplate(selectedDocs);
+    });
+}
+
         // --- Main Initialization ---
     const initializeAdminPanel = (user) => {
             const pageId = window.location.hash.substring(1) || 'dashboard';
             showPage(pageId);
+        ensureReportsPageSetup();
             // Keep quick-section-select in sync and wire navigation
             const quickSel = document.getElementById('quick-section-select');
             if (quickSel) {
@@ -7128,7 +8008,7 @@ if (bulkUploadBtn && csvFileInput) {
                 drawOrdersChart(Number(daysSelect.value) || 7);
             }
             // Metric toggle listeners
-            ['metric-orders','metric-delivered','metric-ofd','metric-users','metric-products','metric-sales'].forEach(id => {
+            ['metric-orders','metric-delivered','metric-ofd','metric-users','metric-products','metric-sales','metric-profit'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.addEventListener('change', () => drawOrdersChart(Number(daysSelect?.value) || 7));
             });
