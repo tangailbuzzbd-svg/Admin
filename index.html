@@ -726,8 +726,8 @@
                             </div>
                             <div class="overflow-x-auto">
                                 <table class="w-full text-left">
-                                    <thead>
-                                        <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50 dark:bg-gray-700">
+                                    <thead class="sticky top-0 z-10">
+                                        <tr class="text-xs font-semibold tracking-wide text-text-secondary uppercase border-b border-color bg-gray-50/95 backdrop-blur dark:bg-gray-700/95">
                                             <th class="px-4 py-3">#</th>
                                             <th class="px-4 py-3 text-center">Select</th>
                                             <th class="px-4 py-3">Image</th>
@@ -736,6 +736,7 @@
                                             <th class="px-4 py-3">Category</th>
                                             <th class="px-4 py-3">Sub-Category</th>
                                             <th class="px-4 py-3">Main Price</th>
+                                            <th class="px-4 py-3">Cost Price</th>
                                             <th class="px-4 py-3">Offer Price</th>
                                             <th class="px-4 py-3">Stock</th>
                                             <th class="px-4 py-3">Offer %</th>
@@ -744,7 +745,18 @@
                                             <th class="px-4 py-3">Actions</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="divide-y border-color" id="all-products-body"><tr class="text-text-primary"><td colspan="14" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
+                                    <tbody class="divide-y border-color" id="all-products-body"><tr class="text-text-primary"><td colspan="15" class="px-4 py-3 text-center">Loading...</td></tr></tbody>
+                                    <tfoot>
+                                        <tr class="text-sm font-semibold text-text-primary bg-gray-50 dark:bg-gray-800" id="all-products-footer">
+                                            <td colspan="7" class="px-4 py-3 text-right">Totals:</td>
+                                            <td class="px-4 py-3" id="footer-main-price">৳0</td>
+                                            <td class="px-4 py-3" id="footer-cost-price">৳0</td>
+                                            <td class="px-4 py-3" id="footer-offer-price">৳0</td>
+                                            <td class="px-4 py-3" id="footer-stock">0</td>
+                                            <td class="px-4 py-3" id="footer-discount">0%</td>
+                                            <td colspan="3"></td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                             </div>
                         </div>
@@ -1546,7 +1558,7 @@
     <script type="module">
         import { initializeApp, deleteApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, onAuthStateChanged, signInWithEmailAndPassword, signOut, createUserWithEmailAndPassword, reauthenticateWithCredential, EmailAuthProvider, setPersistence, browserLocalPersistence, browserSessionPersistence } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getFirestore, collection, onSnapshot, getDocs, addDoc, serverTimestamp, query, where, getCountFromServer, doc, getDoc, deleteDoc, updateDoc, writeBatch, increment, setDoc, orderBy } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+    import { getFirestore, collection, onSnapshot, getDocs, addDoc, serverTimestamp, query, where, getCountFromServer, doc, getDoc, deleteDoc, updateDoc, writeBatch, setDoc, orderBy, runTransaction, deleteField } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
 
         /*
             SECURITY NOTE:
@@ -1585,9 +1597,15 @@
         let allOrders = [];
         let currentProductCategoryFilter = 'all';
         let currentProductSubCategoryFilter = 'all';
-    let showDuplicatesOnly = false; // When true, render only duplicated products
-    let currentOrderStatusFilter = 'all';
-    let duplicateIdSet = new Set(); // computed across all products (global detection)
+        let showDuplicatesOnly = false; // When true, render only duplicated products
+        let currentOrderStatusFilter = 'all';
+        let duplicateIdSet = new Set(); // computed across all products (global detection)
+        let lastLowStockAlertCount = 0; // track low stock alert threshold
+        let productDocIdLookup = new Map();
+        const pendingInventoryAdjustments = new Set();
+        const inventoryAdjustmentInFlight = new Set();
+        const pendingInventoryRestorations = new Set();
+        const inventoryRestorationInFlight = new Set();
         let allDeliveryMen = [];
         let notifications = [];
         let confirmCallback = null;
@@ -1613,6 +1631,11 @@
     let unsubscribePresence = null;
     let lastPresenceDocs = [];
     const PRESENCE_ACTIVE_WINDOW_MS = 2 * 60 * 1000; // consider visitors active if pinged in last 2 minutes
+
+        const COST_PRICE_STORAGE_KEY = 'tb_cost_price_cache_v1';
+        let costPriceCacheById = new Map();
+        let costPricePersistTimer = null;
+        const costPriceRemovalQueue = new Set();
 
         const UI = {
             loadingSpinner: document.getElementById('loading-spinner'),
@@ -3034,6 +3057,144 @@ const saveBulkProducts = async (products) => {
             return Number.isFinite(num) ? num : fallback;
         };
 
+        const schedulePersistCostPriceCache = () => {
+            if (costPricePersistTimer) clearTimeout(costPricePersistTimer);
+            costPricePersistTimer = setTimeout(() => {
+                try {
+                    const serialisable = {};
+                    costPriceCacheById.forEach((value, key) => {
+                        if (typeof value === 'number' && value > 0) {
+                            serialisable[key] = Number(value);
+                        }
+                    });
+                    localStorage.setItem(COST_PRICE_STORAGE_KEY, JSON.stringify(serialisable));
+                } catch (err) {
+                    console.warn('Failed to persist cost price cache', err);
+                }
+            }, 200);
+        };
+
+        const loadCostPriceCache = () => {
+            try {
+                const raw = localStorage.getItem(COST_PRICE_STORAGE_KEY);
+                if (!raw) {
+                    costPriceCacheById = new Map();
+                    return;
+                }
+                const parsed = JSON.parse(raw);
+                const nextMap = new Map();
+                if (parsed && typeof parsed === 'object') {
+                    Object.entries(parsed).forEach(([productId, value]) => {
+                        const numeric = safeNumber(value);
+                        if (productId && numeric > 0) {
+                            nextMap.set(productId, numeric);
+                        }
+                    });
+                }
+                costPriceCacheById = nextMap;
+            } catch (err) {
+                console.warn('Failed to load cost price cache', err);
+                costPriceCacheById = new Map();
+            }
+        };
+
+        const getCachedCostPrice = (productId) => {
+            if (!productId) return null;
+            const value = costPriceCacheById.get(productId);
+            return typeof value === 'number' && value > 0 ? value : null;
+        };
+
+        const setCachedCostPrice = (productId, value) => {
+            if (!productId) return;
+            const numeric = safeNumber(value);
+            if (!(numeric > 0)) {
+                if (costPriceCacheById.delete(productId)) {
+                    schedulePersistCostPriceCache();
+                }
+                return;
+            }
+            const existing = costPriceCacheById.get(productId);
+            if (existing !== numeric) {
+                costPriceCacheById.set(productId, numeric);
+                schedulePersistCostPriceCache();
+            }
+        };
+
+        const removeCachedCostPrice = (productId) => {
+            if (!productId) return;
+            if (costPriceCacheById.delete(productId)) {
+                schedulePersistCostPriceCache();
+            }
+        };
+
+        const queueCostPriceRemoval = (productId) => {
+            if (!productId) return;
+            costPriceRemovalQueue.add(productId);
+        };
+
+        const processQueuedCostPriceRemovals = () => {
+            if (!costPriceRemovalQueue.size) return;
+            const ids = Array.from(costPriceRemovalQueue);
+            costPriceRemovalQueue.clear();
+            ids.forEach(productId => {
+                updateDoc(doc(db, 'products', productId), { costPrice: deleteField() }).catch(err => {
+                    console.warn(`Failed to remove costPrice field for product ${productId}`, err);
+                    costPriceRemovalQueue.add(productId);
+                });
+            });
+        };
+
+        const deriveCostPriceValue = (data) => {
+            if (!data || typeof data !== 'object') return 0;
+            const candidates = [
+                data.costPrice,
+                data.purchasePrice,
+                data.buyingPrice,
+                data.basePrice,
+                data.unitCost,
+                data.cost
+            ];
+            for (const candidate of candidates) {
+                const numeric = safeNumber(candidate);
+                if (numeric > 0) return numeric;
+            }
+            return 0;
+        };
+
+        const deriveSalePriceFallback = (data) => {
+            if (!data || typeof data !== 'object') return 0;
+            const candidates = [
+                data.mainPrice,
+                data.price,
+                data.offerPrice,
+                data.sellingPrice
+            ];
+            for (const candidate of candidates) {
+                const numeric = safeNumber(candidate);
+                if (numeric > 0) return numeric;
+            }
+            return 0;
+        };
+
+        const getEffectiveCostPrice = (productId, data, options = {}) => {
+            const { allowFallback = false } = options;
+            const cached = getCachedCostPrice(productId);
+            if (cached !== null) return cached;
+            const derived = deriveCostPriceValue(data);
+            if (derived > 0) {
+                if (productId) {
+                    setCachedCostPrice(productId, derived);
+                    if (data && Object.prototype.hasOwnProperty.call(data, 'costPrice')) {
+                        queueCostPriceRemoval(productId);
+                    }
+                }
+                return derived;
+            }
+            return allowFallback ? deriveSalePriceFallback(data) : 0;
+        };
+
+        loadCostPriceCache();
+
         const toMillisSafe = (value) => {
             if (!value) return 0;
             if (typeof value.toMillis === 'function') return value.toMillis();
@@ -3117,21 +3278,11 @@ const saveBulkProducts = async (products) => {
             (allProducts || []).forEach(productDoc => {
                 const data = typeof productDoc?.data === 'function' ? productDoc.data() : productDoc;
                 if (!data) return;
-                let finalCost = 0;
-                const costCandidates = [data.costPrice, data.purchasePrice, data.mainPrice, data.basePrice, data.buyingPrice, data.cost];
-                for (const candidate of costCandidates) {
-                    const numeric = safeNumber(candidate);
-                    if (numeric > 0) {
-                        finalCost = numeric;
-                        break;
-                    }
-                }
-                if (!finalCost) {
-                    const fallbackPrice = safeNumber(data.price ?? data.sellingPrice ?? data.offerPrice);
-                    if (fallbackPrice > 0) finalCost = fallbackPrice;
-                }
+                const docId = productDoc?.id;
+                const effectiveCost = getEffectiveCostPrice(docId, data) || deriveSalePriceFallback(data);
+                if (!(effectiveCost > 0)) return;
                 const keys = [
-                    productDoc?.id,
+                    docId,
                     data.id,
                     data.productId,
                     data.productID,
@@ -3146,7 +3297,7 @@ const saveBulkProducts = async (products) => {
                 keys.forEach(key => {
                     const normalized = String(key).toLowerCase();
                     if (!lookup.has(normalized)) {
-                        lookup.set(normalized, finalCost);
+                        lookup.set(normalized, effectiveCost);
                     }
                 });
             });
@@ -3170,6 +3321,391 @@ const saveBulkProducts = async (products) => {
 
         const resolveItemName = (item) => {
             return item?.name || item?.productName || item?.title || item?.productTitle || item?.productId || item?.model || 'Unnamed item';
+        };
+
+        const normalizeProductLookupKey = (value) => {
+            if (value === undefined || value === null) return null;
+            const stringValue = String(value).trim();
+            if (!stringValue) return null;
+            return stringValue.toLowerCase();
+        };
+
+        const buildProductDocLookup = () => {
+            const lookup = new Map();
+            (allProducts || []).forEach(productDoc => {
+                const docId = productDoc?.id;
+                const data = typeof productDoc?.data === 'function' ? productDoc.data() : productDoc;
+                if (!docId || !data) return;
+                const keys = [
+                    docId,
+                    data.id,
+                    data.productId,
+                    data.productID,
+                    data.productCode,
+                    data.productRefId,
+                    data.code,
+                    data.sku,
+                    data.slug,
+                    data.model,
+                    data.barcode,
+                    data.name,
+                    data.title
+                ].filter(Boolean);
+                keys.forEach(key => {
+                    const normalized = normalizeProductLookupKey(key);
+                    if (normalized && !lookup.has(normalized)) {
+                        lookup.set(normalized, docId);
+                    }
+                });
+            });
+            return lookup;
+        };
+
+        const resolveProductDocIdFromItem = (item) => {
+            if (!item) return null;
+            if (item.productRef?.id) return item.productRef.id;
+            const refPath = item.productDocPath || item.productPath;
+            if (refPath && typeof refPath === 'string') {
+                const segments = refPath.split('/').filter(Boolean);
+                const lastSegment = segments[segments.length - 1];
+                if (lastSegment) return lastSegment;
+            }
+            const candidates = [
+                item.productDocId,
+                item.productId,
+                item.productID,
+                item.id,
+                item.productRefId,
+                item.productKey,
+                item.productCode,
+                item.code,
+                item.sku,
+                item.slug,
+                item.model,
+                item.barcode,
+                item.name,
+                item.title
+            ].filter(Boolean);
+            for (const candidate of candidates) {
+                const normalized = normalizeProductLookupKey(candidate);
+                if (!normalized) continue;
+                const docId = productDocIdLookup?.get?.(normalized);
+                if (docId) return docId;
+            }
+            return null;
+        };
+
+        const buildInventoryAdjustments = (items) => {
+            const adjustmentMap = new Map();
+            const unresolvedItems = [];
+            (items || []).forEach(item => {
+                if (!item) return;
+                const quantityRaw = safeNumber(item.quantity ?? item.qty ?? item.count, 1);
+                const quantity = quantityRaw > 0 ? quantityRaw : 1;
+                if (!quantity) return;
+                const docId = resolveProductDocIdFromItem(item);
+                const itemName = resolveItemName(item);
+                if (!docId) {
+                    unresolvedItems.push(itemName);
+                    return;
+                }
+                const existing = adjustmentMap.get(docId) || { quantity: 0, itemNames: new Set() };
+                existing.quantity += quantity;
+                if (itemName) existing.itemNames.add(itemName);
+                adjustmentMap.set(docId, existing);
+            });
+            return {
+                adjustments: Array.from(adjustmentMap.entries()).map(([productId, detail]) => ({
+                    productId,
+                    quantity: detail.quantity,
+                    itemNames: Array.from(detail.itemNames || [])
+                })),
+                unresolvedItems
+            };
+        };
+
+        const INVENTORY_BLOCKED_STATUSES = new Set([
+            'cancelled',
+            'canceled',
+            'refunded',
+            'returned',
+            'failed',
+            'rejected',
+            'void',
+            'draft'
+        ]);
+
+        const shouldSkipInventoryAdjustmentForStatus = (status) => {
+            if (!status) return false;
+            return INVENTORY_BLOCKED_STATUSES.has(normalizeStatus(status));
+        };
+
+        const adjustInventoryForOrder = async (orderId) => {
+            if (!orderId || inventoryAdjustmentInFlight.has(orderId)) return;
+            inventoryAdjustmentInFlight.add(orderId);
+            const orderRef = doc(db, 'orders', orderId);
+            let shouldRetryLater = false;
+            try {
+                await runTransaction(db, async (tx) => {
+                    const orderSnap = await tx.get(orderRef);
+                    if (!orderSnap.exists()) {
+                        pendingInventoryAdjustments.delete(orderId);
+                        return;
+                    }
+                    const orderData = orderSnap.data() || {};
+                    if (orderData.inventoryAdjusted) {
+                        pendingInventoryAdjustments.delete(orderId);
+                        return;
+                    }
+                    const statuses = [orderData.status, orderData.orderStatus, orderData.paymentStatus];
+                    if (statuses.some(shouldSkipInventoryAdjustmentForStatus)) {
+                        return;
+                    }
+                    const items = getOrderItemsArray(orderData);
+                    if (!items.length) {
+                        tx.update(orderRef, {
+                            inventoryAdjusted: true,
+                            inventoryAdjustedAt: serverTimestamp(),
+                            inventoryAdjustmentStatus: 'skipped-no-items',
+                            inventoryAdjustmentNotes: []
+                        });
+                        return;
+                    }
+                    if (!productDocIdLookup || productDocIdLookup.size === 0) {
+                        shouldRetryLater = true;
+                        return;
+                    }
+                    const { adjustments, unresolvedItems } = buildInventoryAdjustments(items);
+                    if (unresolvedItems.length > 0) {
+                        shouldRetryLater = true;
+                    }
+                    if (!adjustments.length) {
+                        shouldRetryLater = true;
+                        if (unresolvedItems.length) {
+                            tx.update(orderRef, {
+                                inventoryAdjustmentStatus: 'pending-matching',
+                                inventoryAdjustmentNotes: unresolvedItems,
+                                inventoryAdjusted: false
+                            });
+                        }
+                        return;
+                    }
+                    const missingProducts = new Set(unresolvedItems);
+                    const appliedAdjustments = [];
+                    const blockedAdjustments = [];
+                    let blockedInsufficientStock = false;
+                    for (const adjustment of adjustments) {
+                        const productRef = doc(db, 'products', adjustment.productId);
+                        const productSnap = await tx.get(productRef);
+                        if (!productSnap.exists()) {
+                            (adjustment.itemNames || []).forEach(name => missingProducts.add(name));
+                            missingProducts.add(adjustment.productId);
+                            blockedAdjustments.push({
+                                productId: adjustment.productId,
+                                quantity: adjustment.quantity,
+                                itemNames: adjustment.itemNames,
+                                reason: 'missing-product'
+                            });
+                            continue;
+                        }
+                        const productData = productSnap.data() || {};
+                        const currentStock = safeNumber(productData.stock);
+                        if (currentStock <= 0 || currentStock < adjustment.quantity) {
+                            blockedInsufficientStock = true;
+                            blockedAdjustments.push({
+                                productId: adjustment.productId,
+                                quantity: adjustment.quantity,
+                                itemNames: adjustment.itemNames,
+                                reason: 'insufficient-stock',
+                                stockAvailable: currentStock
+                            });
+                            (adjustment.itemNames || []).forEach(name => missingProducts.add(`${name} (need ${adjustment.quantity}, have ${currentStock})`));
+                            missingProducts.add(adjustment.productId);
+                            continue;
+                        }
+                        const nextStock = Math.max(0, currentStock - adjustment.quantity);
+                        tx.update(productRef, {
+                            stock: nextStock,
+                            updatedAt: serverTimestamp(),
+                            lastAdjustedOrderId: orderId
+                        });
+                        appliedAdjustments.push({
+                            productId: adjustment.productId,
+                            quantity: adjustment.quantity,
+                            itemNames: adjustment.itemNames,
+                            stockBefore: currentStock,
+                            stockAfter: nextStock
+                        });
+                    }
+                    const notes = Array.from(missingProducts);
+                    const status = (() => {
+                        if (appliedAdjustments.length > 0 && blockedAdjustments.length === 0 && notes.length === 0) return 'success';
+                        if (appliedAdjustments.length > 0 && (blockedAdjustments.length > 0 || notes.length > 0)) return 'partial';
+                        if (blockedInsufficientStock) return 'blocked-insufficient-stock';
+                        if (blockedAdjustments.length > 0 || notes.length > 0) return 'pending-matching';
+                        return 'skipped-no-update';
+                    })();
+                    const updatePayload = {
+                        inventoryAdjustmentStatus: status,
+                        inventoryAdjustmentNotes: notes,
+                        inventoryAdjusted: appliedAdjustments.length > 0,
+                        inventoryRestored: false
+                    };
+                    if (appliedAdjustments.length > 0) {
+                        updatePayload.inventoryAdjustedAt = serverTimestamp();
+                        updatePayload.inventoryAdjustmentLog = appliedAdjustments;
+                    }
+                    if (blockedAdjustments.length > 0) {
+                        updatePayload.inventoryAdjustmentBlocked = blockedAdjustments;
+                    }
+                    tx.update(orderRef, updatePayload);
+                    if (appliedAdjustments.length > 0) {
+                        shouldRetryLater = false;
+                    }
+                    if (!appliedAdjustments.length && (blockedAdjustments.length > 0 || notes.length > 0)) {
+                        shouldRetryLater = true;
+                    }
+                });
+            } catch (error) {
+                console.error(`Inventory adjustment failed for order ${orderId}`, error);
+                shouldRetryLater = true;
+            } finally {
+                inventoryAdjustmentInFlight.delete(orderId);
+                if (shouldRetryLater) {
+                    pendingInventoryAdjustments.add(orderId);
+                } else {
+                    pendingInventoryAdjustments.delete(orderId);
+                }
+            }
+        };
+
+        const maybeAdjustInventoryForOrder = (orderDocSnap) => {
+            if (!orderDocSnap?.id) return;
+            const orderId = orderDocSnap.id;
+            const orderData = orderDocSnap.data() || {};
+            if (orderData.inventoryAdjusted) {
+                pendingInventoryAdjustments.delete(orderId);
+                return;
+            }
+            const statuses = [orderData.status, orderData.orderStatus, orderData.paymentStatus];
+            if (statuses.some(shouldSkipInventoryAdjustmentForStatus)) {
+                pendingInventoryAdjustments.delete(orderId);
+                return;
+            }
+            if (!getOrderItemsArray(orderData).length) {
+                pendingInventoryAdjustments.delete(orderId);
+                return;
+            }
+            if (inventoryAdjustmentInFlight.has(orderId)) return;
+            pendingInventoryAdjustments.delete(orderId);
+            adjustInventoryForOrder(orderId).catch(err => {
+                console.error(`Inventory adjustment retry scheduled for order ${orderId}`, err);
+                pendingInventoryAdjustments.add(orderId);
+            });
+        };
+
+        const restoreInventoryForOrder = async (orderId) => {
+            if (!orderId || inventoryRestorationInFlight.has(orderId)) return;
+            inventoryRestorationInFlight.add(orderId);
+            const orderRef = doc(db, 'orders', orderId);
+            let shouldRetryLater = false;
+            try {
+                await runTransaction(db, async (tx) => {
+                    const orderSnap = await tx.get(orderRef);
+                    if (!orderSnap.exists()) {
+                        pendingInventoryRestorations.delete(orderId);
+                        return;
+                    }
+                    const orderData = orderSnap.data() || {};
+                    if (!orderData.inventoryAdjusted) {
+                        pendingInventoryRestorations.delete(orderId);
+                        return;
+                    }
+                    if (orderData.inventoryRestored) {
+                        pendingInventoryRestorations.delete(orderId);
+                        return;
+                    }
+                    const statuses = [orderData.status, orderData.orderStatus, orderData.paymentStatus];
+                    if (!statuses.some(shouldSkipInventoryAdjustmentForStatus)) {
+                        return;
+                    }
+                    const logEntries = Array.isArray(orderData.inventoryAdjustmentLog) ? orderData.inventoryAdjustmentLog : [];
+                    if (!logEntries.length) {
+                        tx.update(orderRef, {
+                            inventoryRestored: true,
+                            inventoryRestoredAt: serverTimestamp(),
+                            inventoryAdjustmentStatus: 'restored-no-log'
+                        });
+                        return;
+                    }
+                    const missingProducts = new Set();
+                    for (const entry of logEntries) {
+                        const productId = entry?.productId;
+                        const quantity = safeNumber(entry?.quantity);
+                        if (!productId || !quantity) continue;
+                        const productRef = doc(db, 'products', productId);
+                        const productSnap = await tx.get(productRef);
+                        if (!productSnap.exists()) {
+                            missingProducts.add(productId);
+                            shouldRetryLater = true;
+                            continue;
+                        }
+                        const currentStock = safeNumber(productSnap.data()?.stock);
+                        const nextStock = currentStock + quantity;
+                        tx.update(productRef, {
+                            stock: nextStock,
+                            updatedAt: serverTimestamp(),
+                            lastRestoredOrderId: orderId
+                        });
+                    }
+                    const updatePayload = {
+                        inventoryAdjusted: false,
+                        inventoryRestored: true,
+                        inventoryRestoredAt: serverTimestamp(),
+                        inventoryAdjustmentStatus: missingProducts.size > 0 ? 'restored-partial' : 'restored',
+                        inventoryAdjustmentNotes: missingProducts.size > 0 ? Array.from(missingProducts) : []
+                    };
+                    tx.update(orderRef, updatePayload);
+                    if (missingProducts.size > 0) {
+                        shouldRetryLater = true;
+                    }
+                });
+            } catch (error) {
+                console.error(`Inventory restoration failed for order ${orderId}`, error);
+                shouldRetryLater = true;
+            } finally {
+                inventoryRestorationInFlight.delete(orderId);
+                if (shouldRetryLater) {
+                    pendingInventoryRestorations.add(orderId);
+                } else {
+                    pendingInventoryRestorations.delete(orderId);
+                }
+            }
+        };
+
+        const maybeRestoreInventoryForOrder = (orderDocSnap) => {
+            if (!orderDocSnap?.id) return;
+            const orderId = orderDocSnap.id;
+            const orderData = orderDocSnap.data() || {};
+            if (!orderData.inventoryAdjusted) {
+                pendingInventoryRestorations.delete(orderId);
+                return;
+            }
+            if (orderData.inventoryRestored) {
+                pendingInventoryRestorations.delete(orderId);
+                return;
+            }
+            const statuses = [orderData.status, orderData.orderStatus, orderData.paymentStatus];
+            if (!statuses.some(shouldSkipInventoryAdjustmentForStatus)) {
+                pendingInventoryRestorations.delete(orderId);
+                return;
+            }
+            if (inventoryRestorationInFlight.has(orderId)) return;
+            pendingInventoryRestorations.delete(orderId);
+            restoreInventoryForOrder(orderId).catch(err => {
+                console.error(`Inventory restoration retry scheduled for order ${orderId}`, err);
+                pendingInventoryRestorations.add(orderId);
+            });
         };
 
         const summariseOrderItems = (items, orderData, costLookup) => {
@@ -3678,19 +4214,22 @@ const saveBulkProducts = async (products) => {
                 });
 
                 // Calculate Total Stock Cost: (Main Price * Stock) for all products
-                const totalStockValue = productsData.reduce((sum, product) => {
-                    const unitCost = safeNumber(
-                        product.costPrice ??
-                        product.purchasePrice ??
-                        product.buyingPrice ??
-                        product.basePrice ??
-                        product.unitCost ??
-                        product.mainPrice ??
-                        product.price ??
-                        product.offerPrice
-                    );
-                    return sum + (unitCost > 0 ? unitCost : 0) * (safeNumber(product.stock) || 0);
-                }, 0);
+                    const totalStockValue = productsData.reduce((sum, product) => {
+                        const unitCost = safeNumber(
+                            product.costPrice ??
+                            product.purchasePrice ??
+                            product.buyingPrice ??
+                            product.basePrice ??
+                            product.unitCost ??
+                            product.mainPrice ??
+                            product.price ??
+                            product.offerPrice
+                        );
+                        const stock = safeNumber(product.stock);
+                        const effectiveStock = stock > 0 ? stock : 0;
+                        const effectiveCost = unitCost > 0 ? unitCost : 0;
+                        return sum + effectiveCost * effectiveStock;
+                    }, 0);
                 const totalStockCount = productsData.reduce((sum, product) => sum + (product.stock || 0), 0);
 
                 const usersCount = usersSnap.data().count;
@@ -4660,6 +5199,61 @@ const saveBulkProducts = async (products) => {
         };
     const renderUserRow_Recent = doc => { const d = doc.data(); return `<tr class="text-text-primary"><td class="px-4 py-3 text-sm">${d.name || 'N/A'}</td><td class="px-4 py-3 text-sm">${d.email || 'N/A'}</td><td class="px-4 py-3 text-sm">${formatJoinDate(d.createdAt)}</td></tr>`; };
         
+        const updateProductsFooter = (docs) => {
+            const mainPriceEl = document.getElementById('footer-main-price');
+            const costPriceEl = document.getElementById('footer-cost-price');
+            const offerPriceEl = document.getElementById('footer-offer-price');
+            const stockEl = document.getElementById('footer-stock');
+            const discountEl = document.getElementById('footer-discount');
+            if (!mainPriceEl || !costPriceEl || !offerPriceEl || !stockEl || !discountEl) return;
+
+            let totalMainValue = 0;
+            let totalCostValue = 0;
+            let totalOfferValue = 0;
+            let totalStock = 0;
+            let discountSum = 0;
+            let discountCount = 0;
+
+            docs.forEach(doc => {
+                const data = doc.data();
+                const stock = safeNumber(data.stock);
+                const safeStock = stock > 0 ? stock : 0;
+                totalStock += safeStock;
+
+                const mainUnit = safeNumber(data.mainPrice ?? data.price ?? 0);
+                if (mainUnit > 0) totalMainValue += mainUnit * safeStock;
+
+                const offerUnit = safeNumber(data.offerPrice ?? data.salePrice ?? 0);
+                if (offerUnit > 0) totalOfferValue += offerUnit * safeStock;
+
+                const costUnit = safeNumber(
+                    data.costPrice ??
+                    data.purchasePrice ??
+                    data.buyingPrice ??
+                    data.basePrice ??
+                    data.unitCost ??
+                    data.mainPrice ??
+                    data.price ??
+                    data.offerPrice
+                );
+                if (costUnit > 0) totalCostValue += costUnit * safeStock;
+
+                const discount = safeNumber(data.discount);
+                if (discount > 0) {
+                    discountSum += discount;
+                    discountCount += 1;
+                }
+            });
+
+            const formatCurrency = (amount) => `৳${Number(amount || 0).toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+
+            mainPriceEl.textContent = formatCurrency(totalMainValue);
+            costPriceEl.textContent = formatCurrency(totalCostValue);
+            offerPriceEl.textContent = formatCurrency(totalOfferValue);
+            stockEl.textContent = totalStock.toLocaleString('en-US');
+            discountEl.textContent = discountCount ? `${(discountSum / discountCount).toFixed(2)}%` : '0%';
+        };
+
         const renderFilteredProducts = () => {
             const body = document.getElementById('all-products-body');
             body.innerHTML = '';
@@ -4685,6 +5279,7 @@ const saveBulkProducts = async (products) => {
             lucide.createIcons();
             // Update summary after rendering
             updateDuplicatesSummary(filteredProducts);
+            updateProductsFooter(filteredProducts);
         };
 
         // Update duplicates summary badge
@@ -4794,6 +5389,21 @@ const saveBulkProducts = async (products) => {
             const isOfferHtml = (d.isOnOffer) ? `<span class="px-2 py-1 font-semibold leading-tight text-green-700 bg-green-100 rounded-full dark:bg-green-700 dark:text-green-100">Yes</span>` : `<span class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-100">No</span>`;
             const isRefundableHtml = d.isRefundable ? `<span class="px-2 py-1 font-semibold leading-tight text-blue-700 bg-blue-100 rounded-full dark:bg-blue-700 dark:text-blue-100">Yes</span>` : `<span class="px-2 py-1 font-semibold leading-tight text-gray-700 bg-gray-100 rounded-full dark:bg-gray-700 dark:text-gray-100">No</span>`;
             const productIdDisplay = d.model || d.productId || doc.id; // prefer model/code from form, then explicit productId, else doc id
+            const resolveCostPriceDisplay = () => {
+                const rawCost = safeNumber(
+                    d.costPrice ??
+                    d.purchasePrice ??
+                    d.buyingPrice ??
+                    d.basePrice ??
+                    d.unitCost ??
+                    d.mainPrice ??
+                    d.price ??
+                    d.offerPrice
+                );
+                if (!Number.isFinite(rawCost) || rawCost <= 0) return '—';
+                return `৳${rawCost.toLocaleString('en-US', { maximumFractionDigits: 2 })}`;
+            };
+            const costPriceDisplay = resolveCostPriceDisplay();
 
             return `<tr class="text-text-primary ${lowStockClass}">
                 <td class="px-4 py-3 text-sm">${slNo}</td>
@@ -4804,6 +5414,7 @@ const saveBulkProducts = async (products) => {
                 <td class="px-4 py-3 text-sm">${categoryName}</td>
                 <td class="px-4 py-3 text-sm">${subCategoryName}</td>
                 <td class="px-4 py-3 text-sm">৳${d.mainPrice || 0}</td>
+                <td class="px-4 py-3 text-sm">${costPriceDisplay}</td>
                 <td class="px-4 py-3 text-sm">৳${d.offerPrice || 0}</td>
                 <td class="px-4 py-3 text-sm">${stockValue}${lowStockIcon}</td>
                 <td class="px-4 py-3 text-sm">${d.discount || 0}%</td>
@@ -6385,41 +6996,24 @@ async function handleEditCouponSubmit(e) {
                 try {
                     const orderDoc = await getDoc(orderRef);
                     if (!orderDoc.exists()) throw new Error("Order not found");
-                    
+
                     const orderData = orderDoc.data();
                     const oldStatus = orderData.status;
 
-                    if(oldStatus === newStatus) return;
+                    if (oldStatus === newStatus) return;
 
-                    const batch = writeBatch(db);
-                    
-                    const affectsStock = (status) => ['pending', 'shipped', 'out-for-delivery', 'delivered'].includes(status);
+                    await updateDoc(orderRef, { status: newStatus, statusUpdatedAt: serverTimestamp() });
 
-                    if (!affectsStock(oldStatus) && affectsStock(newStatus)) {
-                        for (const item of orderData.items) {
-                            const productRef = doc(db, 'products', item.productId);
-                            batch.update(productRef, { stock: increment(-item.quantity) });
-                        }
-                    } else if (affectsStock(oldStatus) && !affectsStock(newStatus)) {
-                        for (const item of orderData.items) {
-                            const productRef = doc(db, 'products', item.productId);
-                            batch.update(productRef, { stock: increment(item.quantity) });
-                        }
-                    }
-
-                    batch.update(orderRef, { status: newStatus });
-                    
-                    await batch.commit();
                     showToast('Status updated successfully!');
                     if (!UI.orderDetailsModal.classList.contains('hidden')) {
-                        showOrderDetails(orderId); 
+                        showOrderDetails(orderId);
                     }
                 } catch (err) {
-                    console.error("Failed to update status/stock: ", err);
+                    console.error("Failed to update status: ", err);
                     showToast('Failed to update status!', 'error');
                     const docSnap = await getDoc(orderRef);
                     if (docSnap.exists()) {
-                        e.target.value = docSnap.data().status; 
+                        e.target.value = docSnap.data().status;
                     }
                 }
             }
@@ -7545,6 +8139,40 @@ async function handleEditCouponSubmit(e) {
             // Full Data for Pages (All sorted client-side)
             const unsubAllProducts = onSnapshot(collection(db, "products"), snap => {
                 allProducts = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
+                const currentProductIds = new Set();
+                allProducts.forEach(productDoc => {
+                    currentProductIds.add(productDoc.id);
+                    const data = typeof productDoc?.data === 'function' ? productDoc.data() : productDoc;
+                    getEffectiveCostPrice(productDoc.id, data);
+                });
+                costPriceCacheById.forEach((_, productId) => {
+                    if (!currentProductIds.has(productId)) {
+                        removeCachedCostPrice(productId);
+                    }
+                });
+                productDocIdLookup = buildProductDocLookup();
+                if (pendingInventoryAdjustments.size > 0) {
+                    const pendingIds = Array.from(pendingInventoryAdjustments);
+                    pendingIds.forEach(orderId => {
+                        if (!inventoryAdjustmentInFlight.has(orderId)) {
+                            adjustInventoryForOrder(orderId).catch(error => {
+                                console.error(`Inventory adjustment retry failed for order ${orderId}`, error);
+                                pendingInventoryAdjustments.add(orderId);
+                            });
+                        }
+                    });
+                }
+                if (pendingInventoryRestorations.size > 0) {
+                    const restoreIds = Array.from(pendingInventoryRestorations);
+                    restoreIds.forEach(orderId => {
+                        if (!inventoryRestorationInFlight.has(orderId)) {
+                            restoreInventoryForOrder(orderId).catch(error => {
+                                console.error(`Inventory restoration retry failed for order ${orderId}`, error);
+                                pendingInventoryRestorations.add(orderId);
+                            });
+                        }
+                    });
+                }
                 computeDuplicateSet(); // refresh duplicates globally whenever products change
                 renderProductFilters();
                 renderSubCategoryFilter();
@@ -7570,13 +8198,27 @@ async function handleEditCouponSubmit(e) {
                 }).length;
                 const lowStockEl = document.getElementById('total-low-stock');
                 if (lowStockEl) lowStockEl.textContent = String(lowStockCount);
+                if (lowStockCount > 0 && lowStockCount > lastLowStockAlertCount) {
+                    const message = lowStockCount === 1
+                        ? '1 product is low on stock. Consider restocking soon.'
+                        : `${lowStockCount} products are low on stock. Consider restocking soon.`;
+                    showToast(message, 'warning');
+                }
+                lastLowStockAlertCount = lowStockCount;
                 if (typeof renderTopSales === 'function') renderTopSales();
                 if (typeof renderTopRated === 'function') renderTopRated();
                 updateDashboardSummary();
                 refreshReportsData();
+                processQueuedCostPriceRemovals();
             }, handleSnapshotError('All Products'));
             
             const unsubAllOrders = onSnapshot(collection(db, "orders"), snap => {
+                snap.docChanges().forEach(change => {
+                    if (change.type === 'added' || change.type === 'modified') {
+                        maybeAdjustInventoryForOrder(change.doc);
+                        maybeRestoreInventoryForOrder(change.doc);
+                    }
+                });
                 // Client-side sorting: Newest first, store all orders, then render
                 allOrders = snap.docs.sort((a, b) => (b.data().createdAt?.toMillis() || 0) - (a.data().createdAt?.toMillis() || 0));
                 renderOrderFilters();
