@@ -5949,6 +5949,24 @@ const saveBulkProducts = async (products) => {
                     </div>
                 </div>
             </div>
+
+            <div class="p-4 border rounded-lg bg-gray-50/50 dark:bg-gray-800/50 border-color space-y-4">
+                <h3 class="font-semibold text-lg text-text-primary">Variants (Comma Separated)</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div>
+                        <label for="${prefix}product-sizes" class="block text-text-primary font-medium mb-2">Sizes (e.g., S, M, L, XL)</label>
+                        <input type="text" id="${prefix}product-sizes" placeholder="S, M, L, XL" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                    </div>
+                    <div>
+                        <label for="${prefix}product-colors" class="block text-text-primary font-medium mb-2">Colors (e.g., Red, Blue, Black)</label>
+                        <input type="text" id="${prefix}product-colors" placeholder="Red, Blue, Black" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                    </div>
+                    <div>
+                        <label for="${prefix}product-storage" class="block text-text-primary font-medium mb-2">Storage / Variant (e.g., 64GB, 128GB)</label>
+                        <input type="text" id="${prefix}product-storage" placeholder="64GB, 128GB" class="w-full px-4 py-2 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-theme-primary">
+                    </div>
+                </div>
+            </div>
             
             <div class="p-4 border rounded-lg bg-gray-50/50 dark:bg-gray-800/50 border-color space-y-4">
                 <h3 class="font-semibold text-lg text-text-primary">Common Details</h3>
@@ -6217,6 +6235,14 @@ const saveBulkProducts = async (products) => {
                 return Number.isNaN(date.getTime()) ? null : date;
             };
 
+            const sizesInput = form.querySelector(`#${prefix}product-sizes`)?.value || '';
+            const colorsInput = form.querySelector(`#${prefix}product-colors`)?.value || '';
+            const storageInput = form.querySelector(`#${prefix}product-storage`)?.value || '';
+
+            const sizes = sizesInput.split(',').map(v => v.trim()).filter(Boolean);
+            const colors = colorsInput.split(',').map(v => v.trim()).filter(Boolean);
+            const storage = storageInput.split(',').map(v => v.trim()).filter(Boolean);
+
             const flashEnabled = form.querySelector(`#${prefix}product-flash-enabled`)?.checked || false;
             const flashPriceValue = parseFloat(form.querySelector(`#${prefix}product-flash-price`)?.value) || 0;
             const flashStartValue = form.querySelector(`#${prefix}product-flash-start`)?.value || '';
@@ -6273,6 +6299,9 @@ const saveBulkProducts = async (products) => {
                 subcategory: form.querySelector(`#${prefix}product-subcategory`).value,
                 details: form.querySelector(`#${prefix}product-details`).value,
                 specification: specification,
+                sizes,
+                colors,
+                storage,
                 isOnOffer: form.querySelector(`#${prefix}product-on-offer`).checked,
                 isRefundable: form.querySelector(`#${prefix}product-refundable`).checked,
                 flashSale,
@@ -7163,6 +7192,30 @@ async function handleEditCouponSubmit(e) {
                 form.querySelector('#edit-product-stock').value = data.stock || 0;
                 form.querySelector('#edit-product-rating').value = data.rating || 0;
                 form.querySelector('#edit-product-details').value = data.details || '';
+                const formatVariantList = (value) => {
+                    if (Array.isArray(value)) {
+                        return value
+                            .map(item => {
+                                if (item === null || item === undefined) return '';
+                                if (typeof item === 'string' || typeof item === 'number') return String(item);
+                                if (typeof item === 'object') {
+                                    if (typeof item.name === 'string') return item.name;
+                                    if (typeof item.label === 'string') return item.label;
+                                    if (typeof item.value === 'string') return item.value;
+                                }
+                                return '';
+                            })
+                            .filter(Boolean)
+                            .join(', ');
+                    }
+                    return typeof value === 'string' || typeof value === 'number' ? String(value) : '';
+                };
+                const sizesField = form.querySelector('#edit-product-sizes');
+                if (sizesField) sizesField.value = formatVariantList(data.sizes);
+                const colorsField = form.querySelector('#edit-product-colors');
+                if (colorsField) colorsField.value = formatVariantList(data.colors);
+                const storageField = form.querySelector('#edit-product-storage');
+                if (storageField) storageField.value = formatVariantList(data.storageOptions || data.storage);
                 
                 const mainCategorySelect = form.querySelector('#edit-product-category');
                 mainCategorySelect.value = data.category || '';
